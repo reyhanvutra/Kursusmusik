@@ -31,6 +31,14 @@ $routes->group('admin', ['filter' => ['auth','role:admin']], function($routes){
     $routes->get('kursus/edit/(:num)', 'Admin\Admin::edit_kursus/$1');
     $routes->post('kursus/update/(:num)', 'Admin\Admin::update_kursus/$1');
     $routes->get('kursus/hapus/(:num)', 'Admin\Admin::hapus_kursus/$1');
+
+    // paket
+    $routes->get('paket', 'Admin\Admin::paket');
+    $routes->get('paket/tambah', 'Admin\Admin::tambah_paket');
+    $routes->post('paket/simpan', 'Admin\Admin::simpan_paket');
+    $routes->get('paket/edit/(:num)', 'Admin\Admin::edit_paket/$1');
+    $routes->post('paket/update/(:num)', 'Admin\Admin::update_paket/$1');
+    $routes->get('paket/hapus/(:num)', 'Admin\Admin::hapus_paket/$1');
 });
 // KASIR
 $routes->group('kasir', ['filter' => ['auth', 'role:kasir']], function($routes){
