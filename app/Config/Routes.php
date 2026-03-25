@@ -42,7 +42,11 @@ $routes->group('admin', ['filter' => ['auth','role:admin']], function($routes){
 });
 // KASIR
 $routes->group('kasir', ['filter' => ['auth', 'role:kasir']], function($routes){
-    $routes->get('dashboard', 'Kasir\Kasir::dashboard');
+   $routes->get('dashboard', 'Kasir\Kasir::dashboard');
+    $routes->get('pilih', 'Kasir\Kasir::pilih');
+    $routes->get('transaksi', 'Kasir\Kasir::transaksi');
+    $routes->post('simpan', 'Kasir\Kasir::simpan');
+    
 });
 // OWNER
 $routes->group('owner', ['filter' => ['auth', 'role:owner']], function($routes){

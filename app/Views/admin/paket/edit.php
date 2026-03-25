@@ -14,7 +14,7 @@
     <label>Pilih Kursus</label><br>
 
     <?php 
-    // ambil id kursus yang sudah dipilih
+    
     $selected = array_column($detail, 'id_kursus');
     ?>
 
