@@ -36,12 +36,13 @@
 
         <h4>Riwayat Transaksi</h4>
 
-        <table>
+        <table border="1" cellpadding="10" cellspacing="0" width="100%">
             <tr>
                 <th>Tanggal</th>
                 <th>Nama</th>
                 <th>Item</th>
                 <th>Bayar</th>
+                <th>Aksi</th>
             </tr>
 
             <?php foreach($transaksi as $t): ?>
@@ -53,7 +54,7 @@
                     <?php 
                     if(!empty($t['items'])){
                         foreach($t['items'] as $item){
-                            echo '<span class="badge">'.$item.'</span>';
+                            echo '<span class="badge">'.$item.'</span> ';
                         }
                     }
                     ?>
@@ -61,6 +62,13 @@
 
                 <td style="color:#ff4d4d;">
                     Rp <?= number_format($t['total_harga'],0,',','.'); ?>
+                </td>
+
+                <td>
+                    <a href="/kasir/detail/<?= $t['id']; ?>" 
+                       style="background:#444;color:white;padding:5px 10px;border-radius:6px;text-decoration:none;">
+                       Detail
+                    </a>
                 </td>
             </tr>
             <?php endforeach; ?>

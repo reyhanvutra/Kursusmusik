@@ -1,29 +1,123 @@
-<h2>Kursus | Paket</h2>
+<?= $this->extend('kasir/layout'); ?>
+<?= $this->section('content'); ?>
 
-<?php foreach($kursus as $k): ?>
-<div style="border:1px solid #ccc; padding:10px; margin:10px;">
-    <h3><?= $k['nama_kursus']; ?></h3>
-    <p>Harga: <?= $k['harga']; ?></p>
-    <p>Slot: <?= $k['slot']; ?></p>
+<div class="container">
 
-    <?php if($k['slot'] > 0): ?>
-        <button onclick="pilihItem('kursus',<?= $k['id']; ?>,'<?= $k['nama_kursus']; ?>',<?= $k['harga']; ?>)">
-            Tersedia
-        </button>
+    <h2>Kursus & Paket</h2>
+
+    <!-- TAB -->
+    <a href="?tab=kursus">Kursus</a> |
+    <a href="?tab=paket">Paket</a>
+
+    <hr>
+
+    <?php $tab = $_GET['tab'] ?? 'kursus'; ?>
+
+    <!-- ================= KURSUS ================= -->
+    <?php if($tab == 'kursus'): ?>
+
+        <h3>Daftar Kursus</h3>
+
+        <?php foreach($kursus as $k): ?>
+        <div style="border:1px solid #ccc;padding:15px;margin:10px;border-radius:10px;">
+
+            <!-- GAMBAR -->
+            <?php if($k['gambar']): ?>
+                <img src="/uploads/<?= $k['gambar']; ?>" width="120" style="border-radius:8px;"><br><br>
+            <?php endif; ?>
+
+            <!-- INFO -->
+            <b><?= $k['nama_kursus']; ?></b><br><br>
+
+            💰 Harga: Rp <?= number_format($k['harga'],0,',','.'); ?><br>
+            👨‍🏫 Instruktur: <?= $k['instruktur']; ?><br>
+            ⏰ Jadwal: <?= $k['jam_mulai']; ?> - <?= $k['jam_selesai']; ?><br>
+            📦 Slot: <?= $k['slot']; ?><br><br>
+
+            <!-- BUTTON -->
+            <?php if($k['slot'] > 0): ?>
+
+                <!-- PILIH -->
+                <button onclick="pilihItem('kursus',<?= $k['id']; ?>,'<?= $k['nama_kursus']; ?>',<?= $k['harga']; ?>)"
+                    style="background:green;color:white;padding:8px 15px;border:none;border-radius:6px;">
+                    Pilih
+                </button>
+
+                <!-- DETAIL -->
+                <a href="/kasir/detail/kursus/<?= $k['id']; ?>"
+                    style="background:#555;color:white;padding:8px 15px;text-decoration:none;border-radius:6px;">
+                    Lihat Detail
+                </a>
+
+            <?php else: ?>
+
+                <button disabled style="background:#999;color:white;padding:8px 15px;border:none;">
+                    Penuh
+                </button>
+
+            <?php endif; ?>
+
+        </div>
+        <?php endforeach; ?>
+
+    <!-- ================= PAKET ================= -->
     <?php else: ?>
-        <button disabled>Penuh</button>
+
+        <h3>Daftar Paket</h3>
+
+        <?php foreach($paket as $p): ?>
+        <div style="border:1px solid #ccc;padding:15px;margin:10px;border-radius:10px;">
+
+            <b><?= $p['nama_paket']; ?></b><br><br>
+
+            💰 Harga Paket: Rp <?= number_format($p['harga'],0,',','.'); ?><br><br>
+
+            📚 <b>Isi Paket:</b><br>
+            <?= $p['list_kursus']; ?><br><br>
+
+            <!-- BUTTON -->
+            <button onclick="pilihItem('paket',<?= $p['id']; ?>,'<?= $p['nama_paket']; ?>',<?= $p['harga']; ?>)"
+                style="background:blue;color:white;padding:8px 15px;border:none;border-radius:6px;">
+                Pilih Paket
+            </button>
+
+            <a href="/kasir/detail/paket/<?= $p['id']; ?>"
+                style="background:#555;color:white;padding:8px 15px;text-decoration:none;border-radius:6px;">
+                Lihat Detail
+            </a>
+
+        </div>
+        <?php endforeach; ?>
+
     <?php endif; ?>
+
+    <br>
+    <a href="/kasir/dashboard" 
+       style="background:#444;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;">
+       ← Kembali
+    </a>
+
 </div>
-<?php endforeach; ?>
 
 <script>
 function pilihItem(tipe,id,nama,harga){
+
     let items = JSON.parse(localStorage.getItem('cart') || '[]');
 
-    items.push({tipe,id,nama,harga});
+    items.push({
+        tipe: tipe,
+        id: id,
+        nama: nama,
+        harga: harga
+    });
 
     localStorage.setItem('cart', JSON.stringify(items));
 
-    window.location = "/kasir/transaksi";
+    // 🔥 penting supaya transaksi tidak reset
+    localStorage.setItem('dari_pilih', '1');
+
+    window.location.href = "/kasir/transaksi";
 }
 </script>
+
+<?= $this->endSection(); ?>

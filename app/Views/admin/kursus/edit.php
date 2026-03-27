@@ -3,15 +3,48 @@
 
 <h2>Edit Kursus</h2>
 
-<form action="/admin/kursus/update/<?= $kursus['id']; ?>" method="post">
+<?php if(session()->getFlashdata('error')): ?>
+    <div style="color:red;">
+        <?= session()->getFlashdata('error'); ?>
+    </div>
+<?php endif; ?>
 
-Nama: <input type="text" name="nama_kursus" value="<?= $kursus['nama_kursus']; ?>"><br><br>
-Harga: <input type="number" name="harga" value="<?= $kursus['harga']; ?>"><br><br>
-Instruktur: <input type="text" name="instruktur" value="<?= $kursus['instruktur']; ?>"><br><br>
-Durasi: <input type="text" name="durasi" value="<?= $kursus['durasi']; ?>"><br><br>
-Slot: <input type="number" name="slot" value="<?= $kursus['slot']; ?>"><br><br>
+<form action="/admin/kursus/update/<?= $kursus['id']; ?>" method="post" enctype="multipart/form-data">
+
+Nama:
+<input type="text" name="nama_kursus" value="<?= $kursus['nama_kursus']; ?>" required><br><br>
+
+Harga:
+<input type="number" name="harga" value="<?= $kursus['harga']; ?>" required><br><br>
+
+Instruktur:
+<input type="text" name="instruktur" value="<?= $kursus['instruktur']; ?>" required><br><br>
+
+Jam Mulai:
+<input type="time" name="jam_mulai" value="<?= $kursus['jam_mulai']; ?>" required><br><br>
+
+Jam Selesai:
+<input type="time" name="jam_selesai" value="<?= $kursus['jam_selesai']; ?>" required><br><br>
+
+Durasi:
+<input type="text" value="<?= $kursus['durasi']; ?>" readonly><br><br>
+
+Slot:
+<input type="number" name="slot" value="<?= $kursus['slot']; ?>" required><br><br>
+
+Deskripsi:
+<textarea name="deskripsi"><?= $kursus['deskripsi']; ?></textarea><br><br>
+
+
+<?php if($kursus['gambar']): ?>
+    <img src="/uploads/<?= $kursus['gambar']; ?>" width="100"><br><br>
+<?php endif; ?>
+
+Ganti Gambar:
+<input type="file" name="gambar" accept="image/*"><br><br>
 
 <button type="submit">Update</button>
+<a href="/admin/kursus" style="display:inline-block;margin-bottom:15px;">← Kembali</a>
 </form>
 
 <?= $this->endSection(); ?>

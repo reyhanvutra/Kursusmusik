@@ -6,7 +6,10 @@ use App\Models\KursusModel;
 use App\Models\PaketModel;
 use App\Models\TransaksiModel;
 use App\Models\TransaksiDetailModel;
+use App\Models\PaketDetailModel;
 use App\Controllers\BaseController;
+
+use Dompdf\Dompdf;
 
 class Kasir extends BaseController
 {
@@ -14,6 +17,7 @@ class Kasir extends BaseController
     protected $paketModel;
     protected $transaksiModel;
     protected $detailModel;
+    protected $paketDetailModel;
 
     public function __construct()
     {
@@ -21,82 +25,130 @@ class Kasir extends BaseController
         $this->paketModel = new PaketModel();
         $this->transaksiModel = new TransaksiModel();
         $this->detailModel = new TransaksiDetailModel();
+        $this->paketDetailModel = new PaketDetailModel();
     }
-public function dashboard()
-{
-    $today = date('Y-m-d');
 
-    // kursus aktif
-    $kursus_aktif = $this->kursusModel
-        ->where('slot >', 0)
-        ->countAllResults();
+    // ================= DASHBOARD =================
+    public function dashboard()
+    {
+        $today = date('Y-m-d');
 
-    // pendapatan hari ini
-    $pendapatan = $this->transaksiModel
-        ->selectSum('total_harga')
-        ->where('tanggal', $today)
-        ->first();
+        $kursus_aktif = $this->kursusModel
+            ->where('slot >', 0)
+            ->countAllResults();
 
-    // total transaksi hari ini
-    $total_transaksi = $this->transaksiModel
-        ->where('tanggal', $today)
-        ->countAllResults();
+        $pendapatan = $this->transaksiModel
+            ->selectSum('total_harga')
+            ->where('tanggal', $today)
+            ->first();
 
-    // ambil transaksi terbaru
-    $transaksi = $this->transaksiModel
-        ->orderBy('id','DESC')
-        ->findAll(5);
+        $total_transaksi = $this->transaksiModel
+            ->where('tanggal', $today)
+            ->countAllResults();
 
-    // ambil detail item
-    foreach($transaksi as &$t){
+        $transaksi = $this->transaksiModel
+            ->orderBy('id','DESC')
+            ->findAll(5);
 
-        $detail = $this->detailModel
-            ->where('id_transaksi', $t['id'])
-            ->findAll();
+        foreach($transaksi as &$t){
 
-        $items = [];
+            $detail = $this->detailModel
+                ->where('id_transaksi', $t['id'])
+                ->findAll();
 
-        foreach($detail as $d){
-            if($d['tipe'] == 'kursus'){
-                $k = $this->kursusModel->find($d['id_item']);
-                $items[] = $k['nama_kursus'];
-            }else{
-                $p = $this->paketModel->find($d['id_item']);
-                $items[] = $p['nama_paket'];
+            $items = [];
+
+            foreach($detail as $d){
+
+                if($d['tipe'] == 'kursus'){
+                    $k = $this->kursusModel->find($d['id_item']);
+                    $items[] = $k ? $k['nama_kursus'] : 'Kursus dihapus';
+                }else{
+                    $p = $this->paketModel->find($d['id_item']);
+                    $items[] = $p ? $p['nama_paket'] : 'Paket dihapus';
+                }
             }
+
+            $t['items'] = $items;
         }
 
-        $t['items'] = $items;
+        return view('kasir/dashboard', [
+            'kursus_aktif' => $kursus_aktif,
+            'pendapatan_hari_ini' => $pendapatan['total_harga'] ?? 0,
+            'total_transaksi_hari_ini' => $total_transaksi,
+            'transaksi' => $transaksi
+        ]);
+    }
+    public function detail($id)
+{
+    $transaksi = $this->transaksiModel->find($id);
+
+    if(!$transaksi){
+        throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
     }
 
-    $data = [
-        'kursus_aktif' => $kursus_aktif,
-        'pendapatan_hari_ini' => $pendapatan['total_harga'] ?? 0,
-        'total_transaksi_hari_ini' => $total_transaksi,
-        'transaksi' => $transaksi
-    ];
+    $detail = $this->detailModel
+        ->where('id_transaksi', $id)
+        ->findAll();
 
-    return view('kasir/dashboard', $data);
+    foreach($detail as &$d){
+        if($d['tipe'] == 'kursus'){
+            $k = $this->kursusModel->find($d['id_item']);
+            $d['nama'] = $k['nama_kursus'] ?? 'Kursus dihapus';
+        }else{
+            $p = $this->paketModel->find($d['id_item']);
+            $d['nama'] = $p['nama_paket'] ?? 'Paket dihapus';
+        }
+    }
+
+    return view('kasir/detail', [
+        't' => $transaksi,
+        'detail' => $detail
+    ]);
 }
-    // 🔹 halaman pilih kursus/paket
-    public function pilih()
-    {
-        $data['kursus'] = $this->kursusModel->findAll();
-        $data['paket'] = $this->paketModel->findAll();
 
-        return view('kasir/pilih', $data);
+    // ================= PILIH =================
+   public function pilih()
+{
+    $kursus = $this->kursusModel->findAll();
+
+    // 🔥 ambil paket
+    $paket = $this->paketModel->findAll();
+
+    // 🔥 loop untuk ambil isi kursus tiap paket
+    foreach($paket as &$p){
+
+        $detail = $this->paketDetailModel
+            ->select('kursus.nama_kursus')
+            ->join('kursus','kursus.id = paket_detail.id_kursus')
+            ->where('id_paket', $p['id'])
+            ->findAll();
+
+        $namaKursus = array_column($detail, 'nama_kursus');
+
+        // 🔥 jadikan string
+        $p['list_kursus'] = implode(', ', $namaKursus);
     }
 
-    // 🔹 halaman transaksi
+    return view('kasir/pilih', [
+        'kursus' => $kursus,
+        'paket' => $paket
+    ]);
+}
+
     public function transaksi()
     {
         return view('kasir/transaksi');
     }
 
-    // 🔹 simpan transaksi
+    // ================= SIMPAN =================
     public function simpan()
     {
         $items = json_decode($this->request->getPost('items'), true);
+
+        if(empty($items)){
+            return redirect()->back()->with('error','Pilih item dulu');
+        }
 
         $total = 0;
         foreach($items as $i){
@@ -104,34 +156,90 @@ public function dashboard()
         }
 
         $bayar = $this->request->getPost('bayar');
-        $kembali = $bayar - $total;
 
-        $idTransaksi = $this->transaksiModel->insert([
+        if($bayar < $total){
+            return redirect()->back()->with('error','Uang kurang');
+        }
+
+        $id = $this->transaksiModel->insert([
             'nama_pembeli' => $this->request->getPost('nama'),
             'no_hp' => $this->request->getPost('nohp'),
             'total_harga' => $total,
             'uang_bayar' => $bayar,
-            'uang_kembali' => $kembali,
+            'uang_kembali' => $bayar - $total,
             'tanggal' => date('Y-m-d')
         ]);
 
-        // simpan detail
-        foreach($items as $i){
-            $this->detailModel->insert([
-                'id_transaksi' => $idTransaksi,
-                'tipe' => $i['tipe'],
-                'id_item' => $i['id'],
-                'harga' => $i['harga']
-            ]);
+      foreach($items as $i){
 
-            // kurangi slot
-            if($i['tipe'] == 'kursus'){
-                $this->kursusModel->set('slot', 'slot-1', false)
-                    ->where('id', $i['id'])
-                    ->update();
+    $this->detailModel->insert([
+        'id_transaksi' => $id,
+        'tipe' => $i['tipe'],
+        'id_item' => $i['id'],
+        'harga' => $i['harga'],
+        'bulan' => $i['bulan'] ?? 1 // 🔥 default 1 kalau kosong
+    ]);
+
+    if($i['tipe'] == 'kursus'){
+        $this->kursusModel->set('slot','slot-1',false)
+            ->where('id',$i['id'])
+            ->update();
+    }
+}
+
+        // 🔥 langsung cetak PDF
+        return redirect()->to('/kasir/cetak/'.$id);
+    }
+
+    // ================= CETAK PDF =================
+    public function cetak($id)
+    {
+        $transaksi = $this->transaksiModel->find($id);
+
+        $detail = $this->detailModel
+            ->where('id_transaksi', $id)
+            ->findAll();
+
+        foreach($detail as &$d){
+            if($d['tipe'] == 'kursus'){
+                $k = $this->kursusModel->find($d['id_item']);
+                $d['nama'] = $k['nama_kursus'] ?? 'Kursus dihapus';
+            }else{
+                $p = $this->paketModel->find($d['id_item']);
+                $d['nama'] = $p['nama_paket'] ?? 'Paket dihapus';
             }
         }
 
-        return redirect()->to('/kasir/dashboard');
+        $html = view('kasir/struk_pdf', [
+            't' => $transaksi,
+            'detail' => $detail
+        ]);
+
+        $dompdf = new Dompdf();
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper([0,0,226.77,600]); // ukuran struk
+        $dompdf->render();
+
+        $dompdf->stream('struk.pdf', ['Attachment' => false]);
     }
+    public function detailKursus($id)
+{
+    $data['k'] = $this->kursusModel->find($id);
+    return view('kasir/detailkursus', $data);
+}
+
+public function detailPaket($id)
+{
+    $data['p'] = $this->paketModel->find($id);
+
+    $detail = $this->paketDetailModel
+        ->select('kursus.*')
+        ->join('kursus','kursus.id = paket_detail.id_kursus')
+        ->where('id_paket',$id)
+        ->findAll();
+
+    $data['kursus'] = $detail;
+
+    return view('kasir/detailpaket', $data);
+}
 }

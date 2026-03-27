@@ -46,7 +46,11 @@ $routes->group('kasir', ['filter' => ['auth', 'role:kasir']], function($routes){
     $routes->get('pilih', 'Kasir\Kasir::pilih');
     $routes->get('transaksi', 'Kasir\Kasir::transaksi');
     $routes->post('simpan', 'Kasir\Kasir::simpan');
-    
+    $routes->get('detail/(:num)', 'Kasir\Kasir::detail/$1');
+    $routes->get('cetak/(:num)', 'Kasir\Kasir::cetak/$1');
+    $routes->get('detail/kursus/(:num)', 'Kasir\Kasir::detailKursus/$1');
+    $routes->get('detail/paket/(:num)', 'Kasir\Kasir::detailPaket/$1');
+
 });
 // OWNER
 $routes->group('owner', ['filter' => ['auth', 'role:owner']], function($routes){

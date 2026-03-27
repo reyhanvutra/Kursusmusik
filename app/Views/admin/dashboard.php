@@ -15,8 +15,8 @@
 </div>
 
 <div class="card">
-    <h3>Total Transaksi</h3>
-    <p><?= $total_transaksi; ?></p>
+    <h3>Transaksi Hari Ini</h3>
+    <p><?= $transaksi_hari_ini; ?></p>
 </div>
 
 <?= $this->endSection(); ?>

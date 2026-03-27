@@ -9,13 +9,15 @@ class KursusModel extends Model
     protected $table = 'kursus';
     protected $primaryKey = 'id';
 
-    protected $allowedFields = [
-        'nama_kursus',
-        'harga',
-        'instruktur',
-        'durasi',
-        'slot',
-        'deskripsi',
-        'gambar'
-    ];
+ protected $allowedFields = [
+    'nama_kursus',
+    'harga',
+    'instruktur',
+    'durasi',
+    'jam_mulai',
+    'jam_selesai',
+    'slot',
+    'deskripsi',
+    'gambar'
+];
 }

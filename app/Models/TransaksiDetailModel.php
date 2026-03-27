@@ -12,6 +12,7 @@ class TransaksiDetailModel extends Model
         'id_transaksi',
         'tipe',
         'id_item',
-        'harga'
+        'harga',
+        'bulan'
     ];
 }
