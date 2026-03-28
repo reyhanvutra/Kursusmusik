@@ -20,6 +20,22 @@ Harga:
 Instruktur:
 <input type="text" name="instruktur" value="<?= $kursus['instruktur']; ?>" required><br><br>
 
+Hari:<br>
+
+<?php 
+$hariList = ['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu','Minggu'];
+$hariDipilih = $kursus['hari'] ? explode(',', $kursus['hari']) : [];
+?>
+
+<?php foreach($hariList as $h): ?>
+    <label>
+        <input type="checkbox" name="hari[]" value="<?= $h; ?>"
+            <?= in_array($h, $hariDipilih) ? 'checked' : '' ?>>
+        <?= $h; ?>
+    </label><br>
+<?php endforeach; ?>
+
+<br>
 Jam Mulai:
 <input type="time" name="jam_mulai" value="<?= $kursus['jam_mulai']; ?>" required><br><br>
 

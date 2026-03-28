@@ -31,6 +31,7 @@
 
             💰 Harga: Rp <?= number_format($k['harga'],0,',','.'); ?><br>
             👨‍🏫 Instruktur: <?= $k['instruktur']; ?><br>
+            📅 Hari: <?= $k['hari']; ?><br>
             ⏰ Jadwal: <?= $k['jam_mulai']; ?> - <?= $k['jam_selesai']; ?><br>
             📦 Slot: <?= $k['slot']; ?><br><br>
 
@@ -63,31 +64,39 @@
     <!-- ================= PAKET ================= -->
     <?php else: ?>
 
-        <h3>Daftar Paket</h3>
+      <h3>Daftar Paket</h3>
 
-        <?php foreach($paket as $p): ?>
-        <div style="border:1px solid #ccc;padding:15px;margin:10px;border-radius:10px;">
+<?php foreach($paket as $p): ?>
+<div style="border:1px solid #ccc;padding:15px;margin:10px;border-radius:10px;">
 
-            <b><?= $p['nama_paket']; ?></b><br><br>
+    <b><?= $p['nama_paket']; ?></b><br><br>
 
-            💰 Harga Paket: Rp <?= number_format($p['harga'],0,',','.'); ?><br><br>
+    💰 Rp <?= number_format($p['harga'],0,',','.'); ?><br><br>
 
-            📚 <b>Isi Paket:</b><br>
-            <?= $p['list_kursus']; ?><br><br>
+    📅 Hari:<br>
+    <?php foreach(explode(',', $p['hari']) as $h): ?>
+        <span style="background:#444;color:white;padding:3px 8px;border-radius:5px;">
+            <?= trim($h); ?>
+        </span>
+    <?php endforeach; ?>
+    <br><br>
 
-            <!-- BUTTON -->
-            <button onclick="pilihItem('paket',<?= $p['id']; ?>,'<?= $p['nama_paket']; ?>',<?= $p['harga']; ?>)"
-                style="background:blue;color:white;padding:8px 15px;border:none;border-radius:6px;">
-                Pilih Paket
-            </button>
-
-            <a href="/kasir/detail/paket/<?= $p['id']; ?>"
-                style="background:#555;color:white;padding:8px 15px;text-decoration:none;border-radius:6px;">
-                Lihat Detail
-            </a>
-
-        </div>
+    📚 Isi Paket:<br>
+    <ul>
+        <?php foreach(explode(',', $p['list_kursus']) as $k): ?>
+            <li><?= $k; ?></li>
         <?php endforeach; ?>
+    </ul>
+
+    <p><?= $p['deskripsi']; ?></p>
+
+    <button onclick="pilihItem('paket',<?= $p['id']; ?>,'<?= $p['nama_paket']; ?>',<?= $p['harga']; ?>)"
+        style="background:blue;color:white;padding:8px 15px;border:none;">
+        Pilih Paket
+    </button>
+
+</div>
+<?php endforeach; ?>
 
     <?php endif; ?>
 

@@ -96,38 +96,49 @@ class Admin extends BaseController
     }
 
     // ================= KURSUS =================
-    public function kursus()
-    {
-        $data['kursus'] = $this->kursusModel->findAll();
+  public function kursus()
+{
+    // ================= KURSUS =================
+    $data['kursus'] = $this->kursusModel->findAll();
 
-        $paket = $this->paketModel->findAll();
+    // ================= PAKET =================
+    $paket = $this->paketModel->findAll();
 
-        foreach ($paket as &$p) {
-            $detail = $this->paketDetailModel
-                ->select('kursus.nama_kursus, kursus.slot')
-                ->join('kursus', 'kursus.id = paket_detail.id_kursus')
-                ->where('id_paket', $p['id'])
-                ->findAll();
+    foreach($paket as &$p){
 
-            $namaKursus = [];
-            $tersedia = true;
+        $detail = $this->paketDetailModel
+            ->select('kursus.nama_kursus, kursus.hari, kursus.instruktur, kursus.durasi')
+            ->join('kursus','kursus.id = paket_detail.id_kursus')
+            ->where('id_paket', $p['id'])
+            ->findAll();
 
-            foreach($detail as $d){
-                $namaKursus[] = $d['nama_kursus'];
+        // ================= LIST NAMA =================
+        $namaKursus = array_column($detail, 'nama_kursus');
+        $p['list_kursus'] = implode(', ', $namaKursus);
 
-                if($d['slot'] <= 0){
-                    $tersedia = false;
+        // ================= DETAIL =================
+        $p['detail_kursus'] = $detail;
+
+        // ================= HARI =================
+        $semuaHari = [];
+
+        foreach($detail as $d){
+            if($d['hari']){ // 🔥 biar ga error kalau NULL
+                foreach(explode(',', $d['hari']) as $h){
+                    $semuaHari[] = trim($h);
                 }
             }
-
-            $p['list_kursus'] = implode(', ', $namaKursus);
-            $p['status'] = $tersedia ? 'Tersedia' : 'Penuh';
         }
 
-        $data['paket'] = $paket;
-
-        return view('admin/kursus/index', $data);
+        $semuaHari = array_unique($semuaHari);
+        $p['hari'] = implode(', ', $semuaHari);
     }
+
+    // 🔥 INI YANG KAMU LUPA
+    $data['paket'] = $paket;
+
+    return view('admin/kursus/index', $data);
+}
 
     public function tambah_kursus()
     {
@@ -159,11 +170,13 @@ class Admin extends BaseController
         }
 
         $durasi = ($end - $start) / 3600;
+         $hari = $this->request->getPost('hari');
 
         $this->kursusModel->save([
             'nama_kursus' => $this->request->getPost('nama_kursus'),
             'harga' => $this->request->getPost('harga'),
             'instruktur' => $this->request->getPost('instruktur'),
+            'hari' => $hari ? implode(',', $hari) : null,
             'jam_mulai' => $jam_mulai,
             'jam_selesai' => $jam_selesai,
             'durasi' => $durasi . ' jam',
@@ -214,6 +227,7 @@ class Admin extends BaseController
             'nama_kursus' => $this->request->getPost('nama_kursus'),
             'harga' => $this->request->getPost('harga'),
             'instruktur' => $this->request->getPost('instruktur'),
+            'hari' => implode(',', $this->request->getPost('hari')),
             'jam_mulai' => $jam_mulai,
             'jam_selesai' => $jam_selesai,
             'durasi' => $durasi . ' jam',

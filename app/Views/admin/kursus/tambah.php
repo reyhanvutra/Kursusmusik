@@ -20,6 +20,22 @@ Harga:
 Instruktur:
 <input type="text" name="instruktur" required><br><br>
 
+Hari:<br>
+
+<?php 
+$hariList = ['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu','Minggu'];
+foreach($hariList as $h): 
+?>
+
+<label>
+    <input type="checkbox" name="hari[]" value="<?= $h; ?>">
+    <?= $h; ?>
+</label><br>
+
+<?php endforeach; ?>
+
+<br>
+
 Jam Mulai:
 <input type="time" name="jam_mulai" required><br><br>
 

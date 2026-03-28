@@ -26,6 +26,13 @@
 
         👨‍🏫 <?= $k['instruktur']; ?><br>
         ⏱️ <?= $k['durasi']; ?><br>
+        📅 Hari:
+<?php foreach(explode(',', $p['hari']) as $h): ?>
+    <span style="background:#444;color:white;padding:3px 8px;border-radius:5px;margin-right:5px;">
+        <?= trim($h); ?>
+    </span>
+<?php endforeach; ?>
+<br><br>
         💰 Rp <?= number_format($k['harga'],0,',','.'); ?>
 
     </div>

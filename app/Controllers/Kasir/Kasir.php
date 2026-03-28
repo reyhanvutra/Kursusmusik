@@ -79,60 +79,89 @@ class Kasir extends BaseController
             'transaksi' => $transaksi
         ]);
     }
-    public function detail($id)
+   public function detail($id)
 {
     $transaksi = $this->transaksiModel->find($id);
 
+    // 🔥 validasi
     if(!$transaksi){
         throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
     }
 
+    // ambil detail transaksi
     $detail = $this->detailModel
         ->where('id_transaksi', $id)
         ->findAll();
 
+    // 🔥 isi nama + info tambahan
     foreach($detail as &$d){
+
         if($d['tipe'] == 'kursus'){
+
             $k = $this->kursusModel->find($d['id_item']);
-            $d['nama'] = $k['nama_kursus'] ?? 'Kursus dihapus';
+
+            $d['nama']   = $k['nama_kursus'] ?? 'Kursus dihapus';
+            $d['tipe_label'] = 'Kursus';
+
         }else{
+
             $p = $this->paketModel->find($d['id_item']);
-            $d['nama'] = $p['nama_paket'] ?? 'Paket dihapus';
+
+            $d['nama']   = $p['nama_paket'] ?? 'Paket dihapus';
+            $d['tipe_label'] = 'Paket';
+
         }
+
+        // 🔥 pastikan bulan tidak null
+        $d['bulan'] = $d['bulan'] ?? 1;
+
+        // 🔥 harga per bulan (khusus kursus)
+        if($d['tipe'] == 'kursus'){
+            $d['harga_per_bulan'] = $d['harga'] / $d['bulan'];
+        }else{
+            $d['harga_per_bulan'] = $d['harga'];
+        }
+
     }
 
     return view('kasir/detail', [
-        't' => $transaksi,
+        't'      => $transaksi,
         'detail' => $detail
     ]);
 }
 
     // ================= PILIH =================
-   public function pilih()
+  public function pilih()
 {
     $kursus = $this->kursusModel->findAll();
+    $paket  = $this->paketModel->findAll();
 
-    // 🔥 ambil paket
-    $paket = $this->paketModel->findAll();
-
-    // 🔥 loop untuk ambil isi kursus tiap paket
     foreach($paket as &$p){
 
         $detail = $this->paketDetailModel
-            ->select('kursus.nama_kursus')
+            ->select('kursus.nama_kursus, kursus.hari')
             ->join('kursus','kursus.id = paket_detail.id_kursus')
             ->where('id_paket', $p['id'])
             ->findAll();
 
+        // list kursus
         $namaKursus = array_column($detail, 'nama_kursus');
-
-        // 🔥 jadikan string
         $p['list_kursus'] = implode(', ', $namaKursus);
+
+        // hari paket
+        $semuaHari = [];
+        foreach($detail as $d){
+            foreach(explode(',', $d['hari']) as $h){
+                $semuaHari[] = trim($h);
+            }
+        }
+
+        $p['hari'] = implode(', ', array_unique($semuaHari));
     }
 
     return view('kasir/pilih', [
         'kursus' => $kursus,
-        'paket' => $paket
+        'paket'  => $paket
     ]);
 }
 
@@ -188,7 +217,7 @@ class Kasir extends BaseController
 }
 
         // 🔥 langsung cetak PDF
-        return redirect()->to('/kasir/cetak/'.$id);
+       return redirect()->to('/kasir/detail/'.$id);
     }
 
     // ================= CETAK PDF =================

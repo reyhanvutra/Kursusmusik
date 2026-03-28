@@ -18,6 +18,7 @@ class KursusModel extends Model
     'jam_selesai',
     'slot',
     'deskripsi',
-    'gambar'
+    'gambar',
+    'hari'
 ];
 }
