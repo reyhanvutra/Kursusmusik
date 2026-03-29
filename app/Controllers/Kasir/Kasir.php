@@ -7,6 +7,7 @@ use App\Models\PaketModel;
 use App\Models\TransaksiModel;
 use App\Models\TransaksiDetailModel;
 use App\Models\PaketDetailModel;
+use App\Models\LogActivityModel;
 use App\Controllers\BaseController;
 
 use Dompdf\Dompdf;
@@ -18,6 +19,7 @@ class Kasir extends BaseController
     protected $transaksiModel;
     protected $detailModel;
     protected $paketDetailModel;
+    protected $logActivityModel;
 
     public function __construct()
     {
@@ -26,8 +28,18 @@ class Kasir extends BaseController
         $this->transaksiModel = new TransaksiModel();
         $this->detailModel = new TransaksiDetailModel();
         $this->paketDetailModel = new PaketDetailModel();
+        $this->logActivityModel = new LogActivityModel();
     }
 
+   private function log($aktivitas)
+    {
+        $this->logActivityModel->insert([
+            'user_id' => session()->get('id'),
+            'nama_user' => session()->get('nama'),
+            'role' => session()->get('role'),
+            'aktivitas' => $aktivitas
+        ]);
+    }
     // ================= DASHBOARD =================
     public function dashboard()
     {
@@ -71,6 +83,8 @@ class Kasir extends BaseController
 
             $t['items'] = $items;
         }
+            // 🔥 LOG
+            $this->log('Masuk dashboard kasir');
 
         return view('kasir/dashboard', [
             'kursus_aktif' => $kursus_aktif,
@@ -124,6 +138,9 @@ class Kasir extends BaseController
 
     }
 
+     // 🔥 LOG
+     $this->log('Melihat detail transaksi ' . $id);
+
     return view('kasir/detail', [
         't'      => $transaksi,
         'detail' => $detail
@@ -158,6 +175,9 @@ class Kasir extends BaseController
 
         $p['hari'] = implode(', ', array_unique($semuaHari));
     }
+    
+     // 🔥 LOG
+     $this->log('Masuk halaman pilih item untuk transaksi baru');
 
     return view('kasir/pilih', [
         'kursus' => $kursus,
@@ -215,6 +235,7 @@ class Kasir extends BaseController
             ->update();
     }
 }
+$this->log('Menyimpan transaksi dengan pembeli ' . $this->request->getPost('nama') . ' dan total ' . $total);
 
         // 🔥 langsung cetak PDF
        return redirect()->to('/kasir/detail/'.$id);
@@ -238,6 +259,8 @@ class Kasir extends BaseController
                 $d['nama'] = $p['nama_paket'] ?? 'Paket dihapus';
             }
         }
+
+        $this->log('Mencetak struk transaksi atas nama ' . $transaksi['nama_pembeli'] . ' dengan total ' . $transaksi['total_harga']);
 
         $html = view('kasir/struk_pdf', [
             't' => $transaksi,
@@ -268,6 +291,8 @@ public function detailPaket($id)
         ->findAll();
 
     $data['kursus'] = $detail;
+
+    $this->log('Melihat detail paket ' . $data['p']['nama_paket']);
 
     return view('kasir/detailpaket', $data);
 }

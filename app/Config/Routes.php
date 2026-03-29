@@ -55,4 +55,12 @@ $routes->group('kasir', ['filter' => ['auth', 'role:kasir']], function($routes){
 // OWNER
 $routes->group('owner', ['filter' => ['auth', 'role:owner']], function($routes){
     $routes->get('dashboard', 'Owner\Owner::dashboard');
+        $routes->get('laporan', 'Owner\Owner::laporan');
+        $routes->get('laporan/pdf', 'Owner\Owner::pdf');
+        $routes->get('kursus', 'Owner\Owner::dataKursus');
+        $routes->get('data-kursus', 'Owner\Owner::dataKursus');
+        $routes->get('data-kursus/pdf', 'Owner\Owner::dataKursusPDF');
+        $routes->get('log', 'Owner\Owner::log');
+        $routes->get('log-activity', 'Owner\Owner::log');
+
 });

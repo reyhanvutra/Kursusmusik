@@ -7,6 +7,7 @@ use App\Models\KursusModel;
 use App\Models\PaketModel;
 use App\Models\PaketDetailModel;
 use App\Models\TransaksiModel;
+use App\Models\LogActivityModel;
 use App\Controllers\BaseController;
 
 class Admin extends BaseController
@@ -16,6 +17,7 @@ class Admin extends BaseController
     protected $paketModel;
     protected $paketDetailModel;
     protected $transaksiModel;
+    protected $logActivityModel;
 
     public function __construct()
     {
@@ -24,12 +26,25 @@ class Admin extends BaseController
         $this->paketModel = new PaketModel();
         $this->paketDetailModel = new PaketDetailModel();  
         $this->transaksiModel = new TransaksiModel(); 
+        $this->logActivityModel = new LogActivityModel();
+    }
+        // 🔥 HELPER LOG (BIAR RAPI)
+    private function log($aktivitas)
+    {
+        $this->logActivityModel->insert([
+            'user_id' => session()->get('id'),
+            'nama_user' => session()->get('nama'),
+            'role' => session()->get('role'),
+            'aktivitas' => $aktivitas
+        ]);
     }
 
     // ================= DASHBOARD =================
   public function dashboard()
 {
     $today = date('Y-m-d');
+
+    $this->log('Masuk dashboard admin');
 
     return view('admin/dashboard', [
         'total_kursus' => $this->kursusModel->countAll(),
@@ -40,11 +55,13 @@ class Admin extends BaseController
             ->where('tanggal', $today)
             ->countAllResults()
     ]);
+
 }
 
     // ================= USER =================
     public function user()
     {
+        $this->log('Masuk halaman user');
         return view('admin/user/index', [
             'users' => $this->userModel->findAll()
         ]);
@@ -67,6 +84,7 @@ class Admin extends BaseController
             'password' => md5($this->request->getPost('password')),
             'role' => $this->request->getPost('role'),
         ]);
+        $this->log('Menambah user baru');
 
         return redirect()->to('/admin/user');
     }
@@ -85,14 +103,17 @@ class Admin extends BaseController
             'email' => $this->request->getPost('email'),
             'role' => $this->request->getPost('role'),
         ]);
-
+         $this->log('Mengedit user: '.$this->request->getPost('nama'));
         return redirect()->to('/admin/user');
     }
 
     public function hapus_user($id)
     {
         $this->userModel->delete($id);
+        
+            $this->log('Menghapus user: '.$this->request->getPost('nama'));
         return redirect()->to('/admin/user');
+
     }
 
     // ================= KURSUS =================
@@ -133,9 +154,11 @@ class Admin extends BaseController
         $semuaHari = array_unique($semuaHari);
         $p['hari'] = implode(', ', $semuaHari);
     }
-
+    
     // 🔥 INI YANG KAMU LUPA
     $data['paket'] = $paket;
+        // 🔥 LOG
+        $this->log('Masuk halaman kursus & paket');
 
     return view('admin/kursus/index', $data);
 }
@@ -184,6 +207,8 @@ class Admin extends BaseController
             'deskripsi' => $this->request->getPost('deskripsi'),
             'gambar' => $namaGambar
         ]);
+        
+        $this->log('Menambah kursus: ' . $this->request->getPost('nama_kursus'));
 
         return redirect()->to('/admin/kursus');
     }
@@ -235,6 +260,7 @@ class Admin extends BaseController
             'deskripsi' => $this->request->getPost('deskripsi'),
             'gambar' => $namaGambar
         ]);
+            $this->log('Mengedit kursus: ' . $this->request->getPost('nama_kursus'));
 
         return redirect()->to('/admin/kursus');
     }
@@ -248,13 +274,17 @@ class Admin extends BaseController
         }
 
         $this->kursusModel->delete($id);
+            $this->log('Menghapus kursus: ' . $kursus['nama_kursus']);
         return redirect()->to('/admin/kursus');
+          
     }
 
     // ================= PAKET =================
     public function paket()
     {
+       $this->log('Masuk halaman paket');
         return redirect()->to('/admin/kursus?tab=paket');
+       
     }
 
     public function tambah_paket()
@@ -285,6 +315,8 @@ class Admin extends BaseController
                 'id_kursus' => $k
             ]);
         }
+        
+        $this->log('Menambah paket: ' . $this->request->getPost('nama_paket'));
 
         return redirect()->to('/admin/kursus?tab=paket');
     }
@@ -321,6 +353,7 @@ class Admin extends BaseController
                 'id_kursus' => $k
             ]);
         }
+        $this->log('Mengupdate paket: ' . $this->request->getPost('nama_paket'));
 
         return redirect()->to('/admin/kursus?tab=paket');
     }
@@ -329,7 +362,8 @@ class Admin extends BaseController
     {
         $this->paketModel->delete($id);
         $this->paketDetailModel->where('id_paket', $id)->delete();
-
+        $this->log('Menghapus paket: ' . $this->request->getPost('nama_paket'));
         return redirect()->to('/admin/kursus?tab=paket');
+           
     }
 }
