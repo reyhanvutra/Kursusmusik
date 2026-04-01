@@ -8,6 +8,7 @@ use App\Models\PaketModel;
 use App\Models\PaketDetailModel;
 use App\Models\TransaksiModel;
 use App\Models\LogActivityModel;
+use App\Models\SettingModel;
 use App\Controllers\BaseController;
 
 class Admin extends BaseController
@@ -366,4 +367,24 @@ class Admin extends BaseController
         return redirect()->to('/admin/kursus?tab=paket');
            
     }
+    
+    public function index()
+    {
+        $model = new SettingModel();
+        $data['setting'] = $model->first();
+
+        return view('admin/setting/index', $data);
+    }
+
+    public function update()
+    {
+        $model = new SettingModel();
+
+        $model->update(1, [
+            'biaya_pendaftaran' => $this->request->getPost('biaya_pendaftaran')
+        ]);
+
+        return redirect()->back()->with('success', 'Biaya berhasil diupdate');
+    }
+
 }

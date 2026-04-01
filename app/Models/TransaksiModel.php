@@ -14,6 +14,8 @@ protected $allowedFields = [
     'total_harga',
     'uang_bayar',
     'uang_kembali',
-    'tanggal'
+    'tanggal',
+    'biaya_pendaftaran',
+    'id_siswa'
 ];
 }

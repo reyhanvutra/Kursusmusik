@@ -39,6 +39,10 @@ $routes->group('admin', ['filter' => ['auth','role:admin']], function($routes){
     $routes->get('paket/edit/(:num)', 'Admin\Admin::edit_paket/$1');
     $routes->post('paket/update/(:num)', 'Admin\Admin::update_paket/$1');
     $routes->get('paket/hapus/(:num)', 'Admin\Admin::hapus_paket/$1');
+
+    // setting
+    $routes->get('setting', 'Admin\Admin::index');
+    $routes->post('setting/update', 'Admin\Admin::update');
 });
 // KASIR
 $routes->group('kasir', ['filter' => ['auth', 'role:kasir']], function($routes){
@@ -50,6 +54,10 @@ $routes->group('kasir', ['filter' => ['auth', 'role:kasir']], function($routes){
     $routes->get('cetak/(:num)', 'Kasir\Kasir::cetak/$1');
     $routes->get('detail/kursus/(:num)', 'Kasir\Kasir::detailKursus/$1');
     $routes->get('detail/paket/(:num)', 'Kasir\Kasir::detailPaket/$1');
+    $routes->post('simpanSiswaAjax', 'Kasir\Kasir::simpanSiswaAjax');
+    $routes->get('siswa/tambah', 'Kasir\Kasir::tambahSiswa');
+    $routes->get('siswa', 'Kasir\Kasir::siswa');
+    $routes->get('siswa/detail/(:num)', 'Kasir\Kasir::detailSiswa/$1');
 
 });
 // OWNER

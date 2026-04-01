@@ -11,6 +11,12 @@
         </a>
     </div>
 
+    <div style="margin:20px 0;">
+        <a href="/kasir/siswa" class="btn btn-blue">
+            📚 Data Siswa
+        </a>
+    </div>
+
     <!-- CARD -->
     <div style="display:flex; gap:15px; margin-bottom:20px;">
 

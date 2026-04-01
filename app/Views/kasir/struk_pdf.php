@@ -34,7 +34,7 @@ hr {
 }
 
 .right {
-    text-align: right;
+    float: right;
 }
 
 .bold {
@@ -45,15 +45,8 @@ hr {
     font-size: 10px;
 }
 
-/* tombol tidak ikut ke print */
-.no-print {
-    margin-top: 10px;
-}
-
-@media print {
-    .no-print {
-        display: none;
-    }
+.clear {
+    clear: both;
 }
 </style>
 </head>
@@ -90,7 +83,7 @@ hr {
     $tanggal = date('d-m-Y', strtotime($t['tanggal']));
 ?>
 
-<p>ID: <?= $t['id']; ?></p>
+<p>No: TRX-<?= str_pad($t['id'], 5, '0', STR_PAD_LEFT); ?></p>
 <p>Tanggal: <?= $tanggal; ?></p>
 <p>Nama: <?= $t['nama_pembeli']; ?></p>
 <p>No HP: <?= $t['no_hp']; ?></p>
@@ -111,27 +104,30 @@ hr {
 <div class="item">
 
     <div>
-        <b>
-            <?= $isKursus ? '' : ''; ?> 
-            <?= $d['nama']; ?>
-        </b>
-        <span class="small">
-            [<?= strtoupper($d['tipe']); ?>]
-        </span>
+        <b><?= $d['nama']; ?></b>
+        <span class="small">[<?= strtoupper($d['tipe']); ?>]</span>
     </div>
 
     <div>
         <?php if($isKursus): ?>
-            Rp <?= number_format($harga_per_bulan,0,',','.'); ?> 
-            x <?= $bulan; ?> bulan
+            Rp <?= number_format($harga_per_bulan,0,',','.'); ?> x <?= $bulan; ?> bulan
         <?php else: ?>
             Paket Full
         <?php endif; ?>
     </div>
 
+    <?php if($isKursus): ?>
+    <div class="small">
+        Mulai: <?= $d['tanggal_mulai'] ?? '-' ?><br>
+        Selesai: <?= $d['tanggal_selesai'] ?? '-' ?>
+    </div>
+    <?php endif; ?>
+
     <div class="right bold">
         Rp <?= number_format($d['harga'],0,',','.'); ?>
     </div>
+
+    <div class="clear"></div>
 
 </div>
 
@@ -139,24 +135,43 @@ hr {
 
 <hr>
 
+<!-- ================= BIAYA TAMBAHAN ================= -->
+<?php if($t['biaya_pendaftaran'] > 0): ?>
+<p>
+Biaya Pendaftaran
+<span class="right">
+Rp <?= number_format($t['biaya_pendaftaran'],0,',','.'); ?>
+</span>
+</p>
+<div class="clear"></div>
+<?php endif; ?>
+
+<hr>
+
 <!-- ================= TOTAL ================= -->
-<p>Total: 
-<span class="right bold">
+<p class="bold">
+Total
+<span class="right">
 Rp <?= number_format($t['total_harga'],0,',','.'); ?>
 </span>
 </p>
+<div class="clear"></div>
 
-<p>Bayar: 
+<p>
+Bayar
 <span class="right">
 Rp <?= number_format($t['uang_bayar'],0,',','.'); ?>
 </span>
 </p>
+<div class="clear"></div>
 
-<p>Kembali: 
+<p>
+Kembali
 <span class="right">
 Rp <?= number_format($t['uang_kembali'],0,',','.'); ?>
 </span>
 </p>
+<div class="clear"></div>
 
 <hr>
 
@@ -164,7 +179,6 @@ Rp <?= number_format($t['uang_kembali'],0,',','.'); ?>
 <div class="center">
     <p>Terima Kasih </p>
 </div>
-
 
 </body>
 </html>
