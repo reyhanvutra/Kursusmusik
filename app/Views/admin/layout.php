@@ -43,6 +43,7 @@
     <a href="/admin/user">Data User</a>
     <a href="/admin/kursus">Data Kursus</a>
     <a href="/admin/setting">Setting Biaya Pendaftaran</a>
+    <a href="/admin/kategori">Kategori Kursus</a>
     <a href="/logout">Logout</a>
 </div>
 

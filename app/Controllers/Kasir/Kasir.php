@@ -10,6 +10,7 @@ use App\Models\PaketDetailModel;
 use App\Models\LogActivityModel;
 use App\Models\SiswaModel;
 use App\Models\SettingModel;
+use App\Models\KategoriKursusModel;
 use App\Controllers\BaseController;
 
 use Dompdf\Dompdf;
@@ -24,6 +25,7 @@ class Kasir extends BaseController
     protected $logActivityModel;
     protected $siswaModel;
     protected $settingModel;
+    protected $kategoriModel;
 
     public function __construct()
     {
@@ -35,6 +37,7 @@ class Kasir extends BaseController
         $this->logActivityModel = new LogActivityModel();
         $this->siswaModel = new SiswaModel();
         $this->settingModel = new SettingModel();
+        $this->kategoriModel = new KategoriKursusModel();
     }
 
    private function log($aktivitas)
@@ -47,59 +50,80 @@ class Kasir extends BaseController
         ]);
     }
     // ================= DASHBOARD =================
-    public function dashboard()
-    {
-        $today = date('Y-m-d');
+   public function dashboard()
+{
+    $today = date('Y-m-d');
 
-        $kursus_aktif = $this->kursusModel
-            ->where('slot >', 0)
-            ->countAllResults();
+    // ================= KURSUS AKTIF =================
+    $kursus_aktif = $this->kursusModel
+        ->where('slot >', 0)
+        ->countAllResults();
 
-        $pendapatan = $this->transaksiModel
-            ->selectSum('total_harga')
-            ->where('tanggal', $today)
-            ->first();
+    // ================= PENDAPATAN =================
+    $pendapatan = $this->transaksiModel
+        ->selectSum('total_harga')
+        ->where('tanggal', $today)
+        ->first();
 
-        $total_transaksi = $this->transaksiModel
-            ->where('tanggal', $today)
-            ->countAllResults();
+    // ================= TOTAL TRANSAKSI =================
+    $total_transaksi = $this->transaksiModel
+        ->where('tanggal', $today)
+        ->countAllResults();
 
-       $transaksi = $this->transaksiModel
-    ->select('transaksi.*, siswa.nama as nama_pembeli')
-    ->join('siswa', 'siswa.id = transaksi.id_siswa')
-    ->findAll();
+    // ================= AMBIL TRANSAKSI =================
+    $transaksi = $this->transaksiModel
+        ->select('transaksi.*, siswa.nama as nama_pembeli')
+        ->join('siswa', 'siswa.id = transaksi.id_siswa')
+        ->orderBy('transaksi.id', 'DESC')
+        ->findAll();
 
-        foreach($transaksi as &$t){
+    // ================= LOAD MODEL LEVEL =================
+    $levelModel = new \App\Models\LevelModel();
 
-            $detail = $this->detailModel
-                ->where('id_transaksi', $t['id'])
-                ->findAll();
+    // ================= AMBIL ITEM =================
+    foreach($transaksi as &$t){
 
-            $items = [];
+        $detail = $this->detailModel
+            ->where('id_transaksi', $t['id'])
+            ->findAll();
 
-            foreach($detail as $d){
+        $items = [];
 
-                if($d['tipe'] == 'kursus'){
-                    $k = $this->kursusModel->find($d['id_item']);
-                    $items[] = $k ? $k['nama_kursus'] : 'Kursus dihapus';
+        foreach($detail as $d){
+
+            // 🔥 ambil level
+            $level = $levelModel->find($d['id_item']);
+
+            if($level){
+
+                // 🔥 ambil kursus dari level
+                $kursus = $this->kursusModel->find($level['id_kursus']);
+
+                if($kursus){
+                    $items[] = $kursus['nama_kursus'] . ' - ' . $level['nama_level'];
                 }else{
-                    $p = $this->paketModel->find($d['id_item']);
-                    $items[] = $p ? $p['nama_paket'] : 'Paket dihapus';
+                    $items[] = 'Kursus dihapus';
                 }
+
+            }else{
+                $items[] = 'Level dihapus';
             }
-
-            $t['items'] = $items;
         }
-            // 🔥 LOG
-            $this->log('Masuk dashboard kasir');
 
-        return view('kasir/dashboard', [
-            'kursus_aktif' => $kursus_aktif,
-            'pendapatan_hari_ini' => $pendapatan['total_harga'] ?? 0,
-            'total_transaksi_hari_ini' => $total_transaksi,
-            'transaksi' => $transaksi
-        ]);
+        $t['items'] = $items;
     }
+
+    // ================= LOG =================
+    $this->log('Masuk dashboard kasir');
+
+    // ================= VIEW =================
+    return view('kasir/dashboard', [
+        'kursus_aktif' => $kursus_aktif,
+        'pendapatan_hari_ini' => $pendapatan['total_harga'] ?? 0,
+        'total_transaksi_hari_ini' => $total_transaksi,
+        'transaksi' => $transaksi
+    ]);
+}
     public function siswa()
 {
     $siswa = $this->siswaModel
@@ -167,55 +191,66 @@ public function detailSiswa($id)
         'paket' => $paket
     ]);
 }
- public function detail($id)
+public function detail($id)
 {
-    // 🔥 JOIN ke siswa biar dapat nama & no_hp
     $transaksi = $this->transaksiModel
         ->select('transaksi.*, siswa.nama as nama_pembeli, siswa.no_hp')
         ->join('siswa', 'siswa.id = transaksi.id_siswa')
         ->where('transaksi.id', $id)
         ->first();
 
-    // 🔥 validasi
     if(!$transaksi){
         throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
     }
 
-    // 🔥 ambil detail transaksi
     $detail = $this->detailModel
         ->where('id_transaksi', $id)
         ->findAll();
 
-    // 🔥 isi nama + info tambahan
+    $levelModel = new \App\Models\LevelModel();
+
     foreach($detail as &$d){
 
         if($d['tipe'] == 'kursus'){
 
-            $k = $this->kursusModel->find($d['id_item']);
+            // 🔥 ambil LEVEL dulu
+            $level = $levelModel->find($d['id_item']);
 
-            $d['nama']   = $k['nama_kursus'] ?? 'Kursus dihapus';
+            if($level){
+                $kursus = $this->kursusModel->find($level['id_kursus']);
+
+                $d['nama'] = ($kursus['nama_kursus'] ?? '') . ' - ' . ($level['nama_level'] ?? '');
+            }else{
+                $d['nama'] = 'Level dihapus';
+            }
+
             $d['tipe_label'] = 'Kursus';
 
         }else{
 
             $p = $this->paketModel->find($d['id_item']);
 
-            $d['nama']   = $p['nama_paket'] ?? 'Paket dihapus';
+            $d['nama'] = $p['nama_paket'] ?? 'Paket dihapus';
             $d['tipe_label'] = 'Paket';
         }
 
-        // 🔥 pastikan bulan tidak null
         $d['bulan'] = $d['bulan'] ?? 1;
 
         // 🔥 harga per bulan
-        if($d['tipe'] == 'kursus'){
-            $d['harga_per_bulan'] = $d['harga'] / ($d['bulan'] ?: 1);
-        }else{
-            $d['harga_per_bulan'] = $d['harga'];
-        }
+        $d['harga_per_bulan'] = $d['bulan'] > 0 
+            ? $d['harga'] / $d['bulan'] 
+            : $d['harga'];
+
+        // 🔥 format tanggal
+        $d['tanggal_mulai_f'] = !empty($d['tanggal_mulai']) 
+            ? date('d M Y', strtotime($d['tanggal_mulai'])) 
+            : '-';
+
+        $d['tanggal_selesai_f'] = !empty($d['tanggal_selesai']) 
+            ? date('d M Y', strtotime($d['tanggal_selesai'])) 
+            : '-';
     }
 
-    // 🔥 LOG
     $this->log('Melihat detail transaksi ' . $id);
 
     return view('kasir/detail', [
@@ -225,57 +260,38 @@ public function detailSiswa($id)
 }
 
     // ================= PILIH =================
-  public function pilih()
+ public function pilih()
 {
-    $kursus = $this->kursusModel->findAll();
-    $paket  = $this->paketModel->findAll();
 
-    foreach($paket as &$p){
+    $kategori = $this->kategoriModel->findAll();
 
-        $detail = $this->paketDetailModel
-            ->select('kursus.nama_kursus, kursus.hari')
-            ->join('kursus','kursus.id = paket_detail.id_kursus')
-            ->where('id_paket', $p['id'])
+    // ambil kursus per kategori
+    foreach($kategori as &$k){
+
+        $k['kursus'] = $this->kursusModel
+            ->where('id_kategori', $k['id'])
             ->findAll();
-
-        // list kursus
-        $namaKursus = array_column($detail, 'nama_kursus');
-        $p['list_kursus'] = implode(', ', $namaKursus);
-
-        // hari paket
-        $semuaHari = [];
-        foreach($detail as $d){
-            foreach(explode(',', $d['hari']) as $h){
-                $semuaHari[] = trim($h);
-            }
-        }
-
-        $p['hari'] = implode(', ', array_unique($semuaHari));
     }
-    
-     // 🔥 LOG
-     $this->log('Masuk halaman pilih item untuk transaksi baru');
+
+    $this->log('Masuk halaman pilih kategori kursus');
 
     return view('kasir/pilih', [
-        'kursus' => $kursus,
-        'paket'  => $paket
+        'kategori' => $kategori
     ]);
 }
-
-    public function transaksi()
+public function transaksi()
 {
     return view('kasir/transaksi', [
         'siswa' => $this->siswaModel->findAll(),
-        'setting' => (new \App\Models\SettingModel())->first()
+        'setting' => $this->settingModel->first()
     ]);
 }
-
 public function simpan()
 {
     $items = json_decode($this->request->getPost('items'), true);
 
     if(empty($items)){
-        return redirect()->back()->with('error','Pilih item dulu');
+        return redirect()->back()->with('error','Pilih kursus dulu');
     }
 
     $id_siswa = $this->request->getPost('id_siswa');
@@ -284,36 +300,38 @@ public function simpan()
         return redirect()->back()->with('error','Pilih siswa dulu');
     }
 
-    // 🔥 AMBIL DATA SISWA
+    // ================= AMBIL DATA SISWA =================
     $siswa = $this->siswaModel->find($id_siswa);
 
     if(!$siswa){
         return redirect()->back()->with('error','Siswa tidak ditemukan');
     }
 
-    // 🔥 AMBIL SETTING
-    $settingModel = new \App\Models\SettingModel();
-    $setting = $settingModel->first();
-
+    // ================= SETTING =================
+    $setting = $this->settingModel->first();
     $biaya_setting = $setting['biaya_pendaftaran'] ?? 0;
 
-    // 🔥 HITUNG TOTAL ITEM
+    // ================= HITUNG TOTAL =================
     $total = 0;
+
     foreach($items as $i){
-        $total += $i['harga'];
+        $bulan = (int)($i['bulan'] ?? 1);
+        $harga = (int)$i['harga'];
+
+        $total += $harga * $bulan; // 🔥 FIX DI SINI
     }
 
-    // 🔥 CEK BIAYA PENDAFTARAN
+    // ================= BIAYA PENDAFTARAN =================
     $biaya_pendaftaran = 0;
 
     if(isset($siswa['sudah_daftar']) && $siswa['sudah_daftar'] == 0){
         $biaya_pendaftaran = $biaya_setting;
     }
 
-    // 🔥 TOTAL FINAL
     $total_final = $total + $biaya_pendaftaran;
 
-    $bayar = $this->request->getPost('bayar');
+    // ================= VALIDASI BAYAR =================
+    $bayar = (int)$this->request->getPost('bayar');
 
     if($bayar < $total_final){
         return redirect()->back()->with('error','Uang kurang');
@@ -329,42 +347,46 @@ public function simpan()
         'tanggal' => date('Y-m-d')
     ]);
 
-    // 🔥 VALIDASI INSERT
     if(!$id){
         return redirect()->back()->with('error','Gagal simpan transaksi');
     }
 
     // ================= DETAIL =================
+    $levelModel = new \App\Models\LevelModel();
+
     foreach($items as $i){
 
-       $this->detailModel->insert([
-    'id_transaksi' => $id,
-    'tipe' => $i['tipe'],
-    'id_item' => $i['id'],
-    'harga' => $i['harga'],
-    'bulan' => $i['bulan'] ?? 1,
-    'tanggal_mulai' => $i['tanggal_mulai'] ?? null,
-    'tanggal_selesai' => $i['tanggal_selesai'] ?? null,
-]);
+        $level = $levelModel->find($i['id']);
+        $bulan = (int)($i['bulan'] ?? 1);
+        $harga = (int)$i['harga'];
 
-        // 🔥 KURANGI SLOT
-        if($i['tipe'] == 'kursus'){
-            $this->kursusModel->set('slot','slot-1',false)
-                ->where('id',$i['id'])
+        $this->detailModel->insert([
+            'id_transaksi' => $id,
+            'tipe' => 'kursus',
+            'id_item' => $i['id'], // ID LEVEL
+            'harga' => $harga * $bulan, // 🔥 FIX
+            'bulan' => $bulan,
+            'tanggal_mulai' => $i['tanggal_mulai'] ?? date('Y-m-d'),
+            'tanggal_selesai' => $i['tanggal_selesai'] ?? date('Y-m-d', strtotime('+1 month'))
+        ]);
+
+        // 🔥 KURANGI SLOT KURSUS
+        if($level){
+            $this->kursusModel
+                ->set('slot','slot-1',false)
+                ->where('id', $level['id_kursus'])
                 ->update();
         }
     }
 
     // ================= UPDATE SISWA =================
     if(isset($siswa['sudah_daftar']) && $siswa['sudah_daftar'] == 0){
-
         $this->siswaModel->update($id_siswa, [
             'sudah_daftar' => 1
         ]);
     }
 
-    // 🔥 LOG
-    $this->log('Transaksi oleh siswa '.$siswa['nama'].' total '.$total_final);
+    $this->log('Transaksi siswa '.$siswa['nama'].' total Rp '.number_format($total_final,0,',','.'));
 
     return redirect()->to('/kasir/detail/'.$id);
 }
@@ -387,15 +409,25 @@ public function simpan()
         ->where('id_transaksi', $id)
         ->findAll();
 
-    foreach($detail as &$d){
-        if($d['tipe'] == 'kursus'){
-            $k = $this->kursusModel->find($d['id_item']);
-            $d['nama'] = $k['nama_kursus'] ?? 'Kursus dihapus';
+   foreach($detail as &$d){
+
+    if($d['tipe'] == 'kursus'){
+
+        $level = (new \App\Models\LevelModel())->find($d['id_item']);
+
+        if($level){
+            $kursus = $this->kursusModel->find($level['id_kursus']);
+            $d['nama'] = ($kursus['nama_kursus'] ?? '') . ' - ' . $level['nama_level'];
         }else{
-            $p = $this->paketModel->find($d['id_item']);
-            $d['nama'] = $p['nama_paket'] ?? 'Paket dihapus';
+            $d['nama'] = 'Level dihapus';
         }
+
+    }else{
+
+        $p = $this->paketModel->find($d['id_item']);
+        $d['nama'] = $p['nama_paket'] ?? 'Paket dihapus';
     }
+}
 
     // 🔥 AMANKAN BIAR GA ERROR
     $transaksi['nama_pembeli'] = $transaksi['nama_pembeli'] ?? 'Umum';
@@ -416,12 +448,51 @@ public function simpan()
 
     $dompdf->stream('struk.pdf', ['Attachment' => false]);
 }
-    public function detailKursus($id)
+public function detailKursus($id)
 {
-    $data['k'] = $this->kursusModel->find($id);
-    return view('kasir/detailkursus', $data);
-}
+    $levelModel = new \App\Models\LevelModel();
 
+    // ================= AMBIL KURSUS =================
+    $kursus = $this->kursusModel->find($id);
+
+    // 🔥 VALIDASI
+    if(!$kursus){
+        throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+    }
+
+    // ================= AMBIL LEVEL =================
+    $level = $levelModel
+        ->where('id_kursus', $id)
+        ->orderBy('harga', 'ASC') // 🔥 biar urut dari murah (biasanya beginner)
+        ->findAll();
+
+    // ================= TAMBAHAN DATA LEVEL =================
+    foreach($level as &$l){
+
+        // default kalau belum ada field
+        $l['pertemuan'] = $l['pertemuan'] ?? 4;
+        $l['target'] = $l['target'] ?? 'Semua level';
+
+        // 🔥 label otomatis (optional biar keren)
+        if(stripos($l['nama_level'], 'beginner') !== false){
+            $l['badge'] = '🟢 Beginner';
+        }elseif(stripos($l['nama_level'], 'intermediate') !== false){
+            $l['badge'] = '🟡 Intermediate';
+        }elseif(stripos($l['nama_level'], 'advanced') !== false){
+            $l['badge'] = '🔴 Advanced';
+        }else{
+            $l['badge'] = '🎵 Level';
+        }
+    }
+
+    // 🔥 LOG (opsional tapi bagus)
+    $this->log('Melihat detail kursus: ' . $kursus['nama_kursus']);
+
+    return view('kasir/detailkursus', [
+        'k' => $kursus,
+        'level' => $level
+    ]);
+}
 public function detailPaket($id)
 {
     $data['p'] = $this->paketModel->find($id);
@@ -460,21 +531,47 @@ public function simpanSiswa()
 }
 public function simpanSiswaAjax()
 {
-    $data = $this->request->getJSON(true); 
+    $data = $this->request->getJSON(true);
 
+    $nama   = trim($data['nama']);
+    $no_hp  = trim($data['no_hp']);
+    $alamat = trim($data['alamat']);
+
+    // VALIDASI WAJIB
+    if(!$nama || !$no_hp){
+        return $this->response->setJSON([
+            'status' => 'error',
+            'message' => 'Nama & No HP wajib diisi'
+        ]);
+    }
+
+    // 🔥 CEK DUPLIKAT (PAKAI NO HP PALING AMAN)
+    $existing = $this->siswaModel
+        ->where('no_hp', $no_hp)
+        ->first();
+
+    if($existing){
+        return $this->response->setJSON([
+            'status' => 'duplicate',
+            'data' => $existing
+        ]);
+    }
+
+    // 🔥 INSERT BARU
     $id = $this->siswaModel->insert([
-        'nama' => $data['nama'],
-        'no_hp' => $data['no_hp'],
-        'alamat' => $data['alamat'],
+        'nama' => $nama,
+        'no_hp' => $no_hp,
+        'alamat' => $alamat,
+        'sudah_daftar' => 0,
         'tanggal_daftar' => date('Y-m-d')
     ]);
 
     return $this->response->setJSON([
-        'status' => 'success', 
+        'status' => 'success',
         'id' => $id,
-        'nama' => $data['nama'],
-        'no_hp' => $data['no_hp'],
-        'alamat' => $data['alamat']
+        'nama' => $nama,
+        'no_hp' => $no_hp,
+        'alamat' => $alamat
     ]);
 }
 

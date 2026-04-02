@@ -3,7 +3,7 @@
 
 <div class="container">
 
-<a href="/kasir/dashboard" onclick="resetCart()">← Kembali</a>
+<a href="#" onclick="kembaliKeKursus()">← Kembali</a>
 
 <h2>TRANSAKSI</h2>
 
@@ -12,17 +12,14 @@
 <div style="display:flex; gap:30px;">
 
 <!-- ================= KIRI ================= -->
-<div style="flex:1; background:#2b2b2b; padding:20px; border-radius:10px;">
+<div style="flex:1; background:#2b2b2b; padding:20px; border-radius:10px; color:white;">
 
 <h3>Data Siswa</h3>
 
-<!-- 🔍 SEARCH -->
-<div id="searchBox">
-Cari Siswa:<br>
-<input type="text" id="searchSiswa" placeholder="Ketik nama siswa..."
-    style="width:100%; padding:8px;"><br><br>
+<!-- SEARCH -->
+<input type="text" id="searchSiswa" placeholder="Cari siswa..." style="width:100%; padding:8px;"><br><br>
 
-<select id="listSiswa" size="5" style="width:100%; padding:8px; display:none;">
+<select id="listSiswa" size="5" style="width:100%; padding:8px;">
 <?php foreach($siswa as $s): ?>
 <option 
     value="<?= $s['id']; ?>"
@@ -35,17 +32,14 @@ Cari Siswa:<br>
 </option>
 <?php endforeach; ?>
 </select>
-</div>
 
 <input type="hidden" name="id_siswa" id="id_siswa">
 
-<!-- 📄 INFO -->
-<div id="infoSiswa" style="display:none; margin-top:15px;">
-
-<div style="background:#1f1f1f; padding:15px; border-radius:10px;">
+<!-- INFO SISWA -->
+<div id="infoSiswa" style="display:none; margin-top:15px; background:#1f1f1f; padding:15px; border-radius:10px;">
 
 <div style="display:flex; justify-content:space-between;">
-<b>Data Siswa</b>
+<b>Info Siswa</b>
 <button type="button" onclick="resetSiswa()" style="background:red;color:white;border:none;padding:5px 10px;border-radius:5px;">
 Ganti
 </button>
@@ -53,39 +47,39 @@ Ganti
 
 <hr>
 
-Nama:<br>
+Nama:
 <input type="text" id="nama" readonly style="width:100%; padding:8px;"><br><br>
 
-No HP:<br>
+No HP:
 <input type="text" id="nohp" readonly style="width:100%; padding:8px;"><br><br>
 
-Alamat:<br>
+Alamat:
 <textarea id="alamat" readonly style="width:100%; padding:8px;"></textarea><br><br>
 
 Status:
-<div id="statusSiswa" style="font-weight:bold;"></div>
-
-</div>
+<div id="statusSiswa"></div>
 
 </div>
 
 <br>
 
+<!-- TAMBAH SISWA -->
 <button type="button" onclick="toggleForm()">+ Tambah Siswa</button>
 
-<div id="formSiswa" style="display:none; margin-top:15px;">
+<div id="formSiswa" style="display:none; margin-top:15px; background:#1f1f1f; padding:15px; border-radius:10px;">
+
 <hr>
 
-Nama:<br>
+Nama:
 <input type="text" id="nama_siswa" style="width:100%; padding:8px;"><br><br>
 
-No HP:<br>
+No HP:
 <input type="text" id="nohp_siswa" style="width:100%; padding:8px;"><br><br>
 
-Alamat:<br>
+Alamat:
 <textarea id="alamat_siswa" style="width:100%; padding:8px;"></textarea><br><br>
 
-<button type="button" onclick="simpanSiswa()">Simpan Siswa</button>
+<button type="button" onclick="simpanSiswa()">Simpan</button>
 
 </div>
 
@@ -93,22 +87,22 @@ Alamat:<br>
 
 <h3>Pembayaran</h3>
 
-Bulan:<br>
+Bulan:
 <input type="number" id="bulan" value="1" min="1" style="width:100%; padding:8px;"><br><br>
 
-Tanggal Mulai:<br>
+Tanggal Mulai:
 <input type="date" id="tanggal_mulai" style="width:100%; padding:8px;"><br><br>
 
-Tanggal Selesai:<br>
+Tanggal Selesai:
 <input type="date" id="tanggal_selesai" readonly style="width:100%; padding:8px;"><br><br>
 
-Bayar:<br>
+Bayar:
 <input type="number" name="bayar" id="bayar" required style="width:100%; padding:8px;"><br><br>
 
 </div>
 
 <!-- ================= KANAN ================= -->
-<div style="flex:1; background:#2b2b2b; padding:20px; border-radius:10px;">
+<div style="flex:1; background:#2b2b2b; padding:20px; border-radius:10px; color:white;">
 
 <h3>Ringkasan</h3>
 
@@ -128,11 +122,7 @@ Biaya Pendaftaran: <b id="biayaDaftar"></b><br>
 
 <hr>
 
-<div style="font-size:18px;">
-TOTAL: <b id="total">0</b><br>
-</div>
-
-<br>
+<h3>TOTAL: <span id="total">0</span></h3>
 
 Bayar: <b id="bayarText">0</b><br>
 Kembalian: <b id="kembali">0</b><br><br>
@@ -150,46 +140,26 @@ Kembalian: <b id="kembali">0</b><br><br>
 
 <script>
 
-// ================= GLOBAL FUNCTION (ANTI ERROR) =================
-function toggleForm(){
-    let f = document.getElementById('formSiswa');
-    f.style.display = f.style.display === 'none' ? 'block' : 'none';
-}
-
-function tambahItem(){
-    window.location = '/kasir/pilih';
-}
-
-function resetCart(){
+// AUTO RESET
+if(!localStorage.getItem('from_detail')){
     localStorage.removeItem('cart');
 }
+localStorage.removeItem('from_detail');
 
-// ================= INIT =================
 let BIAYA_DAFTAR = <?= $setting['biaya_pendaftaran'] ?? 0 ?>;
 let biayaDaftarAktif = 0;
 let items = JSON.parse(localStorage.getItem('cart') || '[]');
 
-// ================= SEARCH =================
+// SEARCH
 document.getElementById('searchSiswa').addEventListener('input', function(){
     let keyword = this.value.toLowerCase();
-    let options = document.querySelectorAll('#listSiswa option');
-    let ada = false;
-
-    options.forEach(opt => {
-        if(opt.text.toLowerCase().includes(keyword) && keyword !== ''){
-            opt.style.display = '';
-            ada = true;
-        }else{
-            opt.style.display = 'none';
-        }
+    document.querySelectorAll('#listSiswa option').forEach(opt=>{
+        opt.style.display = opt.text.toLowerCase().includes(keyword) ? '' : 'none';
     });
-
-    document.getElementById('listSiswa').style.display = ada ? 'block' : 'none';
 });
 
-// ================= PILIH SISWA =================
+// PILIH SISWA
 document.getElementById('listSiswa').addEventListener('change', function(){
-
     let s = this.options[this.selectedIndex];
 
     document.getElementById('id_siswa').value = s.value;
@@ -198,41 +168,127 @@ document.getElementById('listSiswa').addEventListener('change', function(){
     document.getElementById('alamat').value = s.dataset.alamat;
 
     document.getElementById('infoSiswa').style.display = 'block';
-    document.getElementById('searchBox').style.display = 'none';
 
     let status = parseInt(s.dataset.daftar || 0);
 
     if(status === 0){
         biayaDaftarAktif = BIAYA_DAFTAR;
         document.getElementById('statusSiswa').innerHTML = "🟠 Siswa Baru";
-        document.getElementById('statusSiswa').style.color = "orange";
-
         document.getElementById('biayaDaftarBox').style.display = 'block';
         document.getElementById('biayaDaftar').innerText = formatRupiah(biayaDaftarAktif);
     }else{
         biayaDaftarAktif = 0;
         document.getElementById('statusSiswa').innerHTML = "🟢 Siswa Lama";
-        document.getElementById('statusSiswa').style.color = "lightgreen";
-
         document.getElementById('biayaDaftarBox').style.display = 'none';
     }
 
     render();
 });
 
-// ================= RESET SISWA =================
+// 🔥 RESET SISWA
 function resetSiswa(){
     document.getElementById('id_siswa').value = '';
     document.getElementById('infoSiswa').style.display = 'none';
-    document.getElementById('searchBox').style.display = 'block';
-
     biayaDaftarAktif = 0;
-    document.getElementById('biayaDaftarBox').style.display = 'none';
-
     render();
 }
 
-// ================= TANGGAL =================
+// 🔥 TOGGLE FORM
+function toggleForm(){
+    let f = document.getElementById('formSiswa');
+    f.style.display = f.style.display === 'none' ? 'block' : 'none';
+}
+
+// 🔥 SIMPAN SISWA AJAX
+function simpanSiswa(){
+
+    let nama   = document.getElementById('nama_siswa').value.trim();
+    let nohp   = document.getElementById('nohp_siswa').value.trim();
+    let alamat = document.getElementById('alamat_siswa').value.trim();
+
+    if(!nama || !nohp){
+        alert('Nama & No HP wajib diisi!');
+        return;
+    }
+
+    fetch('/kasir/simpanSiswaAjax', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            nama: nama,
+            no_hp: nohp,
+            alamat: alamat
+        })
+    })
+    .then(res => res.json())
+    .then(res => {
+
+        // ================= DUPLIKAT =================
+        if(res.status === 'duplicate'){
+
+            alert('Siswa sudah ada, otomatis dipilih!');
+
+            let s = res.data;
+
+            document.getElementById('id_siswa').value = s.id;
+            document.getElementById('nama').value = s.nama;
+            document.getElementById('nohp').value = s.no_hp;
+            document.getElementById('alamat').value = s.alamat;
+
+            document.getElementById('infoSiswa').style.display = 'block';
+
+            let status = parseInt(s.sudah_daftar || 0);
+
+            if(status === 0){
+                biayaDaftarAktif = BIAYA_DAFTAR;
+                document.getElementById('statusSiswa').innerHTML = "🟠 Siswa Baru";
+                document.getElementById('biayaDaftarBox').style.display = 'block';
+                document.getElementById('biayaDaftar').innerText = formatRupiah(biayaDaftarAktif);
+            }else{
+                biayaDaftarAktif = 0;
+                document.getElementById('statusSiswa').innerHTML = "🟢 Siswa Lama";
+                document.getElementById('biayaDaftarBox').style.display = 'none';
+            }
+
+            render();
+            return;
+        }
+
+        // ================= SUCCESS =================
+        if(res.status === 'success'){
+
+            let select = document.getElementById('listSiswa');
+
+            let opt = document.createElement('option');
+            opt.value = res.id;
+            opt.text = res.nama + ' (' + res.no_hp + ')';
+            opt.dataset.nama = res.nama;
+            opt.dataset.nohp = res.no_hp;
+            opt.dataset.alamat = res.alamat;
+            opt.dataset.daftar = 0;
+
+            select.appendChild(opt);
+
+            alert('Siswa berhasil ditambahkan!');
+
+            // 🔥 AUTO PILIH SISWA BARU
+            select.value = res.id;
+            select.dispatchEvent(new Event('change'));
+
+            // 🔥 RESET FORM
+            document.getElementById('nama_siswa').value = '';
+            document.getElementById('nohp_siswa').value = '';
+            document.getElementById('alamat_siswa').value = '';
+        }
+
+        // ================= ERROR =================
+        if(res.status === 'error'){
+            alert(res.message);
+        }
+
+    });
+}
+// TANGGAL
 document.getElementById('tanggal_mulai').addEventListener('change', hitungTanggal);
 document.getElementById('bulan').addEventListener('input', hitungTanggal);
 document.getElementById('bayar').addEventListener('input', render);
@@ -249,7 +305,7 @@ function hitungTanggal(){
     document.getElementById('tanggal_selesai').value = t.toISOString().split('T')[0];
 }
 
-// ================= RENDER =================
+// RENDER
 function render(){
 
     let bulan = parseInt(document.getElementById('bulan').value) || 1;
@@ -258,20 +314,21 @@ function render(){
     let html = '';
 
     items.forEach((i,index)=>{
-        let harga = i.tipe == 'kursus' ? i.harga * bulan : i.harga;
+        let harga = i.harga * bulan;
         subtotal += harga;
 
         html += `
-        <div style="margin-bottom:8px;">
-            ${i.nama}
-            <button onclick="hapus(${index})" style="float:right;">X</button>
-            <div style="text-align:right;">Rp ${formatRupiah(harga)}</div>
+        <div>
+            <b>${i.nama}</b>
+            <button onclick="hapus(${index})">X</button>
+            <div>Rp ${formatRupiah(i.harga)} x ${bulan}</div>
+            <div><b>Rp ${formatRupiah(harga)}</b></div>
         </div>`;
     });
 
     let total = subtotal + biayaDaftarAktif;
 
-    document.getElementById('list').innerHTML = html;
+    document.getElementById('list').innerHTML = html || '<i>Belum ada item</i>';
     document.getElementById('subtotal').innerText = formatRupiah(subtotal);
     document.getElementById('total').innerText = formatRupiah(total);
 
@@ -281,13 +338,14 @@ function render(){
     document.getElementById('kembali').innerText = formatRupiah(bayar - total);
 }
 
+// HAPUS
 function hapus(i){
     items.splice(i,1);
     localStorage.setItem('cart', JSON.stringify(items));
     render();
 }
 
-// ================= SUBMIT =================
+// SUBMIT
 function kirimData(){
 
     if(!document.getElementById('id_siswa').value){
@@ -295,13 +353,13 @@ function kirimData(){
         return false;
     }
 
+    let bulan = document.getElementById('bulan').value;
     let mulai = document.getElementById('tanggal_mulai').value;
     let selesai = document.getElementById('tanggal_selesai').value;
-    let bulan = document.getElementById('bulan').value;
 
     items = items.map(i => ({
         ...i,
-        bulan,
+        bulan: bulan,
         tanggal_mulai: mulai,
         tanggal_selesai: selesai
     }));
@@ -309,15 +367,30 @@ function kirimData(){
     document.getElementById('items').value = JSON.stringify(items);
 
     localStorage.removeItem('cart');
+    localStorage.removeItem('last_kursus');
 
     return true;
+}
+
+// NAVIGASI
+function tambahItem(){
+    window.location = '/kasir/pilih';
+}
+
+function kembaliKeKursus(){
+    localStorage.removeItem('cart');
+    let id = localStorage.getItem('last_kursus');
+    if(id){
+        window.location.href = "/kasir/detail/kursus/" + id;
+    }else{
+        window.location.href = "/kasir/pilih";
+    }
 }
 
 function formatRupiah(angka){
     return new Intl.NumberFormat('id-ID').format(angka);
 }
 
-// INIT RENDER
 render();
 
 </script>

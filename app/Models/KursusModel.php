@@ -11,7 +11,6 @@ class KursusModel extends Model
 
  protected $allowedFields = [
     'nama_kursus',
-    'harga',
     'instruktur',
     'durasi',
     'jam_mulai',
@@ -19,6 +18,7 @@ class KursusModel extends Model
     'slot',
     'deskripsi',
     'gambar',
-    'hari'
+    'hari',
+    'id_kategori'
 ];
 }

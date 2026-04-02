@@ -40,9 +40,25 @@ $routes->group('admin', ['filter' => ['auth','role:admin']], function($routes){
     $routes->post('paket/update/(:num)', 'Admin\Admin::update_paket/$1');
     $routes->get('paket/hapus/(:num)', 'Admin\Admin::hapus_paket/$1');
 
+    // kategori kursus
+    $routes->get('kategori', 'Admin\Admin::index');
+    $routes->get('kategori/create', 'Admin\Admin::create');
+    $routes->post('kategori/store', 'Admin\Admin::store');
+    $routes->get('kategori/edit/(:num)', 'Admin\Admin::edit/$1');
+    $routes->post('kategori/update/(:num)', 'Admin\Admin::update/$1');
+    $routes->get('kategori/delete/(:num)', 'Admin\Admin::delete/$1');
+
     // setting
-    $routes->get('setting', 'Admin\Admin::index');
-    $routes->post('setting/update', 'Admin\Admin::update');
+    $routes->get('setting', 'Admin\Admin::settings');
+    $routes->post('setting/update', 'Admin\Admin::updateSettings');
+
+    // level
+    $routes->get('level/(:num)', 'Admin\Admin::indexlevel/$1');
+    $routes->get('level/tambah/(:num)', 'Admin\Admin::tambah/$1');
+    $routes->post('level/simpan', 'Admin\Admin::simpan');
+    $routes->get('level/edit/(:num)', 'Admin\Admin::editlevel/$1');
+    $routes->post('level/update/(:num)', 'Admin\Admin::updatelevel/$1');
+    $routes->get('level/hapus/(:num)', 'Admin\Admin::hapus/$1');
 });
 // KASIR
 $routes->group('kasir', ['filter' => ['auth', 'role:kasir']], function($routes){

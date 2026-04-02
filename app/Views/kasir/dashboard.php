@@ -46,8 +46,8 @@
             <tr>
                 <th>Tanggal</th>
                 <th>Nama</th>
-                <th>Item</th>
-                <th>Bayar</th>
+                <th>Kursus</th>
+                <th>Total</th>
                 <th>Aksi</th>
             </tr>
 
@@ -56,11 +56,19 @@
                 <td><?= $t['tanggal']; ?></td>
                 <td><?= $t['nama_pembeli']; ?></td>
 
+                <!-- ITEM -->
                 <td>
                     <?php 
                     if(!empty($t['items'])){
                         foreach($t['items'] as $item){
-                            echo '<span class="badge">'.$item.'</span> ';
+                            echo '<span style="
+                                background:#444;
+                                color:white;
+                                padding:4px 8px;
+                                border-radius:6px;
+                                margin:2px;
+                                display:inline-block;
+                            ">'.$item.'</span>';
                         }
                     }
                     ?>
@@ -72,7 +80,12 @@
 
                 <td>
                     <a href="/kasir/detail/<?= $t['id']; ?>" 
-                       style="background:#444;color:white;padding:5px 10px;border-radius:6px;text-decoration:none;">
+                       style="
+                       background:#444;
+                       color:white;
+                       padding:6px 10px;
+                       border-radius:6px;
+                       text-decoration:none;">
                        Detail
                     </a>
                 </td>

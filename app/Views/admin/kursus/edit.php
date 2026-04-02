@@ -11,11 +11,20 @@
 
 <form action="/admin/kursus/update/<?= $kursus['id']; ?>" method="post" enctype="multipart/form-data">
 
+Kategori:
+<select name="id_kategori" required>
+    <?php foreach($kategori as $k): ?>
+        <option value="<?= $k['id']; ?>"
+            <?= $k['id'] == $kursus['id_kategori'] ? 'selected' : '' ?>>
+            <?= $k['nama_kategori']; ?>
+        </option>
+    <?php endforeach; ?>
+</select>
+<br><br>
+
 Nama:
 <input type="text" name="nama_kursus" value="<?= $kursus['nama_kursus']; ?>" required><br><br>
 
-Harga:
-<input type="number" name="harga" value="<?= $kursus['harga']; ?>" required><br><br>
 
 Instruktur:
 <input type="text" name="instruktur" value="<?= $kursus['instruktur']; ?>" required><br><br>
@@ -28,14 +37,15 @@ $hariDipilih = $kursus['hari'] ? explode(',', $kursus['hari']) : [];
 ?>
 
 <?php foreach($hariList as $h): ?>
-    <label>
-        <input type="checkbox" name="hari[]" value="<?= $h; ?>"
-            <?= in_array($h, $hariDipilih) ? 'checked' : '' ?>>
-        <?= $h; ?>
-    </label><br>
+<label>
+    <input type="checkbox" name="hari[]" value="<?= $h; ?>"
+        <?= in_array($h, $hariDipilih) ? 'checked' : '' ?>>
+    <?= $h; ?>
+</label><br>
 <?php endforeach; ?>
 
 <br>
+
 Jam Mulai:
 <input type="time" name="jam_mulai" value="<?= $kursus['jam_mulai']; ?>" required><br><br>
 
@@ -51,7 +61,6 @@ Slot:
 Deskripsi:
 <textarea name="deskripsi"><?= $kursus['deskripsi']; ?></textarea><br><br>
 
-
 <?php if($kursus['gambar']): ?>
     <img src="/uploads/<?= $kursus['gambar']; ?>" width="100"><br><br>
 <?php endif; ?>
@@ -60,7 +69,8 @@ Ganti Gambar:
 <input type="file" name="gambar" accept="image/*"><br><br>
 
 <button type="submit">Update</button>
-<a href="/admin/kursus" style="display:inline-block;margin-bottom:15px;">← Kembali</a>
+<a href="/admin/kursus">← Kembali</a>
+
 </form>
 
 <?= $this->endSection(); ?>

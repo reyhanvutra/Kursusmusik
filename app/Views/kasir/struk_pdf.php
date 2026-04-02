@@ -6,139 +6,88 @@
 
 <style>
 @page {
-    size: 80mm auto;
     margin: 5mm;
 }
 
 body {
     font-family: monospace;
-    font-size: 12px;
+    font-size: 11px;
     width: 100%;
-    max-width: 80mm;
-    margin: auto;
-    color: black;
 }
 
-.center {
-    text-align: center;
+.container {
+    width: 70mm; /* 🔥 lebih aman dari 80mm */
+    margin: auto;
 }
+
+.center { text-align:center; }
+.right { float:right; }
+.clear { clear:both; }
 
 hr {
-    border: 0;
-    border-top: 1px dashed black;
-    margin: 8px 0;
+    border: none;
+    border-top: 1px dashed #000;
+    margin: 6px 0;
 }
 
 .item {
-    margin-bottom: 8px;
-}
-
-.right {
-    float: right;
-}
-
-.bold {
-    font-weight: bold;
+    margin-bottom: 5px;
 }
 
 .small {
     font-size: 10px;
-}
-
-.clear {
-    clear: both;
 }
 </style>
 </head>
 
 <body>
 
-<!-- ================= HEADER ================= -->
+<div class="container">
+
 <div class="center">
     <h3 style="margin:0;">KURSUS MUSIK</h3>
-
-    <?php 
-    $adaKursus = false;
-    $adaPaket = false;
-
-    foreach($detail as $d){
-        if($d['tipe'] == 'kursus') $adaKursus = true;
-        if($d['tipe'] == 'paket') $adaPaket = true;
-    }
-    ?>
-
-    <?php if($adaKursus && !$adaPaket): ?>
-        <p class="small">Struk Kursus</p>
-    <?php elseif($adaPaket && !$adaKursus): ?>
-        <p class="small">Struk Paket</p>
-    <?php else: ?>
-        <p class="small">Kursus & Paket</p>
-    <?php endif; ?>
+    <small>Struk Pembayaran</small>
 </div>
 
 <hr>
 
-<!-- ================= INFO ================= -->
-<?php 
-    $tanggal = date('d-m-Y', strtotime($t['tanggal']));
-?>
-
-<p>No: TRX-<?= str_pad($t['id'], 5, '0', STR_PAD_LEFT); ?></p>
-<p>Tanggal: <?= $tanggal; ?></p>
+<p>No: TRX-<?= str_pad($t['id'],5,'0',STR_PAD_LEFT); ?></p>
+<p>Tanggal: <?= date('d-m-Y', strtotime($t['tanggal'])); ?></p>
 <p>Nama: <?= $t['nama_pembeli']; ?></p>
-<p>No HP: <?= $t['no_hp']; ?></p>
 
 <hr>
 
-<!-- ================= ITEM ================= -->
 <?php foreach($detail as $d): ?>
-
-<?php 
-    $bulan = $d['bulan'] ?? 1;
-    $bulan = $bulan > 0 ? $bulan : 1;
-
-    $isKursus = ($d['tipe'] == 'kursus');
-    $harga_per_bulan = $isKursus ? ($d['harga'] / $bulan) : $d['harga'];
-?>
 
 <div class="item">
 
-    <div>
-        <b><?= $d['nama']; ?></b>
-        <span class="small">[<?= strtoupper($d['tipe']); ?>]</span>
-    </div>
+<b><?= $d['nama']; ?></b><br>
 
-    <div>
-        <?php if($isKursus): ?>
-            Rp <?= number_format($harga_per_bulan,0,',','.'); ?> x <?= $bulan; ?> bulan
-        <?php else: ?>
-            Paket Full
-        <?php endif; ?>
-    </div>
+<?php if($d['tipe'] == 'kursus'): ?>
+    <?= number_format($d['harga'] / $d['bulan'],0,',','.'); ?> x <?= $d['bulan']; ?> bulan<br>
+    <span class="small">
+        <?= date('d-m-Y', strtotime($d['tanggal_mulai'])); ?> 
+        s/d 
+        <?= date('d-m-Y', strtotime($d['tanggal_selesai'])); ?>
+    </span>
+<?php endif; ?>
 
-    <?php if($isKursus): ?>
-    <div class="small">
-        Mulai: <?= $d['tanggal_mulai'] ?? '-' ?><br>
-        Selesai: <?= $d['tanggal_selesai'] ?? '-' ?>
-    </div>
-    <?php endif; ?>
-
-    <div class="right bold">
+<div>
+    <span class="right">
         Rp <?= number_format($d['harga'],0,',','.'); ?>
-    </div>
-
+    </span>
     <div class="clear"></div>
+</div>
 
 </div>
 
-<?php endforeach; ?>
-
 <hr>
 
-<!-- ================= BIAYA TAMBAHAN ================= -->
+<?php endforeach; ?>
+
 <?php if($t['biaya_pendaftaran'] > 0): ?>
 <p>
-Biaya Pendaftaran
+Biaya Daftar
 <span class="right">
 Rp <?= number_format($t['biaya_pendaftaran'],0,',','.'); ?>
 </span>
@@ -148,14 +97,12 @@ Rp <?= number_format($t['biaya_pendaftaran'],0,',','.'); ?>
 
 <hr>
 
-<!-- ================= TOTAL ================= -->
-<p class="bold">
-Total
+<p>
+<b>Total</b>
 <span class="right">
 Rp <?= number_format($t['total_harga'],0,',','.'); ?>
 </span>
 </p>
-<div class="clear"></div>
 
 <p>
 Bayar
@@ -163,7 +110,6 @@ Bayar
 Rp <?= number_format($t['uang_bayar'],0,',','.'); ?>
 </span>
 </p>
-<div class="clear"></div>
 
 <p>
 Kembali
@@ -171,13 +117,13 @@ Kembali
 Rp <?= number_format($t['uang_kembali'],0,',','.'); ?>
 </span>
 </p>
-<div class="clear"></div>
 
 <hr>
 
-<!-- ================= FOOTER ================= -->
 <div class="center">
-    <p>Terima Kasih </p>
+    Terima Kasih 🙏
+</div>
+
 </div>
 
 </body>

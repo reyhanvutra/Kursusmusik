@@ -11,11 +11,20 @@
 
 <form action="/admin/kursus/simpan" method="post" enctype="multipart/form-data">
 
+Kategori:
+<select name="id_kategori" required>
+    <option value="">-- Pilih Kategori --</option>
+    <?php foreach($kategori as $k): ?>
+        <option value="<?= $k['id']; ?>">
+            <?= $k['nama_kategori']; ?>
+        </option>
+    <?php endforeach; ?>
+</select>
+<br><br>
+
 Nama:
 <input type="text" name="nama_kursus" required><br><br>
 
-Harga:
-<input type="number" name="harga" required><br><br>
 
 Instruktur:
 <input type="text" name="instruktur" required><br><br>
@@ -26,12 +35,10 @@ Hari:<br>
 $hariList = ['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu','Minggu'];
 foreach($hariList as $h): 
 ?>
-
 <label>
     <input type="checkbox" name="hari[]" value="<?= $h; ?>">
     <?= $h; ?>
 </label><br>
-
 <?php endforeach; ?>
 
 <br>
@@ -55,7 +62,7 @@ Gambar:
 <input type="file" name="gambar" accept="image/*"><br><br>
 
 <button type="submit">Simpan</button>
-<a href="/admin/kursus" style="display:inline-block;margin-bottom:15px;">← Kembali</a>
+<a href="/admin/kursus">← Kembali</a>
 
 </form>
 
@@ -71,11 +78,7 @@ function hitungDurasi(){
 
         let selisih = (end - start) / 3600000;
 
-        if(selisih <= 0){
-            durasi.value = 'Jam tidak valid';
-        }else{
-            durasi.value = selisih + ' jam';
-        }
+        durasi.value = selisih > 0 ? selisih + ' jam' : 'Jam tidak valid';
     }
 }
 
