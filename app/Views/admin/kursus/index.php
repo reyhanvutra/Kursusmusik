@@ -62,7 +62,7 @@
                     <?php else: ?> - <?php endif; ?>
                 </td>
                 <td>
-                    <a href="/admin/level/<?= $k['id']; ?>" class="btn-level">Level</a>
+                    <a href="/admin/level/index/<?= $k['id']; ?>" class="btn-level">Level</a>
                     <div style="margin-top: 5px;">
                         <a href="/admin/kursus/edit/<?= $k['id']; ?>" class="action-link edit">Edit</a>
                         <span style="color:#444;">|</span>

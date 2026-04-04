@@ -1,0 +1,170 @@
+/* Pastikan body dan html mengizinkan scroll */
+html, body {
+    overflow-y: auto !important;
+    height: auto !important;
+}
+
+/* Jika kamu menggunakan wrapper utama untuk konten admin, 
+   pastikan dia bisa scroll jika isinya melebihi tinggi layar */
+.content-wrapper, .main-content {
+    overflow-y: auto;
+    max-height: 100vh;
+    padding-bottom: 50px; /* Jarak aman di bawah agar tidak terpotong */
+}
+
+/* Custom Scrollbar agar tetap estetik (Dark Mode) */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #121212;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #444;
+}
+/* --- PROFILE CARD SECTION --- */
+.profile-card {
+    background: #1a1a1a;
+    border-radius: 25px;
+    padding: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.profile-avatar {
+    background: #222;
+    width: 70px;
+    height: 70px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: #555;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.profile-info h3 {
+    color: #fff;
+    margin: 0 0 5px 0;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.profile-meta {
+    display: flex;
+    gap: 15px;
+    color: #777;
+    font-size: 13px;
+}
+
+.profile-meta span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* --- TRANSACTION TIMELINE --- */
+.transaction-item {
+    background: #1a1a1a;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    border-left: 5px solid #008f39; /* Aksen hijau untuk transaksi */
+    overflow: hidden;
+    transition: 0.3s;
+}
+
+.transaction-item:hover {
+    transform: translateX(5px);
+}
+
+.transaction-header {
+    background: rgba(255, 255, 255, 0.02);
+    padding: 15px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.trx-id {
+    font-family: 'Courier New', Courier, monospace;
+    color: #fff;
+    font-weight: bold;
+}
+
+.trx-date {
+    color: #666;
+    font-size: 12px;
+}
+
+.trx-amount {
+    color: #00ff00;
+    font-weight: 800;
+    font-size: 16px;
+}
+
+/* --- DETAIL TABLE INSIDE CARD --- */
+.detail-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.detail-table th {
+    text-align: left;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: #444;
+    padding: 15px 25px 5px 25px;
+    letter-spacing: 1px;
+}
+
+.detail-table td {
+    padding: 10px 25px 15px 25px;
+    color: #ccc;
+    font-size: 14px;
+    vertical-align: top;
+}
+
+.course-name {
+    color: #fff;
+    font-weight: 700;
+    display: block;
+}
+
+.course-sub {
+    font-size: 11px;
+    color: #555;
+}
+
+.status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.status-active { background: #00ff00; color: #00ff00; font-weight: bold; font-size: 12px; }
+.status-expired { background: #ff4d4d; color: #ff4d4d; font-weight: bold; font-size: 12px; }
+
+/* Empty State */
+.empty-history {
+    text-align: center;
+    padding: 50px;
+    background: #1a1a1a;
+    border-radius: 20px;
+    color: #444;
+    border: 2px dashed rgba(255, 255, 255, 0.05);
+}

@@ -1,88 +1,110 @@
-/* public/assets/css/admin_user.css */
+/* --- CONTAINER UTAMA --- */
+.table-container {
+    background: #1a1a1a;
+    border-radius: 30px;
+    padding: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+    overflow-x: auto; /* Aman untuk layar kecil */
+}
 
+/* --- HEADER AREA --- */
 .user-header-flex {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
 }
 
-/* Tombol Tambah User ala Figma */
+/* Tombol Tambah User */
 .btn-tambah {
-    background-color: #006600; /* Hijau gelap sesuai Figma */
-    color: #ffffff;
-    padding: 10px 24px;
+    background: #008f39; /* Hijau Deep Modern */
+    color: white;
+    padding: 12px 24px;
     border-radius: 12px;
     text-decoration: none;
     font-weight: 700;
     font-size: 14px;
     transition: 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .btn-tambah:hover {
-    background-color: #008800;
+    filter: brightness(1.2);
     transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 143, 57, 0.3);
 }
 
-/* Container Tabel Putih/Abu Terang sesuai Figma */
-.table-container {
-    background-color: #d9d9d9; /* Warna terang di dalam dashboard */
-    border-radius: 30px;
-    padding: 20px;
-    overflow: hidden;
-    color: #000000;
-}
-
+/* --- STYLING TABEL MODERN --- */
 .custom-table {
     width: 100%;
-    border-collapse: collapse;
-    text-align: left;
+    border-collapse: separate;
+    border-spacing: 0 10px; /* KUNCI: Memberi jarak antar baris */
 }
 
 .custom-table th {
+    color: #888;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 1px;
     padding: 15px;
-    font-weight: 800;
-    border-bottom: 2px solid #aaaaaa;
-    text-align: center;
+    text-align: left;
+    border-bottom: none; /* Hapus border bawah th */
 }
 
 .custom-table td {
+    background: rgba(255, 255, 255, 0.03); /* Efek melayang */
     padding: 15px;
-    border-bottom: 1px solid #cccccc;
-    font-weight: 500;
-    text-align: center;
+    color: #fff;
+    font-size: 14px;
+    vertical-align: middle;
+    border-top: 1px solid rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
 }
 
-/* Styling Baris terakhir agar tidak ada border */
-.custom-table tr:last-child td {
-    border-bottom: none;
+/* Melengkungkan sudut baris (First & Last Child) */
+.custom-table tr td:first-child { 
+    border-radius: 15px 0 0 15px; 
+    border-left: 1px solid rgba(255, 255, 255, 0.02);
+}
+.custom-table tr td:last-child { 
+    border-radius: 0 15px 15px 0; 
+    border-right: 1px solid rgba(255, 255, 255, 0.02);
 }
 
-/* Tombol Aksi */
+/* --- BADGE ROLE / LEVEL --- */
+.badge-role {
+    background: rgba(255, 140, 0, 0.15); /* Oranye transparan */
+    color: #ff8c00;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+/* --- TOMBOL AKSI --- */
 .action-group {
     display: flex;
-    gap: 10px;
-    justify-content: center;
+    gap: 15px;
     align-items: center;
 }
 
-.btn-edit {
-    background-color: #006600;
-    color: white;
-    padding: 6px 20px;
-    border-radius: 20px;
+.action-link {
+    color: #aaa;
     text-decoration: none;
-    font-size: 12px;
-    font-weight: 700;
-}
-
-.btn-delete {
-    color: #121212;
-    font-size: 18px;
-    text-decoration: none;
+    font-size: 18px; /* Ukuran icon */
     transition: 0.3s;
 }
 
-.btn-delete:hover {
-    color: #990000;
+.action-link.edit:hover { 
+    color: #fff; 
+    transform: scale(1.1);
+}
+
+.action-link.hapus:hover { 
+    color: #ff4d4d; 
+    transform: scale(1.1);
 }

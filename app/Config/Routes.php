@@ -53,7 +53,7 @@ $routes->group('admin', ['filter' => ['auth','role:admin']], function($routes){
     $routes->post('setting/update', 'Admin\Admin::updateSettings');
 
     // level
-    $routes->get('level/(:num)', 'Admin\Admin::indexlevel/$1');
+    $routes->get('level/index/(:num)', 'Admin\Admin::indexlevel/$1');
     $routes->get('level/tambah/(:num)', 'Admin\Admin::tambah/$1');
     $routes->post('level/simpan', 'Admin\Admin::simpan');
     $routes->get('level/edit/(:num)', 'Admin\Admin::editlevel/$1');
