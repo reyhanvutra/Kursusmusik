@@ -3,86 +3,121 @@
 
 <div class="container">
 
-    <h2>👤 Detail Siswa</h2>
-    <h3><?= $siswa['nama']; ?></h3>
+<h2 style="margin-bottom:20px;">👤 Detail Siswa</h2>
 
-    <!-- ================= KURSUS ================= -->
-    <div class="card card-dark" style="margin-bottom:20px;">
-        <h4>🎓 Kursus</h4>
+<!-- ================= INFO ================= -->
+<div style="background:#2b2b2b;padding:20px;border-radius:12px;color:white;margin-bottom:20px;">
 
-        <?php if(empty($kursus)): ?>
-            <p>Tidak ada kursus</p>
-        <?php else: ?>
-            <table border="1" cellpadding="10" width="100%">
-                <tr>
-                    <th>Nama</th>
-                    <th>Mulai</th>
-                    <th>Selesai</th>
-                    <th>Sisa</th>
-                    <th>Aksi</th>
-                </tr>
+    <h3>Informasi Siswa</h3>
+    <hr style="border-color:#444;">
 
-                <?php foreach($kursus as $k): ?>
-                <tr>
-                    <td><?= $k['nama']; ?></td>
-                    <td><?= $k['mulai']; ?></td>
-                    <td><?= $k['selesai']; ?></td>
+    <b><?= $siswa['nama']; ?></b><br>
+    <?= $siswa['no_hp']; ?><br>
+    <?= $siswa['alamat']; ?>
 
-                    <td>
-                        <?php if($k['sisa_hari'] <= 3): ?>
-                            <span style="color:red;">
-                                <?= $k['sisa_hari']; ?> hari
-                            </span>
-                        <?php else: ?>
-                            <span style="color:green;">
-                                <?= $k['sisa_hari']; ?> hari
-                            </span>
-                        <?php endif; ?>
-                    </td>
+    <hr style="border-color:#444; margin:15px 0;">
 
-                    <td>
-                        <a href="/kasir/perpanjang/<?= $k['id_detail']; ?>" 
-                           style="background:orange;color:white;padding:5px 10px;border-radius:6px;text-decoration:none;">
-                           Perpanjang
-                        </a>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-
-            </table>
-        <?php endif; ?>
+    <div style="display:flex; gap:20px;">
+        <div>🎯 Aktif: <b style="color:lime;"><?= $total_aktif; ?></b></div>
+        <div>📊 Total Riwayat Transaksi: <b><?= $total_riwayat; ?></b></div>
     </div>
 
-    <!-- ================= PAKET ================= -->
-    <div class="card card-dark">
-        <h4>📦 Paket</h4>
+</div>
 
-        <?php if(empty($paket)): ?>
-            <p>Tidak ada paket</p>
-        <?php else: ?>
-            <table border="1" cellpadding="10" width="100%">
-                <tr>
-                    <th>Nama Paket</th>
-                    <th>Tanggal Ambil</th>
-                    <th>Aksi</th>
-                </tr>
+<!-- ================= KURSUS ================= -->
+<h3 style="margin-bottom:10px;">📚 Kursus</h3>
 
-                <?php foreach($paket as $p): ?>
-                <tr>
-                    <td><?= $p['nama']; ?></td>
-                    <td><?= $p['tanggal']; ?></td>
-                    <td>
-                        <a href="/kasir/pilih?paket=<?= $p['id_item']; ?>" 
-                           style="background:green;color:white;padding:5px 10px;border-radius:6px;text-decoration:none;">
-                           Beli Lagi
-                        </a>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-
-            </table>
-        <?php endif; ?>
+<?php if(empty($kursus)): ?>
+    <div style="background:#2b2b2b;padding:15px;border-radius:10px;color:#aaa;">
+        Tidak ada kursus
     </div>
+<?php else: ?>
+
+<?php foreach($kursus as $k): ?>
+
+<div style="background:#2b2b2b;padding:20px;margin-bottom:20px;border-radius:12px;color:white;">
+
+    <h3><?= $k['nama']; ?></h3>
+    <hr style="border-color:#444;">
+
+    <?php foreach($k['data'] as $d): ?>
+
+    <div style="background:#1f1f1f;padding:15px;border-radius:10px;margin-bottom:10px;">
+
+        <!-- STATUS -->
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+
+            <div>
+                <?php if($d['status'] == 'aktif'): ?>
+                    <span style="background:lime;color:black;padding:5px 10px;border-radius:20px;">
+                        🟢 Aktif
+                    </span>
+                <?php else: ?>
+                    <span style="background:red;color:white;padding:5px 10px;border-radius:20px;">
+                        🔴 Selesai
+                    </span>
+                <?php endif; ?>
+            </div>
+
+            <?php if($d['status'] == 'aktif'): ?>
+                <div style="color:#ccc;">
+                    <?= $d['sisa_hari']; ?> hari lagi
+                </div>
+            <?php endif; ?>
+
+        </div>
+
+        <hr style="border-color:#333;">
+
+        <!-- DETAIL CERITA -->
+        <div style="font-size:14px; line-height:1.6;">
+
+            📌 Mulai sejak:
+            <b><?= date('d M Y', strtotime($d['mulai_awal'])); ?></b><br>
+
+            🔄 Perpanjang:
+            <b><?= $d['jumlah_perpanjang']; ?>x</b><br>
+
+            📅 Sampai:
+            <b><?= date('d M Y', strtotime($d['selesai'])); ?></b><br>
+
+            ⏳ Total durasi:
+            <b><?= $d['durasi_hari']; ?> hari</b>
+
+        </div>
+
+        <!-- WARNING -->
+        <?php if($d['status'] == 'aktif' && $d['sisa_hari'] <= 7): ?>
+            <div style="margin-top:8px;color:orange;">
+                ⚠️ Hampir habis
+            </div>
+        <?php endif; ?>
+
+        <!-- BUTTON -->
+        <?php if($d['status'] == 'aktif'): ?>
+        <div style="margin-top:10px;">
+            <a href="/kasir/perpanjang/<?= $d['id_detail']; ?>"
+               style="background:orange;color:black;padding:6px 12px;border-radius:6px;text-decoration:none;">
+               🔄 Perpanjang
+            </a>
+        </div>
+        <?php endif; ?>
+
+    </div>
+
+    <?php endforeach; ?>
+
+</div>
+
+<?php endforeach; ?>
+
+<?php endif; ?>
+
+<!-- BACK -->
+<a href="/kasir/siswa"
+   style="background:#444;color:white;padding:10px 15px;border-radius:8px;text-decoration:none;">
+   ← Kembali
+</a>
 
 </div>
 

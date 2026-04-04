@@ -1,0 +1,109 @@
+/* Wrapper Utama */
+.form-page-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    /* Memberi jarak atas lebih longgar agar komposisi seimbang */
+    padding: 10px 20px; 
+    min-height: 100vh;
+    overflow-y: auto;
+}
+
+/* Header Area: Judul & Tombol Kembali */
+.form-header-area {
+    width: 100%;
+    /* Samakan max-width dengan container di bawahnya */
+    max-width: 800px; 
+    margin-bottom: 9px;
+}
+
+.page-header {
+    color: #ffffff;
+    font-size: 24px; 
+    font-weight: 700;
+    margin: 5px 0;
+}
+
+/* Container Form: Dibuat sedikit lebih lebar agar space tidak terlalu kosong */
+.form-container {
+    width: 100%;
+    max-width: 800px; /* Dinaikkan dari 400px ke 500px agar lebih pas di mata */
+    background: #1a1a1a;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 30px 35px; /* Padding dalam sedikit diperlonggar */
+    box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+}
+
+/* Grouping Input */
+.form-group {
+    margin-bottom: 18px; /* Jarak antar input dibuat lebih lega sedikit */
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Input & Select */
+.form-control {
+    background: #252525; 
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 12px 15px; /* Padding input dibuat lebih nyaman */
+    color: #ffffff;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* FIX Teks Dropdown agar terlihat jelas */
+.form-control option {
+    background-color: #252525;
+    color: #ffffff;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #990000;
+    background: #2a2a2a;
+}
+
+/* Tombol Simpan */
+.btn-save {
+    background: #990000;
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.3s;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.btn-save:hover {
+    filter: brightness(1.2);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(153, 0, 0, 0.4);
+}
+
+.btn-back {
+    color: #888;
+    text-decoration: none;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.btn-back:hover {
+    color: #ffffff;
+}

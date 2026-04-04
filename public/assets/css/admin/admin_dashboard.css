@@ -1,0 +1,109 @@
+/* public/assets/css/admin-dashboard.css */
+
+.page-header {
+    font-weight: 800;
+    font-size: 28px;
+    margin-bottom: 25px;
+    letter-spacing: -1px;
+    color: #ffffff;
+}
+
+.dashboard-container {
+    display: grid;
+    grid-template-columns: 1.3fr 0.7fr;
+    gap: 24px;
+    margin-top: 10px;
+}
+
+.column-left {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Card Style: Deep Obsidian */
+.card-premium {
+    background: #1a1a1a;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 40px;
+    padding: 35px;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 220px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-premium:hover {
+    transform: translateY(-8px);
+    border-color: rgba(153, 0, 0, 0.4);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+}
+
+.card-label {
+    font-size: 16px;
+    font-weight: 600;
+    color: #888;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.card-value {
+    font-size: 52px;
+    font-weight: 800;
+    margin-top: 10px;
+}
+
+/* Bagian bawah kartu (Pill Shape) */
+.card-info-pill {
+    background: rgba(255, 255, 255, 0.05);
+    color: #eee;
+    padding: 12px 24px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    width: fit-content;
+    margin-top: auto;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(5px);
+}
+
+/* Card Kanan (Total User) - Memanjang ke bawah */
+.card-tall {
+    height: 100%;
+    background: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%);
+    border-radius: 40px;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+}
+
+.card-tall:hover {
+    border-color: rgba(153, 0, 0, 0.3);
+}
+
+.user-list-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: auto;
+}
+
+.tag-user {
+    background: var(--accent); /* Mengambil variabel --accent dari layout utama */
+    color: white;
+    padding: 10px 18px;
+    border-radius: 14px;
+    font-size: 12px;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(153, 0, 0, 0.2);
+}
+
+/* Utility untuk warna spesifik di pill */
+.text-success {
+    color: #00ff80 !important;
+    border-color: rgba(0, 255, 128, 0.2) !important;
+}

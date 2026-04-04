@@ -35,18 +35,39 @@
 
     <hr style="border-color:#555;">
 
-    <?php if($d['tipe'] == 'kursus'): ?>
+   <?php if($d['tipe'] == 'kursus'): ?>
 
-        <div>
-            💰 Rp <?= number_format($d['harga_per_bulan'],0,',','.'); ?> 
-            x <?= $d['bulan']; ?> bulan
+    <div>
+        💰 Rp <?= number_format($d['harga_per_bulan'],0,',','.'); ?> 
+        x <?= $d['bulan']; ?> bulan
+    </div>
+
+    <div style="font-size:13px; color:#ccc;">
+        📅 <?= $d['tanggal_mulai_f']; ?> → <?= $d['tanggal_selesai_f']; ?>
+    </div>
+
+    <!-- 🔥 KHUSUS PERPANJANG -->
+    <?php if(!empty($d['is_perpanjang'])): ?>
+        <div style="
+            margin-top:10px;
+            padding:12px;
+            background:#2a2a2a;
+            border-left:5px solid orange;
+            border-radius:8px;
+        ">
+            <div style="color:orange; font-weight:bold;">
+                🔄 Transaksi Perpanjang
+            </div>
+
+            <div style="font-size:13px; margin-top:5px; color:#ccc;">
+                ➕ Tambah <?= $d['bulan']; ?> bulan<br>
+                📅 Dari: <?= $d['tanggal_mulai_f']; ?><br>
+                📅 Sampai: <?= $d['tanggal_selesai_f']; ?>
+            </div>
         </div>
+    <?php endif; ?>
 
-        <div style="font-size:13px; color:#ccc;">
-            📅 <?= $d['tanggal_mulai_f']; ?> → <?= $d['tanggal_selesai_f']; ?>
-        </div>
-
-    <?php else: ?>
+<?php else: ?>
 
         <div>📦 Paket Full</div>
 

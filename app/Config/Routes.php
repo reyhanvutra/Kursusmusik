@@ -59,6 +59,15 @@ $routes->group('admin', ['filter' => ['auth','role:admin']], function($routes){
     $routes->get('level/edit/(:num)', 'Admin\Admin::editlevel/$1');
     $routes->post('level/update/(:num)', 'Admin\Admin::updatelevel/$1');
     $routes->get('level/hapus/(:num)', 'Admin\Admin::hapus/$1');
+
+    // siswa
+    $routes->get('siswa', 'Admin\Admin::indexsiswa');   
+    $routes->get('siswa/detail/(:num)', 'Admin\Admin::detail/$1');
+    $routes->get('siswa/edit/(:num)', 'Admin\Admin::editsiswa/$1');
+    $routes->post('siswa/update/(:num)', 'Admin\Admin::updatesiswa/$1');
+        $routes->get('siswa/toggle/(:num)', 'Admin\Admin::toggle/$1');
+        $routes->get('siswa/tambah', 'Admin\Admin::tambahsiswa');
+        $routes->post('siswa/simpan', 'Admin\Admin::simpansiswa');
 });
 // KASIR
 $routes->group('kasir', ['filter' => ['auth', 'role:kasir']], function($routes){
@@ -69,11 +78,15 @@ $routes->group('kasir', ['filter' => ['auth', 'role:kasir']], function($routes){
     $routes->get('detail/(:num)', 'Kasir\Kasir::detail/$1');
     $routes->get('cetak/(:num)', 'Kasir\Kasir::cetak/$1');
     $routes->get('detail/kursus/(:num)', 'Kasir\Kasir::detailKursus/$1');
+    $routes->get('detail/kategori/(:num)', 'Kasir\Kasir::detailKategori/$1');
     $routes->get('detail/paket/(:num)', 'Kasir\Kasir::detailPaket/$1');
     $routes->post('simpanSiswaAjax', 'Kasir\Kasir::simpanSiswaAjax');
     $routes->get('siswa/tambah', 'Kasir\Kasir::tambahSiswa');
     $routes->get('siswa', 'Kasir\Kasir::siswa');
     $routes->get('siswa/detail/(:num)', 'Kasir\Kasir::detailSiswa/$1');
+     $routes->get('perpanjang/(:num)', 'Kasir\Kasir::perpanjang/$1');
+        $routes->post('perpanjang/simpan', 'Kasir\Kasir::simpanPerpanjang');
+
 
 });
 // OWNER

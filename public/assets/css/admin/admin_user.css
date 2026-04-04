@@ -1,0 +1,88 @@
+/* public/assets/css/admin_user.css */
+
+.user-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+/* Tombol Tambah User ala Figma */
+.btn-tambah {
+    background-color: #006600; /* Hijau gelap sesuai Figma */
+    color: #ffffff;
+    padding: 10px 24px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.btn-tambah:hover {
+    background-color: #008800;
+    transform: translateY(-2px);
+}
+
+/* Container Tabel Putih/Abu Terang sesuai Figma */
+.table-container {
+    background-color: #d9d9d9; /* Warna terang di dalam dashboard */
+    border-radius: 30px;
+    padding: 20px;
+    overflow: hidden;
+    color: #000000;
+}
+
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.custom-table th {
+    padding: 15px;
+    font-weight: 800;
+    border-bottom: 2px solid #aaaaaa;
+    text-align: center;
+}
+
+.custom-table td {
+    padding: 15px;
+    border-bottom: 1px solid #cccccc;
+    font-weight: 500;
+    text-align: center;
+}
+
+/* Styling Baris terakhir agar tidak ada border */
+.custom-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Tombol Aksi */
+.action-group {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn-edit {
+    background-color: #006600;
+    color: white;
+    padding: 6px 20px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.btn-delete {
+    color: #121212;
+    font-size: 18px;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.btn-delete:hover {
+    color: #990000;
+}

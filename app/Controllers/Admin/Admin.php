@@ -11,29 +11,31 @@ use App\Models\LogActivityModel;
 use App\Models\SettingModel;
 use App\Models\KategoriKursusModel;
 use App\Models\LevelModel;
+use App\Models\SiswaModel;
+use App\Models\TransaksiDetailModel;
 use App\Controllers\BaseController;
 
 class Admin extends BaseController
 {
     protected $userModel;
     protected $kursusModel;
-    protected $paketModel;
-    protected $paketDetailModel;
     protected $transaksiModel;
     protected $logActivityModel;
     protected $kategori;
     protected $levelModel;
+        protected $siswaModel;
+        protected $detailModel;
 
     public function __construct()
     {
         $this->userModel = new UserModel();
         $this->kursusModel = new KursusModel();
-        $this->paketModel = new PaketModel();
-        $this->paketDetailModel = new PaketDetailModel();  
         $this->transaksiModel = new TransaksiModel(); 
         $this->logActivityModel = new LogActivityModel();
         $this->kategori = new KategoriKursusModel();
         $this->levelModel = new LevelModel();
+            $this->siswaModel = new SiswaModel();
+            $this->detailModel = new TransaksiDetailModel();
     }
         // 🔥 HELPER LOG (BIAR RAPI)
     private function log($aktivitas)
@@ -399,13 +401,13 @@ class Admin extends BaseController
            
     // }
     
-    // public function settings()
-    // {
-    //     $model = new SettingModel();
-    //     $data['setting'] = $model->first();
+    public function settings()
+    {
+        $model = new SettingModel();
+        $data['setting'] = $model->first();
 
-    //     return view('admin/setting/index', $data);
-    // }
+        return view('admin/setting/index', $data);
+    }
 
 
     public function updateSettings()
@@ -566,4 +568,157 @@ class Admin extends BaseController
         return redirect()->back();
     }
 
+// ================= LIST SISWA =================
+public function indexsiswa()
+{
+    $keyword = $this->request->getGet('search');
+
+    // 🔍 SEARCH
+    if ($keyword) {
+        $siswa = $this->siswaModel
+            ->like('nama', $keyword)
+            ->orLike('no_hp', $keyword)
+            ->findAll();
+    } else {
+        $siswa = $this->siswaModel->findAll();
+    }
+
+    $today = date('Y-m-d');
+
+    foreach ($siswa as &$s) {
+
+        // 🔥 cek apakah masih punya kursus aktif
+        $aktifTransaksi = $this->detailModel
+            ->join('transaksi', 'transaksi.id = transaksi_detail.id_transaksi')
+            ->where('transaksi.id_siswa', $s['id'])
+            ->where('transaksi_detail.tanggal_selesai >=', $today)
+            ->countAllResults();
+
+        // 🔥 LOGIKA STATUS FINAL
+        if ($s['sudah_daftar'] == 0) {
+            $s['status'] = 'belum';
+        } else {
+            $s['status'] = $aktifTransaksi > 0 ? 'aktif' : 'nonaktif';
+        }
+    }
+
+    return view('admin/siswa/index', [
+        'siswa' => $siswa,
+        'search' => $keyword
+    ]);
+}
+
+public function detail($id)
+{
+    $siswa = $this->siswaModel->find($id);
+    if (!$siswa) {
+        throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+    }
+
+    $transaksi = $this->transaksiModel
+        ->where('id_siswa', $id)
+        ->orderBy('id', 'DESC')
+        ->findAll();
+
+    $detailModel = new \App\Models\TransaksiDetailModel();
+    $kursusModel = new \App\Models\KursusModel();
+    $levelModel = new \App\Models\LevelModel();
+    $kategoriModel = new \App\Models\KategoriKursusModel();
+
+    foreach ($transaksi as &$t) {
+
+        $details = $detailModel
+            ->where('id_transaksi', $t['id'])
+            ->findAll();
+
+        foreach ($details as &$d) {
+
+            if ($d['tipe'] === 'kursus') {
+
+                // 🔥 id_item = id_level
+                $level = $levelModel->find($d['id_item']);
+
+                if ($level) {
+
+                    $kursus = $kursusModel->find($level['id_kursus']);
+
+                    $d['nama_kursus'] = $kursus['nama_kursus'] ?? '-';
+
+                    if ($kursus) {
+                        $kategori = $kategoriModel->find($kursus['id_kategori']);
+                        $d['kategori'] = $kategori['nama_kategori'] ?? '-';
+                    } else {
+                        $d['kategori'] = '-';
+                    }
+
+                    $d['level'] = $level['nama_level'] ?? '-';
+
+                } else {
+
+                    $d['nama_kursus'] = 'Level dihapus';
+                    $d['kategori'] = '-';
+                    $d['level'] = '-';
+                }
+
+            } else {
+
+                $d['nama_kursus'] = '-';
+                $d['kategori'] = '-';
+                $d['level'] = '-';
+            }
+
+            // 🔥 default aman
+            $d['harga'] = $d['harga'] ?? 0;
+            $d['bulan'] = $d['bulan'] ?? 1;
+            $d['tanggal_mulai'] = $d['tanggal_mulai'] ?? '-';
+            $d['tanggal_selesai'] = $d['tanggal_selesai'] ?? '-';
+        }
+
+        $t['detail'] = $details;
+    }
+
+    return view('admin/siswa/detail', [
+        's' => $siswa,
+        'transaksi' => $transaksi
+    ]);
+}
+// ================= EDIT =================
+public function editsiswa($id)
+{
+    $siswa = $this->siswaModel->find($id);
+    if (!$siswa) throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+
+    return view('admin/siswa/edit', ['s' => $siswa]);
+}
+
+public function updatesiswa($id)
+{
+    $no_hp = $this->request->getPost('no_hp');
+    $siswa = $this->siswaModel->find($id);
+
+    if ($this->siswaModel->where('no_hp', $no_hp)->where('id !=', $id)->first()) {
+        return redirect()->back()->withInput()->with('error','No HP sudah terdaftar');
+    }
+
+    $this->siswaModel->update($id, [
+        'nama' => $this->request->getPost('nama'),
+        'no_hp' => $no_hp,
+        'alamat' => $this->request->getPost('alamat'),
+    ]);
+
+    return redirect()->to('/admin/siswa')->with('success','Data berhasil diupdate');
+}
+
+// // ================= TOGGLE AKTIF/NONAKTIF =================
+// public function toggle($id)
+// {
+//     $siswa = $this->siswaModel->find($id);
+//     if (!$siswa) throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+
+//     $this->siswaModel->update($id, [
+//         'aktif' => $siswa['aktif'] ? 0 : 1
+//     ]);
+
+//     return redirect()->to('/admin/siswa')->with('success','Status berhasil diubah');
+// }
 }

@@ -15,9 +15,10 @@
 
         <?php foreach($k['kursus'] as $c): ?>
             <div style="margin-bottom:10px;">
-                <a href="/kasir/detail/kursus/<?= $c['id']; ?>" 
-                   style="text-decoration:none; color:blue;">
-                    👉 <?= $c['nama_kursus']; ?>
+               <a href="/kasir/detail/kategori/<?= $k['id']; ?>" 
+   style="display:inline-block;margin-top:10px;background:#2196f3;color:white;padding:8px 12px;border-radius:6px;text-decoration:none;">
+   🔍 Lihat Kategori
+</a>
                 </a>
             </div>
         <?php endforeach; ?>
@@ -25,6 +26,14 @@
     </div>
 <?php endforeach; ?>
 
+</div>
+
+<!-- 🔥 TOMBOL KEMBALI -->
+<div style="margin-top:20px;">
+    <a href="/kasir/dashboard"
+       style="background:#444;color:white;padding:10px 15px;border-radius:8px;text-decoration:none;">
+       ← Kembali
+    </a>
 </div>
 
 <?= $this->endSection(); ?>

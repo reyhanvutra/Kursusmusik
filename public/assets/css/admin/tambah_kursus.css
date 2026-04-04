@@ -1,0 +1,146 @@
+/* --- ROOT WRAPPER --- */
+.form-page-wrapper {
+    display: block; /* Mengganti flex agar scroll normal browser aktif */
+    width: 100%;
+    min-height: 100vh;
+    padding: 40px 20px;
+    background: #0f0f0f;
+    box-sizing: border-box;
+    overflow-y: visible; /* Memastikan scroll browser yang menangani */
+}
+
+/* Header: Tombol Kembali & Judul */
+.form-header-area {
+    width: 100%;
+    max-width: 850px;
+    margin: 0 auto 20px auto; /* Center alignment */
+}
+
+.btn-back {
+    color: #888;
+    text-decoration: none;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.3s;
+}
+
+.btn-back:hover { color: #fff; }
+
+.page-header {
+    color: #fff;
+    font-size: 28px;
+    font-weight: 800;
+    margin: 10px 0;
+}
+
+/* --- FORM CONTAINER --- */
+.form-container {
+    width: 100%;
+    max-width: 850px;
+    background: #1a1a1a;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 25px;
+    padding: 35px;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+    margin: 0 auto 80px auto; /* Jarak bawah ekstra agar tombol tidak mepet */
+}
+
+/* Grid System (Dibuat lebih rapat) */
+.form-grid {
+    display: flex;
+    gap: 25px;
+    flex-wrap: wrap;
+}
+
+.form-column {
+    flex: 1;
+    min-width: 300px;
+}
+
+/* --- INPUT ELEMENTS --- */
+.form-group {
+    margin-bottom: 18px; /* Dikurangi dari 22px agar lebih pendek */
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-size: 10px; /* Lebih kecil agar elegan */
+    font-weight: 700;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+}
+
+.form-control {
+    background: #222;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: #fff;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+    transition: 0.3s;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #990000;
+    background: #282828;
+}
+
+/* Checkbox Hari (Dibuat 3 kolom agar sangat hemat tempat) */
+.checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 10px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    border-radius: 12px;
+}
+
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #999;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.checkbox-item input {
+    accent-color: #990000;
+    width: 16px;
+    height: 16px;
+}
+
+/* --- BUTTON SIMPAN --- */
+.btn-save {
+    background: #990000;
+    color: #fff;
+    border: none;
+    padding: 16px;
+    border-radius: 12px;
+    width: 100%;
+    font-weight: 800;
+    font-size: 15px;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: 0.3s;
+    box-shadow: 0 10px 20px rgba(153, 0, 0, 0.2);
+}
+
+.btn-save:hover {
+    background: #cc0000;
+    transform: translateY(-2px);
+}
+
+/* Textarea (Dibuat pendek agar tidak mendorong tombol) */
+textarea.form-control {
+    min-height: 70px;
+}

@@ -3,7 +3,7 @@
 
 <div class="container">
 
-    <a href="/kasir/pilih">← Kembali</a>
+    <a href="/kasir/detail/kategori/<?= $k['id_kategori']; ?>">← Kembali</a>
 
     <h2 style="margin-bottom:10px;"><?= $k['nama_kursus']; ?></h2>
 

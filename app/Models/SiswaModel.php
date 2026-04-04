@@ -15,6 +15,7 @@ class SiswaModel extends Model
         'alamat',
         'tanggal_daftar',
         'created_at',
-        'sudah_daftar'
+        'sudah_daftar',
+        'aktif'
     ];
 }
