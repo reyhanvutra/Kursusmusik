@@ -49,8 +49,8 @@ class Kasir extends BaseController
             'aktivitas' => $aktivitas
         ]);
     }
-    // ================= DASHBOARD =================
-   public function dashboard()
+ // ================= DASHBOARD =================
+public function dashboard()
 {
     $today = date('Y-m-d');
 
@@ -59,29 +59,30 @@ class Kasir extends BaseController
         ->where('slot >', 0)
         ->countAllResults();
 
-    // ================= PENDAPATAN =================
+    // ================= PENDAPATAN HARI INI =================
     $pendapatan = $this->transaksiModel
         ->selectSum('total_harga')
         ->where('tanggal', $today)
         ->first();
 
-    // ================= TOTAL TRANSAKSI =================
+    // ================= TOTAL TRANSAKSI HARI INI =================
     $total_transaksi = $this->transaksiModel
         ->where('tanggal', $today)
         ->countAllResults();
 
-    // ================= AMBIL TRANSAKSI =================
+    // ================= AMBIL TRANSAKSI (LIMIT 5 TERBARU) =================
     $transaksi = $this->transaksiModel
         ->select('transaksi.*, siswa.nama as nama_pembeli')
-        ->join('siswa', 'siswa.id = transaksi.id_siswa')
+        ->join('siswa', 'siswa.id = transaksi.id_siswa', 'left')
         ->orderBy('transaksi.id', 'DESC')
+        ->limit(5) // 🔥 penting (preview saja)
         ->findAll();
 
-    // ================= LOAD MODEL LEVEL =================
+    // ================= LOAD MODEL =================
     $levelModel = new \App\Models\LevelModel();
 
     // ================= AMBIL ITEM =================
-    foreach($transaksi as &$t){
+    foreach ($transaksi as &$t) {
 
         $detail = $this->detailModel
             ->where('id_transaksi', $t['id'])
@@ -89,23 +90,23 @@ class Kasir extends BaseController
 
         $items = [];
 
-        foreach($detail as $d){
+        foreach ($detail as $d) {
 
             // 🔥 ambil level
             $level = $levelModel->find($d['id_item']);
 
-            if($level){
+            if ($level) {
 
                 // 🔥 ambil kursus dari level
                 $kursus = $this->kursusModel->find($level['id_kursus']);
 
-                if($kursus){
+                if ($kursus) {
                     $items[] = $kursus['nama_kursus'] . ' - ' . $level['nama_level'];
-                }else{
+                } else {
                     $items[] = 'Kursus dihapus';
                 }
 
-            }else{
+            } else {
                 $items[] = 'Level dihapus';
             }
         }
@@ -122,6 +123,57 @@ class Kasir extends BaseController
         'pendapatan_hari_ini' => $pendapatan['total_harga'] ?? 0,
         'total_transaksi_hari_ini' => $total_transaksi,
         'transaksi' => $transaksi
+    ]);
+}
+// ================= RIWAYAT TRANSAKSI =================
+public function riwayat()
+{
+    // ================= AMBIL TRANSAKSI =================
+    $transaksi = $this->transaksiModel
+        ->select('transaksi.*, siswa.nama as nama_pembeli')
+        ->join('siswa', 'siswa.id = transaksi.id_siswa', 'left')
+        ->orderBy('transaksi.id', 'DESC')
+        ->paginate(10);
+
+    $pager = $this->transaksiModel->pager;
+
+    // ================= LOAD MODEL =================
+    $levelModel = new \App\Models\LevelModel();
+
+    // ================= AMBIL ITEM =================
+    foreach ($transaksi as &$t) {
+
+        $detail = $this->detailModel
+            ->where('id_transaksi', $t['id'])
+            ->findAll();
+
+        $items = [];
+
+        foreach ($detail as $d) {
+
+            $level = $levelModel->find($d['id_item']);
+
+            if ($level) {
+
+                $kursus = $this->kursusModel->find($level['id_kursus']);
+
+                if ($kursus) {
+                    $items[] = $kursus['nama_kursus'] . ' - ' . $level['nama_level'];
+                } else {
+                    $items[] = 'Kursus dihapus';
+                }
+
+            } else {
+                $items[] = 'Level dihapus';
+            }
+        }
+
+        $t['items'] = $items;
+    }
+
+    return view('kasir/riwayat', [
+        'transaksi' => $transaksi,
+        'pager' => $pager
     ]);
 }
   public function siswa()
@@ -672,22 +724,22 @@ public function detailKursus($id)
         'level' => $level
     ]);
 }
-public function detailPaket($id)
-{
-    $data['p'] = $this->paketModel->find($id);
+// public function detailPaket($id)
+// {
+//     $data['p'] = $this->paketModel->find($id);
 
-    $detail = $this->paketDetailModel
-        ->select('kursus.*')
-        ->join('kursus','kursus.id = paket_detail.id_kursus')
-        ->where('id_paket',$id)
-        ->findAll();
+//     $detail = $this->paketDetailModel
+//         ->select('kursus.*')
+//         ->join('kursus','kursus.id = paket_detail.id_kursus')
+//         ->where('id_paket',$id)
+//         ->findAll();
 
-    $data['kursus'] = $detail;
+//     $data['kursus'] = $detail;
 
-    $this->log('Melihat detail paket ' . $data['p']['nama_paket']);
+//     $this->log('Melihat detail paket ' . $data['p']['nama_paket']);
 
-    return view('kasir/detailpaket', $data);
-}
+//     return view('kasir/detailpaket', $data);
+// }
 public function tambahSiswa()
 {
     $this->log('Masuk halaman tambah siswa baru');

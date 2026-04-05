@@ -1,18 +1,12 @@
 <?= $this->extend('owner/layout'); ?>
 <?= $this->section('content'); ?>
-<h1>Laporan Kursus & Paket</h1>
+
+<h1>Laporan Data Kursus</h1>
 
 <form method="get" action="/owner/data-kursus">
 
-    <label>Nama:</label>
+    <label>Nama Kursus:</label>
     <input type="text" name="nama" value="<?= $_GET['nama'] ?? '' ?>">
-
-    <label>Tipe:</label>
-    <select name="tipe">
-        <option value="">--Semua--</option>
-        <option value="kursus" <?= (($_GET['tipe'] ?? '')=='kursus')?'selected':'' ?>>Kursus</option>
-        <option value="paket" <?= (($_GET['tipe'] ?? '')=='paket')?'selected':'' ?>>Paket</option>
-    </select>
 
     <button type="submit">Filter</button>
 
@@ -26,16 +20,14 @@
 
 <?php
 $nama = $_GET['nama'] ?? '';
-$tipe = $_GET['tipe'] ?? '';
 ?>
 
-<a href="/owner/data-kursus/pdf?nama=<?= $nama ?>&tipe=<?= $tipe ?>" target="_blank">
+<a href="/owner/data-kursus/pdf?nama=<?= $nama ?>" target="_blank">
     Export PDF
 </a>
 
 <hr>
 
-<!-- 🔥 NOMOR LANJUT -->
 <?php 
 $page = $_GET['page'] ?? 1;
 $perPage = 10;
@@ -45,8 +37,9 @@ $no = 1 + ($perPage * ($page - 1));
 <table border="1" cellpadding="10" width="100%">
 <tr>
     <th>No</th>
-    <th>Nama</th>
-    <th>Tipe</th>
+    <th>Kursus</th>
+    <th>Kategori</th>
+    <th>Level</th>
     <th>Total Terjual</th>
     <th>Total Pendapatan</th>
 </tr>
@@ -59,20 +52,15 @@ $grand += $d['total_pendapatan'];
 ?>
 <tr>
     <td><?= $no++; ?></td>
-
-    <td>
-        <?= $d['tipe']=='kursus' ? $d['nama_kursus'] : $d['nama_paket']; ?>
-    </td>
-
-    <td><?= ucfirst($d['tipe']); ?></td>
-
+    <td><?= $d['nama_kursus']; ?></td>
+    <td><?= $d['nama_kategori']; ?></td>
+    <td><?= $d['nama_level']; ?></td>
     <td><?= $d['total_terjual']; ?></td>
-
     <td>Rp <?= number_format($d['total_pendapatan'],0,',','.'); ?></td>
 </tr>
 <?php endforeach; else: ?>
 <tr>
-    <td colspan="5">Data tidak ditemukan</td>
+    <td colspan="6" align="center">Data tidak ditemukan</td>
 </tr>
 <?php endif; ?>
 
@@ -82,6 +70,6 @@ $grand += $d['total_pendapatan'];
 
 <br>
 
-<!-- 🔥 PAGINATION -->
 <?= $pager->links(); ?>
+
 <?= $this->endSection(); ?>

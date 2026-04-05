@@ -66,7 +66,7 @@
                     <div style="margin-top: 5px;">
                         <a href="/admin/kursus/edit/<?= $k['id']; ?>" class="action-link edit">Edit</a>
                         <span style="color:#444;">|</span>
-                        <a href="/admin/kursus/hapus/<?= $k['id']; ?>" class="action-link hapus" onclick="return confirm('Hapus kursus ini?')">Hapus</a>
+                        <a href="/admin/kursus/hapus/<?= $k['id']; ?>">Hapus</a>
                     </div>
                 </td>
             </tr>

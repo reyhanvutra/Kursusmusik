@@ -147,6 +147,41 @@
             flex: 1;
             padding: 0 40px 40px 40px;
         }
+        /* ALERT GLOBAL */
+.global-alert {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    min-width: 250px;
+}
+
+/* ALERT BASE */
+.alert {
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    animation: fadeIn 0.4s ease;
+}
+
+/* SUCCESS */
+.alert.success {
+    background: #1e7e34;
+    color: #d4edda;
+    border-left: 5px solid #28a745;
+}
+
+/* ERROR */
+.alert.error {
+    background: #7e1e1e;
+    color: #f8d7da;
+    border-left: 5px solid #dc3545;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
     </style>
 </head>
 <body>
@@ -195,6 +230,20 @@ $currentUri = uri_string();
 </aside>
 
 <div class="main">
+
+    <!-- 🔥 GLOBAL ALERT -->
+    <?php if(session()->getFlashdata('success')): ?>
+        <div class="alert success global-alert">
+            <?= session()->getFlashdata('success'); ?>
+        </div>
+    <?php endif; ?>
+
+    <?php if(session()->getFlashdata('error')): ?>
+        <div class="alert error global-alert">
+            <?= session()->getFlashdata('error'); ?>
+        </div>
+    <?php endif; ?>
+
     <header class="topbar">
         <div class="topbar-title">
             <h1><?= $page_title ?? 'Welcome Admin Dashboard' ?></h1>
@@ -207,6 +256,22 @@ $currentUri = uri_string();
         <?= $this->renderSection('content'); ?>
     </main>
 </div>
+<script>
+setTimeout(() => {
+    const alerts = document.querySelectorAll('.alert');
+    
+    alerts.forEach(alert => {
+        alert.style.transition = "0.5s";
+        alert.style.opacity = "0";
+        alert.style.transform = "translateY(-10px)";
+        
+        setTimeout(() => {
+            alert.remove();
+        }, 500);
+    });
 
+}, 3000);
+</script>
 </body>
+
 </html>

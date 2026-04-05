@@ -37,7 +37,7 @@
                         <a href="/admin/level/edit/<?= $l['id']; ?>" class="action-link edit" title="Edit">
                             <i class="fa-solid fa-pen-to-square"></i>
                         </a>
-                        <a href="/admin/level/hapus/<?= $l['id']; ?>" class="action-link hapus" onclick="return confirm('Hapus level ini?')" title="Hapus">
+                        <a href="/admin/level/hapus/<?= $l['id']; ?>" >
                             <i class="fa-solid fa-trash"></i>
                         </a>
                     </div>

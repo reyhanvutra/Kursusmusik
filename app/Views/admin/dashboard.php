@@ -1,5 +1,4 @@
 <?= $this->extend('admin/layout'); ?>
-
 <?= $this->section('content'); ?>
 <link rel="stylesheet" href="<?= base_url('assets/css/admin/admin_dashboard.css'); ?>">
 
@@ -14,7 +13,7 @@
                 <div class="card-value"><?= $total_kursus; ?> Kursus</div>
             </div>
             <div class="card-info-pill">
-                Drum | Gitar | Piano | Vokal
+                <?= $kategori_list ?: '-' ?>
             </div>
         </div>
 
@@ -24,7 +23,7 @@
                 <div class="card-value"><?= $transaksi_hari_ini; ?> Transaksi</div>
             </div>
             <div class="card-info-pill text-success">
-                Total Pendapatan : Rp 700.000
+                Total Pendapatan : Rp <?= number_format($pendapatan_hari_ini,0,',','.'); ?>
             </div>
         </div>
     </div>
@@ -34,11 +33,17 @@
         <div style="flex: 1; display: flex; align-items: center; justify-content: center;">
             <div class="card-value" style="font-size: 80px;"><?= $total_user; ?></div>
         </div>
-        <div class="user-list-tags">
-            <span class="tag-user">Admin</span>
-            <span class="tag-user">Mentor</span>
-            <span class="tag-user">Siswa</span>
+<div class="user-list-detail">
+    <?php foreach($users as $u): ?>
+        <div class="user-item">
+            <div class="user-info">
+                <div class="user-name"><?= $u['nama']; ?></div>
+                <div class="user-email"><?= $u['email']; ?></div>
+            </div>
+            <div class="user-role"><?= strtoupper($u['role']); ?></div>
         </div>
+    <?php endforeach; ?>
+</div>
     </div>
 
 </div>

@@ -35,7 +35,7 @@
                         <a href="/admin/user/edit/<?= $u['id']; ?>" class="action-link edit" title="Edit">
                             <i class="fa-solid fa-pen-to-square"></i>
                         </a>
-                        <a href="/admin/user/hapus/<?= $u['id']; ?>" class="action-link hapus" onclick="return confirm('Hapus user ini?')" title="Hapus">
+                        <a href="/admin/user/hapus/<?= $u['id']; ?>">
                             <i class="fa-solid fa-trash"></i>
                         </a>
                     </div>

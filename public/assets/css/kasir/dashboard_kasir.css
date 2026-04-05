@@ -1,0 +1,148 @@
+/* --- DASHBOARD KASIR STYLE --- */
+:root {
+    --bg-dark: #121212;
+    --card-bg: #1a1a1a;
+    --accent-red: #990000;
+    --border-rgba: rgba(255, 255, 255, 0.05);
+    --radius-lg: 20px;
+    --radius-md: 12px;
+}
+
+/* Container utama agar tidak terlalu lebar ke samping */
+.form-page-wrapper {
+    padding: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Navigasi Tombol */
+.nav-buttons {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 35px;
+}
+
+.btn-nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.btn-nav.primary {
+    background: var(--accent-red);
+    color: white;
+}
+
+.btn-nav.secondary {
+    background: #252525;
+    color: #bbb;
+    border: 1px solid var(--border-rgba);
+}
+
+.btn-nav:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.2);
+}
+
+/* Kartu Statistik */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.stat-card {
+    background: var(--card-bg);
+    padding: 30px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-rgba);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+}
+
+.stat-card h4 {
+    color: #666;
+    font-size: 12px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+}
+
+.stat-card h2 {
+    color: #ffffff;
+    font-size: 32px;
+    margin: 0;
+    font-weight: 700;
+}
+
+.stat-card span {
+    font-size: 16px;
+    color: #444;
+    margin-left: 8px;
+}
+
+/* Tabel Riwayat */
+.table-container {
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    padding: 30px;
+    border: 1px solid var(--border-rgba);
+}
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.custom-table th {
+    text-align: left;
+    padding: 15px;
+    border-bottom: 2px solid #222;
+    color: #555;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.custom-table td {
+    padding: 20px 15px;
+    border-bottom: 1px solid #222;
+    font-size: 14px;
+    color: #ccc;
+}
+
+.badge-item {
+    background: #252525;
+    color: #999;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 11px;
+    border: 1px solid var(--border-rgba);
+}
+
+.btn-detail {
+    background: #252525;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 12px;
+    transition: 0.3s;
+}
+
+.btn-detail:hover {
+    background: #333;
+}

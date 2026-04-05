@@ -48,23 +48,54 @@ class Admin extends BaseController
         ]);
     }
 
-    // ================= DASHBOARD =================
-  public function dashboard()
+  // ================= DASHBOARD =================
+public function dashboard()
 {
     $today = date('Y-m-d');
 
     $this->log('Masuk dashboard admin');
 
+    // ================= TOTAL KURSUS =================
+    $total_kursus = $this->kursusModel->countAll();
+
+    // ================= TOTAL USER =================
+    $total_user = $this->userModel->countAll();
+    $users = $this->userModel->findAll();
+
+    // ================= AMBIL ROLE DINAMIS =================
+    $roles = $this->userModel
+        ->select('role')
+        ->distinct()
+        ->findAll();
+
+    $role_list = array_column($roles, 'role');
+
+    // ================= TRANSAKSI HARI INI =================
+    $transaksi_hari_ini = $this->transaksiModel
+        ->where('tanggal', $today)
+        ->countAllResults();
+
+    // ================= TOTAL PENDAPATAN =================
+    $pendapatan = $this->transaksiModel
+        ->selectSum('total_harga')
+        ->where('tanggal', $today)
+        ->first();
+
+    $pendapatan_hari_ini = $pendapatan['total_harga'] ?? 0;
+
+    // ================= KATEGORI =================
+    $kategori_kursus = $this->kategori->findAll(); // 🔥 FIX DISINI
+    $kategori_list = implode(' | ', array_column($kategori_kursus, 'nama_kategori'));
+
     return view('admin/dashboard', [
-        'total_kursus' => $this->kursusModel->countAll(),
-        'total_user' => $this->userModel->countAll(),
-
-        // 🔥 hitung transaksi hari ini
-        'transaksi_hari_ini' => $this->transaksiModel
-            ->where('tanggal', $today)
-            ->countAllResults()
+        'total_kursus' => $total_kursus,
+        'total_user' => $total_user,
+        'transaksi_hari_ini' => $transaksi_hari_ini,
+        'pendapatan_hari_ini' => $pendapatan_hari_ini,
+        'kategori_list' => $kategori_list,
+        'role_list' => $role_list,
+        'users' => $users
     ]);
-
 }
 
     // ================= USER =================
@@ -95,7 +126,8 @@ class Admin extends BaseController
         ]);
         $this->log('Menambah user baru');
 
-        return redirect()->to('/admin/user');
+        return redirect()->to('/admin/user')
+            ->with('success', 'Data berhasil disimpan');
     }
 
     public function edit_user($id)
@@ -113,7 +145,8 @@ class Admin extends BaseController
             'role' => $this->request->getPost('role'),
         ]);
          $this->log('Mengedit user: '.$this->request->getPost('nama'));
-        return redirect()->to('/admin/user');
+        return redirect()->to('/admin/user')
+            ->with('success', 'Data berhasil diupdate');
     }
 
     public function hapus_user($id)
@@ -121,7 +154,8 @@ class Admin extends BaseController
         $this->userModel->delete($id);
         
             $this->log('Menghapus user: '.$this->request->getPost('nama'));
-        return redirect()->to('/admin/user');
+        return redirect()->to('/admin/user')
+            ->with('success', 'Data berhasil dihapus');
 
     }
 
@@ -232,7 +266,8 @@ class Admin extends BaseController
 
     $this->log('Menambah kursus: ' . $this->request->getPost('nama_kursus'));
 
-    return redirect()->to('/admin/kursus');
+    return redirect()->to('/admin/kursus')
+        ->with('success', 'Data berhasil disimpan');
 }
 
     // ================= EDIT =================
@@ -293,7 +328,8 @@ class Admin extends BaseController
 
         $this->log('Mengedit kursus: ' . $this->request->getPost('nama_kursus'));
 
-        return redirect()->to('/admin/kursus');
+        return redirect()->to('/admin/kursus')
+            ->with('success', 'Data berhasil diupdate');
     }
 
     // ================= HAPUS =================
@@ -309,7 +345,8 @@ class Admin extends BaseController
 
         $this->log('Menghapus kursus: ' . $kursus['nama_kursus']);
 
-        return redirect()->to('/admin/kursus');
+        return redirect()->to('/admin/kursus')
+            ->with('success', 'Data berhasil dihapus');
     }
 
 
@@ -421,48 +458,89 @@ class Admin extends BaseController
         return redirect()->back()->with('success', 'Biaya berhasil diupdate');
     }
 
-    public function index()
-    {
-        $data['kategori'] = $this->kategori->findAll();
-        return view('admin/kategori/index', $data);
+   // ================= INDEX =================
+public function index()
+{
+    $data['kategori'] = $this->kategori->findAll();
+    return view('admin/kategori/index', $data);
+}
+
+// ================= CREATE =================
+public function create()
+{
+    return view('admin/kategori/create');
+}
+
+// ================= STORE =================
+public function store()
+{
+    $file = $this->request->getFile('gambar');
+
+    $namaFile = null;
+
+    if ($file && $file->isValid() && !$file->hasMoved()) {
+        $namaFile = $file->getRandomName();
+        $file->move('uploads/kategori', $namaFile);
     }
 
-    public function create()
-    {
-        return view('admin/kategori/create');
+    $this->kategori->save([
+        'nama_kategori' => $this->request->getPost('nama_kategori'),
+        'deskripsi' => $this->request->getPost('deskripsi'),
+        'gambar' => $namaFile
+    ]);
+
+    return redirect()->to('/admin/kategori')->with('success', 'Data berhasil ditambahkan');
+}
+
+// ================= EDIT =================
+public function edit($id)
+{
+    $data['kategori'] = $this->kategori->find($id);
+    return view('admin/kategori/edit', $data);
+}
+
+// ================= UPDATE =================
+public function update($id)
+{
+    $kategori = $this->kategori->find($id);
+
+    $file = $this->request->getFile('gambar');
+    $namaFile = $kategori['gambar'];
+
+    if ($file && $file->isValid() && !$file->hasMoved()) {
+
+        // hapus gambar lama
+        if ($kategori['gambar'] && file_exists('uploads/kategori/' . $kategori['gambar'])) {
+            unlink('uploads/kategori/' . $kategori['gambar']);
+        }
+
+        $namaFile = $file->getRandomName();
+        $file->move('uploads/kategori', $namaFile);
     }
 
-    public function store()
-    {
-        $this->kategori->save([
-            'nama_kategori' => $this->request->getPost('nama_kategori'),
-            'deskripsi' => $this->request->getPost('deskripsi'),
-        ]);
+    $this->kategori->update($id, [
+        'nama_kategori' => $this->request->getPost('nama_kategori'),
+        'deskripsi' => $this->request->getPost('deskripsi'),
+        'gambar' => $namaFile
+    ]);
 
-        return redirect()->to('/admin/kategori')->with('success', 'Data berhasil ditambahkan');
+    return redirect()->to('/admin/kategori')->with('success', 'Data berhasil diupdate');
+}
+
+// ================= DELETE =================
+public function delete($id)
+{
+    $kategori = $this->kategori->find($id);
+
+    if ($kategori['gambar'] && file_exists('uploads/kategori/' . $kategori['gambar'])) {
+        unlink('uploads/kategori/' . $kategori['gambar']);
     }
 
-    public function edit($id)
-    {
-        $data['kategori'] = $this->kategori->find($id);
-        return view('admin/kategori/edit', $data);
-    }
+    $this->kategori->delete($id);
 
-    public function update($id)
-    {
-        $this->kategori->update($id, [
-            'nama_kategori' => $this->request->getPost('nama_kategori'),
-            'deskripsi' => $this->request->getPost('deskripsi'),
-        ]);
-
-        return redirect()->to('/admin/kategori')->with('success', 'Data berhasil diupdate');
-    }
-
-    public function delete($id)
-    {
-        $this->kategori->delete($id);
-        return redirect()->to('/admin/kategori')->with('success', 'Data berhasil dihapus');
-    }
+    return redirect()->to('/admin/kategori')
+    ->with('success', 'Data berhasil dihapus');
+}
 
        // ================= LIST LEVEL =================
     public function indexlevel($id_kursus)

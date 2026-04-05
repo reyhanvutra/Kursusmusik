@@ -72,6 +72,7 @@ $routes->group('admin', ['filter' => ['auth','role:admin']], function($routes){
 // KASIR
 $routes->group('kasir', ['filter' => ['auth', 'role:kasir']], function($routes){
    $routes->get('dashboard', 'Kasir\Kasir::dashboard');
+        $routes->get('riwayat', 'Kasir\Kasir::riwayat');
     $routes->get('pilih', 'Kasir\Kasir::pilih');
     $routes->get('transaksi', 'Kasir\Kasir::transaksi');
     $routes->post('simpan', 'Kasir\Kasir::simpan');
@@ -86,6 +87,8 @@ $routes->group('kasir', ['filter' => ['auth', 'role:kasir']], function($routes){
     $routes->get('siswa/detail/(:num)', 'Kasir\Kasir::detailSiswa/$1');
      $routes->get('perpanjang/(:num)', 'Kasir\Kasir::perpanjang/$1');
         $routes->post('perpanjang/simpan', 'Kasir\Kasir::simpanPerpanjang');
+
+
 
 
 });

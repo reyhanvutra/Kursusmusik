@@ -99,9 +99,13 @@ style="background:green;padding:10px 18px;border-radius:8px;color:white;text-dec
 🖨️ Cetak Struk
 </a>
 
-<a href="/kasir/dashboard"
+<?php 
+$back = $_SERVER['HTTP_REFERER'] ?? '/kasir/dashboard';
+?>
+
+<a href="<?= $back; ?>"
 style="background:#555;padding:10px 18px;border-radius:8px;color:white;text-decoration:none;">
-⬅️ Dashboard
+⬅️ Kembali
 </a>
 
 </div>
