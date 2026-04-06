@@ -35,7 +35,7 @@
             background: var(--bg-base);
             color: var(--text-primary);
             min-height: 100vh;
-            overflow: hidden;
+            overflow: auto;
         }
 
         /* ══════════════════════════════
@@ -108,6 +108,7 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            height: auto;
         }
 
         .topbar {
@@ -225,6 +226,11 @@ $currentUri = uri_string();
            class="nav-icon <?= (str_contains($currentUri, 'setting')) ? 'active' : '' ?>"
            data-tip="Setting Biaya">
             <i class="fa-solid fa-sliders"></i>
+        </a>
+        <a href="/admin/mentor"
+           class="nav-icon <?= (str_contains($currentUri, 'mentor')) ? 'active' : '' ?>"
+           data-tip="Data Mentor">
+            <i class="fa-solid fa-chalkboard-teacher"></i>
         </a>
     </nav>
 </aside>

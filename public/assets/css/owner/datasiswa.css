@@ -1,0 +1,102 @@
+.container {
+    padding: 20px;
+}
+
+.judul {
+    margin-bottom: 20px;
+}
+
+/* FILTER */
+.filter-box {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.filter-box input,
+.filter-box select {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.filter-box button {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-reset {
+    background: #aaa;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 6px;
+    text-decoration: none;
+}
+
+/* TABLE */
+.table-box {
+    overflow-x: auto;
+    background: white;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background: #2c3e50;
+    color: white;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+
+tbody tr:nth-child(even) {
+    background: #f2f2f2;
+}
+
+/* BADGE */
+.badge {
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+}
+
+.badge.baru {
+    background: orange;
+    color: white;
+}
+
+.badge.lama {
+    background: green;
+    color: white;
+}
+
+/* BUTTON */
+.btn-detail {
+    background: #27ae60;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 6px;
+    text-decoration: none;
+}
+
+/* EMPTY */
+.kosong {
+    text-align: center;
+    color: #888;
+}
+
+/* PAGINATION */
+.pagination {
+    margin-top: 20px;
+}

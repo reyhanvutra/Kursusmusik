@@ -1,12 +1,17 @@
 /* --- ROOT WRAPPER --- */
 .form-page-wrapper {
-    display: block; /* Mengganti flex agar scroll normal browser aktif */
     width: 100%;
-    min-height: 100vh;
-    padding: 40px 20px;
+    /* Gunakan min-height agar background hitam menutupi seluruh layar, 
+       tapi biarkan height tetap auto agar bisa memanjang ke bawah */
+    min-height: 100vh; 
+    height: auto; 
+    padding: 40px 20px 80px 20px; /* Jarak bawah ditambah agar tidak mepet */
     background: #0f0f0f;
     box-sizing: border-box;
-    overflow-y: visible; /* Memastikan scroll browser yang menangani */
+    
+    /* Pastikan tidak ada properti yang mengunci scroll */
+    position: relative;
+    overflow: visible; 
 }
 
 /* Header: Tombol Kembali & Judul */

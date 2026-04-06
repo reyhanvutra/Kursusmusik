@@ -13,6 +13,7 @@ use App\Models\KategoriKursusModel;
 use App\Models\LevelModel;
 use App\Models\SiswaModel;
 use App\Models\TransaksiDetailModel;
+use App\Models\MentorModel;
 use App\Controllers\BaseController;
 
 class Admin extends BaseController
@@ -25,6 +26,7 @@ class Admin extends BaseController
     protected $levelModel;
         protected $siswaModel;
         protected $detailModel;
+        protected $mentorModel;
 
     public function __construct()
     {
@@ -36,6 +38,7 @@ class Admin extends BaseController
         $this->levelModel = new LevelModel();
             $this->siswaModel = new SiswaModel();
             $this->detailModel = new TransaksiDetailModel();
+            $this->mentorModel = new MentorModel();
     }
         // 🔥 HELPER LOG (BIAR RAPI)
     private function log($aktivitas)
@@ -180,7 +183,7 @@ public function dashboard()
         ]);
     }
 
-   public function simpan_kursus()
+ public function simpan_kursus()
 {
     // ================= VALIDASI =================
     if(!$this->request->getPost('nama_kursus')){
@@ -189,13 +192,6 @@ public function dashboard()
 
     if(!$this->request->getPost('id_kategori')){
         return redirect()->back()->with('error','Kategori wajib dipilih');
-    }
-
-    // ================= VALIDASI HARGA =================
-    $harga = (int) $this->request->getPost('harga');
-
-    if($harga <= 0){
-        return redirect()->back()->with('error','Harga harus lebih dari 0');
     }
 
     // ================= UPLOAD GAMBAR =================
@@ -207,59 +203,10 @@ public function dashboard()
         $file->move('uploads/', $namaGambar);
     }
 
-    // ================= VALIDASI JAM =================
-    $jam_mulai = $this->request->getPost('jam_mulai');
-    $jam_selesai = $this->request->getPost('jam_selesai');
-
-    $start = strtotime($jam_mulai);
-    $end = strtotime($jam_selesai);
-
-    if($end <= $start){
-        return redirect()->back()->with('error','Jam tidak valid');
-    }
-
-    // ================= FORMAT DURASI =================
-    $selisihDetik = $end - $start;
-
-    $jam = floor($selisihDetik / 3600);
-    $menit = floor(($selisihDetik % 3600) / 60);
-
-    $durasi = '';
-
-    if($jam > 0){
-        $durasi .= $jam . ' jam ';
-    }
-
-    if($menit > 0){
-        $durasi .= $menit . ' menit';
-    }
-
-    $durasi = trim($durasi); // 🔥 penting
-
-    // ================= HARI =================
-    $hari = $this->request->getPost('hari');
-
-    if(!$hari){
-        return redirect()->back()->with('error','Pilih minimal 1 hari');
-    }
-
-    // ================= SLOT =================
-    $slot = (int) $this->request->getPost('slot');
-
-    if($slot <= 0){
-        return redirect()->back()->with('error','Slot harus lebih dari 0');
-    }
-
     // ================= SIMPAN =================
     $this->kursusModel->save([
         'id_kategori' => $this->request->getPost('id_kategori'),
         'nama_kursus' => $this->request->getPost('nama_kursus'),
-        'instruktur' => $this->request->getPost('instruktur'),
-        'hari' => implode(',', $hari),
-        'jam_mulai' => $jam_mulai,
-        'jam_selesai' => $jam_selesai,
-        'durasi' => $durasi, // 🔥 FIX (tidak pakai ' jam' lagi)
-        'slot' => $slot,
         'deskripsi' => $this->request->getPost('deskripsi'),
         'gambar' => $namaGambar
     ]);
@@ -279,58 +226,36 @@ public function dashboard()
         ]);
     }
 
-    public function update_kursus($id)
-    {
-        $kursus = $this->kursusModel->find($id);
+   public function update_kursus($id)
+{
+    $kursus = $this->kursusModel->find($id);
 
-        // ================= UPLOAD GAMBAR =================
-        $file = $this->request->getFile('gambar');
-        $namaGambar = $kursus['gambar'];
+    // ================= UPLOAD GAMBAR =================
+    $file = $this->request->getFile('gambar');
+    $namaGambar = $kursus['gambar'];
 
-        if($file && $file->isValid()){
-            $namaGambar = $file->getRandomName();
-            $file->move('uploads/', $namaGambar);
+    if($file && $file->isValid()){
+        $namaGambar = $file->getRandomName();
+        $file->move('uploads/', $namaGambar);
 
-            if($kursus['gambar']){
-                @unlink('uploads/'.$kursus['gambar']);
-            }
+        if($kursus['gambar']){
+            @unlink('uploads/'.$kursus['gambar']);
         }
-
-        // ================= VALIDASI JAM =================
-        $jam_mulai = $this->request->getPost('jam_mulai');
-        $jam_selesai = $this->request->getPost('jam_selesai');
-
-        $start = strtotime($jam_mulai);
-        $end = strtotime($jam_selesai);
-
-        if($end <= $start){
-            return redirect()->back()->with('error','Jam tidak valid');
-        }
-
-        $durasi = ($end - $start) / 3600;
-
-        // ================= HARI =================
-        $hari = $this->request->getPost('hari');
-
-        // ================= UPDATE =================
-        $this->kursusModel->update($id, [
-            'id_kategori' => $this->request->getPost('id_kategori'),
-            'nama_kursus' => $this->request->getPost('nama_kursus'),
-            'instruktur' => $this->request->getPost('instruktur'),
-            'hari' => $hari ? implode(',', $hari) : null,
-            'jam_mulai' => $jam_mulai,
-            'jam_selesai' => $jam_selesai,
-            'durasi' => $durasi . ' jam',
-            'slot' => $this->request->getPost('slot'),
-            'deskripsi' => $this->request->getPost('deskripsi'),
-            'gambar' => $namaGambar
-        ]);
-
-        $this->log('Mengedit kursus: ' . $this->request->getPost('nama_kursus'));
-
-        return redirect()->to('/admin/kursus')
-            ->with('success', 'Data berhasil diupdate');
     }
+
+    // ================= UPDATE =================
+    $this->kursusModel->update($id, [
+        'id_kategori' => $this->request->getPost('id_kategori'),
+        'nama_kursus' => $this->request->getPost('nama_kursus'),
+        'deskripsi' => $this->request->getPost('deskripsi'),
+        'gambar' => $namaGambar
+    ]);
+
+    $this->log('Mengedit kursus: ' . $this->request->getPost('nama_kursus'));
+
+    return redirect()->to('/admin/kursus')
+        ->with('success', 'Data berhasil diupdate');
+}
 
     // ================= HAPUS =================
     public function hapus_kursus($id)
@@ -349,100 +274,115 @@ public function dashboard()
             ->with('success', 'Data berhasil dihapus');
     }
 
+ // ================= LIST =================
+    public function indexmentor()
+    {
+        $this->log('Masuk halaman mentor');
+        return view('admin/mentor/index', [
+            'mentor' => $this->mentorModel->findAll()
+        ]);
+    }
 
-    // // ================= PAKET =================
-    // public function paket()
-    // {
-    //    $this->log('Masuk halaman paket');
-    //     return redirect()->to('/admin/kursus?tab=paket');
-       
-    // }
+    // ================= TAMBAH =================
+    public function tambahmentor()
+    {
+        $this->log('Masuk halaman tambah mentor');
+        return view('admin/mentor/tambah');
+    }
 
-    // public function tambah_paket()
-    // {
-    //     return view('admin/paket/tambah', [
-    //         'kursus' => $this->kursusModel->findAll()
-    //     ]);
-    // }
+    public function simpanmentor()
+    {
+        $nama = $this->request->getPost('nama');
+        $keahlian = $this->request->getPost('keahlian');
 
-    // public function simpan_paket()
-    // {
-    //     $kursus = $this->request->getPost('kursus');
+        // VALIDASI
+        if(!$nama){
+            return redirect()->back()->withInput()
+                ->with('error','Nama mentor wajib diisi');
+        }
 
-    //     if(!$kursus){
-    //         return redirect()->back()->with('error','Pilih minimal 1 kursus');
-    //     }
+        if(!$keahlian){
+            return redirect()->back()->withInput()
+                ->with('error','Keahlian wajib diisi');
+        }
 
-    //     $idPaket = $this->paketModel->insert([
-    //         'nama_paket' => $this->request->getPost('nama_paket'),
-    //         'harga' => $this->request->getPost('harga'),
-    //         'durasi' => $this->request->getPost('durasi'), 
-    //         'deskripsi' => $this->request->getPost('deskripsi'),
-    //     ]);
+        $this->mentorModel->save([
+            'nama' => $nama,
+            'keahlian' => $keahlian,
+            'aktif' => $this->request->getPost('aktif') ?? 1
+        ]);
+        $this->log('Menambah mentor: ' . $nama);
 
-    //     foreach($kursus as $k){
-    //         $this->paketDetailModel->insert([
-    //             'id_paket' => $idPaket,
-    //             'id_kursus' => $k
-    //         ]);
-    //     }
-        
-    //     $this->log('Menambah paket: ' . $this->request->getPost('nama_paket'));
+        return redirect()->to('/admin/mentor')
+            ->with('success','Mentor berhasil ditambahkan');
+    }
 
-    //     return redirect()->to('/admin/kursus?tab=paket');
-    // }
+    // ================= EDIT =================
+    public function editmentor($id)
+    {
+        $mentor = $this->mentorModel->find($id);
 
-    // public function edit_paket($id)
-    // {
-    //     return view('admin/paket/edit', [
-    //         'paket' => $this->paketModel->find($id),
-    //         'kursus' => $this->kursusModel->findAll(),
-    //         'detail' => $this->paketDetailModel->where('id_paket', $id)->findAll()
-    //     ]);
-    // }
+        if(!$mentor){
+            return redirect()->back()->with('error','Mentor tidak ditemukan');
+        }
 
-    // public function update_paket($id)
-    // {
-    //     $kursus = $this->request->getPost('kursus');
+        $this->log('Mengedit mentor: ' . $mentor['nama']);
+        return view('admin/mentor/edit', [
+            'mentor' => $mentor
+        ]);
+    }
 
-    //     if(!$kursus){
-    //         return redirect()->back()->with('error','Pilih minimal 1 kursus');
-    //     }
+    // ================= UPDATE =================
+    public function updatementor($id)
+    {
+        $mentor = $this->mentorModel->find($id);
 
-    //     $this->paketModel->update($id, [
-    //         'nama_paket' => $this->request->getPost('nama_paket'),
-    //         'harga' => $this->request->getPost('harga'),
-    //         'durasi' => $this->request->getPost('durasi'), 
-    //         'deskripsi' => $this->request->getPost('deskripsi'),
-    //     ]);
+        if(!$mentor){
+            return redirect()->back()->with('error','Mentor tidak ditemukan');
+        }
 
-    //     $this->paketDetailModel->where('id_paket', $id)->delete();
+        $nama = $this->request->getPost('nama');
+        $keahlian = $this->request->getPost('keahlian');
 
-    //     foreach($kursus as $k){
-    //         $this->paketDetailModel->insert([
-    //             'id_paket' => $id,
-    //             'id_kursus' => $k
-    //         ]);
-    //     }
-    //     $this->log('Mengupdate paket: ' . $this->request->getPost('nama_paket'));
+        if(!$nama || !$keahlian){
+            return redirect()->back()->withInput()
+                ->with('error','Data tidak lengkap');
+        }
 
-    //     return redirect()->to('/admin/kursus?tab=paket');
-    // }
+        $this->mentorModel->update($id, [
+            'nama' => $nama,
+            'keahlian' => $keahlian,
+            'aktif' => $this->request->getPost('aktif')
+        ]);
 
-    // public function hapus_paket($id)
-    // {
-    //     $this->paketModel->delete($id);
-    //     $this->paketDetailModel->where('id_paket', $id)->delete();
-    //     $this->log('Menghapus paket: ' . $this->request->getPost('nama_paket'));
-    //     return redirect()->to('/admin/kursus?tab=paket');
-           
-    // }
+            $this->log('Mengedit mentor: ' . $nama);
+        return redirect()->to('/admin/mentor')
+            ->with('success','Mentor berhasil diupdate');
+    }
+
+    // ================= HAPUS =================
+    public function hapusmentor($id)
+    {
+        $mentor = $this->mentorModel->find($id);
+
+        if(!$mentor){
+            return redirect()->back()->with('error','Mentor tidak ditemukan');
+        }
+
+        $this->mentorModel->delete($id);
+
+        $this->log('Menghapus mentor: ' . $mentor['nama']);
+        return redirect()->to('/admin/mentor')
+            ->with('success','Mentor berhasil dihapus');
+    }
+ 
     
     public function settings()
     {
         $model = new SettingModel();
         $data['setting'] = $model->first();
 
+        $this->log('Masuk halaman setting');
         return view('admin/setting/index', $data);
     }
 
@@ -455,12 +395,14 @@ public function dashboard()
             'biaya_pendaftaran' => $this->request->getPost('biaya_pendaftaran')
         ]);
 
+            $this->log('Mengupdate biaya pendaftaran: ' . $this->request->getPost('biaya_pendaftaran'));
         return redirect()->back()->with('success', 'Biaya berhasil diupdate');
     }
 
    // ================= INDEX =================
 public function index()
 {
+    $this->log('Masuk halaman kategori');
     $data['kategori'] = $this->kategori->findAll();
     return view('admin/kategori/index', $data);
 }
@@ -468,6 +410,7 @@ public function index()
 // ================= CREATE =================
 public function create()
 {
+    $this->log('Masuk halaman tambah kategori');
     return view('admin/kategori/create');
 }
 
@@ -488,6 +431,7 @@ public function store()
         'deskripsi' => $this->request->getPost('deskripsi'),
         'gambar' => $namaFile
     ]);
+        $this->log('Menambah kategori: ' . $this->request->getPost('nama_kategori'));
 
     return redirect()->to('/admin/kategori')->with('success', 'Data berhasil ditambahkan');
 }
@@ -495,6 +439,7 @@ public function store()
 // ================= EDIT =================
 public function edit($id)
 {
+    $this->log('Masuk halaman edit kategori');
     $data['kategori'] = $this->kategori->find($id);
     return view('admin/kategori/edit', $data);
 }
@@ -523,6 +468,7 @@ public function update($id)
         'deskripsi' => $this->request->getPost('deskripsi'),
         'gambar' => $namaFile
     ]);
+        $this->log('Mengedit kategori: ' . $this->request->getPost('nama_kategori'));
 
     return redirect()->to('/admin/kategori')->with('success', 'Data berhasil diupdate');
 }
@@ -538,113 +484,327 @@ public function delete($id)
 
     $this->kategori->delete($id);
 
+        $this->log('Menghapus kategori: ' . $kategori['nama_kategori']);
     return redirect()->to('/admin/kategori')
     ->with('success', 'Data berhasil dihapus');
 }
 
-       // ================= LIST LEVEL =================
-    public function indexlevel($id_kursus)
-    {
-        $kursus = $this->kursusModel->find($id_kursus);
+  public function indexlevel($id_kursus)
+{
+    $kursus = $this->kursusModel->find($id_kursus);
 
-        if(!$kursus){
-            return redirect()->to('/admin/kursus')->with('error','Kursus tidak ditemukan');
+    if(!$kursus){
+        return redirect()->to('/admin/kursus')
+            ->with('error','Kursus tidak ditemukan');
+    }
+
+    $level = $this->levelModel
+        ->select('level.*, mentor.nama as nama_mentor')
+        ->join('mentor','mentor.id = level.id_mentor','left')
+        ->where('level.id_kursus', $id_kursus)
+        ->orderBy('level.urutan','ASC')
+        ->findAll();
+
+    // 🔥 HITUNG SLOT DINAMIS
+    foreach($level as &$l){
+
+        $aktif = $this->detailModel
+            ->join('transaksi', 'transaksi.id = transaksi_detail.id_transaksi')
+            ->where('transaksi_detail.id_item', $l['id'])
+            ->where('transaksi_detail.tanggal_selesai >=', date('Y-m-d'))
+            ->countAllResults();
+
+        $l['slot_terpakai'] = $aktif;
+        $l['slot_sisa'] = $l['slot'] - $aktif;
+    }
+
+    $this->log('Masuk halaman level untuk kursus: ' . $kursus['nama_kursus']);
+
+    return view('admin/level/index', [
+        'kursus' => $kursus,
+        'level' => $level
+    ]);
+}
+
+
+// ================= TAMBAH =================
+public function tambah($id_kursus)
+{
+    $this->log('Masuk halaman tambah level untuk kursus ID: ' . $id_kursus);
+    return view('admin/level/tambah', [
+        'id_kursus' => $id_kursus,
+        'mentor' => $this->mentorModel->where('aktif',1)->findAll()
+    ]);
+}
+
+
+public function simpan()
+{
+    $id_kursus = $this->request->getPost('id_kursus');
+    $id_mentor = $this->request->getPost('id_mentor');
+
+    $harga      = (int)$this->request->getPost('harga');
+    $pertemuan  = (int)$this->request->getPost('pertemuan');
+    $urutan     = (int)$this->request->getPost('urutan');
+    $slot       = (int)$this->request->getPost('slot');
+
+    $jam_mulai   = $this->request->getPost('jam_mulai');
+    $jam_selesai = $this->request->getPost('jam_selesai');
+    $hari        = $this->request->getPost('hari');
+
+    // ================= VALIDASI =================
+    if(!$this->request->getPost('nama_level')){
+        return redirect()->back()->withInput()
+            ->with('error','Nama level wajib diisi');
+    }
+
+    if(!$id_mentor){
+        return redirect()->back()->withInput()
+            ->with('error','Mentor wajib dipilih');
+    }
+
+    if($harga <= 0 || $pertemuan <= 0 || $urutan <= 0 || $slot <= 0){
+        return redirect()->back()->withInput()
+            ->with('error','Data angka tidak valid');
+    }
+
+    if(!is_array($hari) || empty($hari)){
+        return redirect()->back()->withInput()
+            ->with('error','Pilih minimal 1 hari');
+    }
+
+    $start = strtotime($jam_mulai);
+    $end   = strtotime($jam_selesai);
+
+    if($end <= $start){
+        return redirect()->back()->withInput()
+            ->with('error','Jam tidak valid');
+    }
+
+    // ================= CEK BENTROK LEVEL =================
+    $existing = $this->levelModel
+        ->where('id_kursus', $id_kursus)
+        ->findAll();
+
+    foreach($existing as $e){
+
+        $hari_lama = explode(',', $e['hari']);
+
+        if(array_intersect($hari_lama, $hari)){
+
+            $start2 = strtotime($e['jam_mulai']);
+            $end2   = strtotime($e['jam_selesai']);
+
+            if($start < $end2 && $end > $start2){
+                return redirect()->back()->withInput()
+                    ->with('error','Jadwal bentrok dengan level lain!');
+            }
         }
-
-        $data = [
-            'kursus' => $kursus,
-            'level' => $this->levelModel
-                ->where('id_kursus', $id_kursus)
-                ->orderBy('urutan', 'ASC')
-                ->findAll()
-        ];
-
-        return view('admin/level/index', $data);
     }
 
-    // ================= TAMBAH =================
-    public function tambah($id_kursus)
-    {
-        return view('admin/level/tambah', [
-            'id_kursus' => $id_kursus
-        ]);
+    // ================= CEK BENTROK MENTOR =================
+    $mentorBentrok = $this->levelModel
+        ->where('id_mentor', $id_mentor)
+        ->findAll();
+
+    foreach($mentorBentrok as $m){
+
+        $hari_lama = explode(',', $m['hari']);
+
+        if(array_intersect($hari_lama, $hari)){
+
+            $start2 = strtotime($m['jam_mulai']);
+            $end2   = strtotime($m['jam_selesai']);
+
+            if($start < $end2 && $end > $start2){
+                return redirect()->back()->withInput()
+                    ->with('error','Mentor sudah mengajar di jadwal tersebut!');
+            }
+        }
     }
+
+    // ================= DURASI =================
+    $selisih = $end - $start;
+    $jam   = floor($selisih / 3600);
+    $menit = floor(($selisih % 3600) / 60);
+
+    $durasi = ($jam ? $jam.' jam ' : '') . ($menit ? $menit.' menit' : '');
 
     // ================= SIMPAN =================
-    public function simpan()
-    {
-        $harga = (int)$this->request->getPost('harga');
-        $pertemuan = (int)$this->request->getPost('pertemuan');
-        $urutan = (int)$this->request->getPost('urutan');
+    $this->levelModel->save([
+        'id_kursus'   => $id_kursus,
+        'nama_level'  => $this->request->getPost('nama_level'),
+        'deskripsi'   => $this->request->getPost('deskripsi'),
+        'urutan'      => $urutan,
+        'harga'       => $harga,
+        'pertemuan'   => $pertemuan,
+        'id_mentor'   => $id_mentor,
+        'slot'        => $slot,
+        'hari'        => implode(',', $hari),
+        'jam_mulai'   => $jam_mulai,
+        'jam_selesai' => $jam_selesai,
+        'durasi'      => trim($durasi)
+    ]);
 
-        if(!$this->request->getPost('nama_level')){
-            return redirect()->back()->with('error','Nama level wajib diisi');
-        }
+    $this->log('Level berhasil ditambahkan untuk kursus ID: ' . $id_kursus);
 
-        if($harga <= 0){
-            return redirect()->back()->with('error','Harga tidak valid');
-        }
+    return redirect()->to('/admin/level/index/'.$id_kursus)
+        ->with('success','Level berhasil ditambahkan');
+}
 
-        if($pertemuan <= 0){
-            return redirect()->back()->with('error','Pertemuan tidak valid');
-        }
 
-        if($urutan <= 0){
-            return redirect()->back()->with('error','Urutan tidak valid');
-        }
+// ================= EDIT =================
+public function editlevel($id)
+{
+    $level = $this->levelModel->find($id);
 
-        $this->levelModel->save([
-            'id_kursus' => $this->request->getPost('id_kursus'),
-            'nama_level' => $this->request->getPost('nama_level'),
-            'deskripsi' => $this->request->getPost('deskripsi'),
-            'urutan' => $urutan,
-            'harga' => $harga,
-            'pertemuan' => $pertemuan
-        ]);
-
-        return redirect()->to('/admin/level/'.$this->request->getPost('id_kursus'));
+    if(!$level){
+        return redirect()->back()->with('error','Level tidak ditemukan');
     }
 
-    // ================= EDIT =================
-    public function editlevel($id)
-    {
-        $level = $this->levelModel->find($id);
+    $level['hari_array'] = explode(',', $level['hari'] ?? '');
 
-        return view('admin/level/edit', [
-            'level' => $level
-        ]);
+    $this->log('Masuk halaman edit level ID: ' . $id);
+    return view('admin/level/edit', [
+        'level' => $level,
+         'mentor' => $this->mentorModel->where('aktif',1)->findAll()
+    ]);
+}
+
+
+public function updatelevel($id)
+{
+    $level = $this->levelModel->find($id);
+
+    if(!$level){
+        return redirect()->back()->with('error','Level tidak ditemukan');
     }
+
+    $id_kursus = $level['id_kursus'];
+    $id_mentor = $this->request->getPost('id_mentor');
+
+    $harga      = (int)$this->request->getPost('harga');
+    $pertemuan  = (int)$this->request->getPost('pertemuan');
+    $urutan     = (int)$this->request->getPost('urutan');
+    $slot       = (int)$this->request->getPost('slot');
+
+    $jam_mulai   = $this->request->getPost('jam_mulai');
+    $jam_selesai = $this->request->getPost('jam_selesai');
+    $hari        = $this->request->getPost('hari');
+
+    // ================= VALIDASI =================
+    if(!$id_mentor){
+        return redirect()->back()->withInput()
+            ->with('error','Mentor wajib dipilih');
+    }
+
+    if($harga <= 0 || $pertemuan <= 0 || $urutan <= 0 || $slot <= 0){
+        return redirect()->back()->withInput()
+            ->with('error','Data tidak valid');
+    }
+
+    if(!is_array($hari) || empty($hari)){
+        return redirect()->back()->withInput()
+            ->with('error','Pilih minimal 1 hari');
+    }
+
+    $start = strtotime($jam_mulai);
+    $end   = strtotime($jam_selesai);
+
+    if($end <= $start){
+        return redirect()->back()->withInput()
+            ->with('error','Jam tidak valid');
+    }
+
+    // ================= CEK BENTROK LEVEL =================
+    $existing = $this->levelModel
+        ->where('id_kursus', $id_kursus)
+        ->where('id !=', $id)
+        ->findAll();
+
+    foreach($existing as $e){
+
+        $hari_lama = explode(',', $e['hari']);
+
+        if(array_intersect($hari_lama, $hari)){
+
+            $start2 = strtotime($e['jam_mulai']);
+            $end2   = strtotime($e['jam_selesai']);
+
+            if($start < $end2 && $end > $start2){
+                return redirect()->back()->withInput()
+                    ->with('error','Jadwal bentrok dengan level lain!');
+            }
+        }
+    }
+
+    // ================= CEK BENTROK MENTOR =================
+    $mentorBentrok = $this->levelModel
+        ->where('id_mentor', $id_mentor)
+        ->where('id !=', $id)
+        ->findAll();
+
+    foreach($mentorBentrok as $m){
+
+        $hari_lama = explode(',', $m['hari']);
+
+        if(array_intersect($hari_lama, $hari)){
+
+            $start2 = strtotime($m['jam_mulai']);
+            $end2   = strtotime($m['jam_selesai']);
+
+            if($start < $end2 && $end > $start2){
+                return redirect()->back()->withInput()
+                    ->with('error','Mentor sudah dipakai di jadwal lain!');
+            }
+        }
+    }
+
+    // ================= DURASI =================
+    $selisih = $end - $start;
+    $jam   = floor($selisih / 3600);
+    $menit = floor(($selisih % 3600) / 60);
+
+    $durasi = ($jam ? $jam.' jam ' : '') . ($menit ? $menit.' menit' : '');
 
     // ================= UPDATE =================
-    public function updatelevel($id)
-    {
-        $harga = (int)$this->request->getPost('harga');
-        $pertemuan = (int)$this->request->getPost('pertemuan');
-        $urutan = (int)$this->request->getPost('urutan');
+    $this->levelModel->update($id, [
+        'nama_level'  => $this->request->getPost('nama_level'),
+        'deskripsi'   => $this->request->getPost('deskripsi'),
+        'urutan'      => $urutan,
+        'harga'       => $harga,
+        'pertemuan'   => $pertemuan,
+        'id_mentor'   => $id_mentor,
+        'slot'        => $slot,
+        'hari'        => implode(',', $hari),
+        'jam_mulai'   => $jam_mulai,
+        'jam_selesai' => $jam_selesai,
+        'durasi'      => trim($durasi)
+    ]);
 
-        $this->levelModel->update($id, [
-            'nama_level' => $this->request->getPost('nama_level'),
-            'deskripsi' => $this->request->getPost('deskripsi'),
-            'urutan' => $urutan,
-            'harga' => $harga,
-            'pertemuan' => $pertemuan
-        ]);
+    $this->log('Level berhasil diupdate untuk kursus ID: ' . $id_kursus);
 
-        return redirect()->back();
+    return redirect()->to('/admin/level/index/'.$id_kursus)
+        ->with('success','Level berhasil diupdate');
+}
+
+// ================= HAPUS =================
+public function hapus($id)
+{
+    $level = $this->levelModel->find($id);
+
+    if(!$level){
+        return redirect()->back()->with('error','Level tidak ditemukan');
     }
 
-    // ================= HAPUS =================
-    public function hapus($id)
-    {
-        $level = $this->levelModel->find($id);
+    $id_kursus = $level['id_kursus'];
 
-        if($level){
-            $this->levelModel->delete($id);
-            return redirect()->to('/admin/level/'.$level['id_kursus']);
-        }
+    $this->levelModel->delete($id);
+    $this->log('Level berhasil dihapus untuk kursus ID: ' . $id_kursus);
 
-        return redirect()->back();
-    }
+    return redirect()->to('/admin/level/index/'.$id_kursus)
+        ->with('success','Level berhasil dihapus');
+}
 
 // ================= LIST SISWA =================
 public function indexsiswa()
@@ -679,6 +839,8 @@ public function indexsiswa()
             $s['status'] = $aktifTransaksi > 0 ? 'aktif' : 'nonaktif';
         }
     }
+
+    $this->log('Masuk halaman siswa');
 
     return view('admin/siswa/index', [
         'siswa' => $siswa,
@@ -755,6 +917,8 @@ public function detail($id)
         $t['detail'] = $details;
     }
 
+    $this->log('Melihat detail siswa: ' . $siswa['nama']);
+
     return view('admin/siswa/detail', [
         's' => $siswa,
         'transaksi' => $transaksi
@@ -765,6 +929,8 @@ public function editsiswa($id)
 {
     $siswa = $this->siswaModel->find($id);
     if (!$siswa) throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+
+    $this->log('Masuk halaman edit siswa: ' . $siswa['nama']);
 
     return view('admin/siswa/edit', ['s' => $siswa]);
 }
@@ -783,6 +949,7 @@ public function updatesiswa($id)
         'no_hp' => $no_hp,
         'alamat' => $this->request->getPost('alamat'),
     ]);
+    $this->log('Mengupdate siswa: ' . $siswa['nama']);
 
     return redirect()->to('/admin/siswa')->with('success','Data berhasil diupdate');
 }

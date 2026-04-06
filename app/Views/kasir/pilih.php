@@ -17,24 +17,39 @@
         </a>
     </div>
 
-    <div class="category-grid">
-        <?php foreach($kategori as $k): ?>
-            <div class="category-card">
-                <div class="category-content">
-                    <h3><?= $k['nama_kategori']; ?></h3>
-                    <?php if(!empty($k['deskripsi'])): ?>
-                        <p><?= $k['deskripsi']; ?></p>
-                    <?php endif; ?>
-                </div>
+   <div class="category-grid">
+    <?php foreach($kategori as $k): ?>
 
-                <div class="category-footer">
-                    <a href="/kasir/detail/kategori/<?= $k['id']; ?>" class="btn-action-cat">
-                        Pilih Kategori <i class="fa-solid fa-chevron-right" style="margin-left: 10px; font-size: 11px;"></i>
-                    </a>
-                </div>
+        <?php 
+        $bg = $k['gambar'] 
+            ? base_url('uploads/kategori/'.$k['gambar']) 
+            : base_url('assets/no-image.jpg'); 
+        ?>
+
+        <div class="category-card"
+             style="background-image: url('<?= $bg ?>');">
+
+            <!-- OVERLAY -->
+            <div class="category-overlay"></div>
+
+            <div class="category-content">
+                <h3><?= $k['nama_kategori']; ?></h3>
+
+                <?php if(!empty($k['deskripsi'])): ?>
+                    <p><?= $k['deskripsi']; ?></p>
+                <?php endif; ?>
             </div>
-        <?php endforeach; ?>
-    </div>
+
+            <div class="category-footer">
+                <a href="/kasir/detail/kategori/<?= $k['id']; ?>" class="btn-action-cat">
+                    Pilih Kategori 
+                    <i class="fa-solid fa-chevron-right" style="margin-left: 10px; font-size: 11px;"></i>
+                </a>
+            </div>
+
+        </div>
+    <?php endforeach; ?>
+</div>
 
 </div>
 

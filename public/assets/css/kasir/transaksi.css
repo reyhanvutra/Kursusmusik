@@ -1,0 +1,146 @@
+/* ================= GLOBAL ================= */
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #f5f6fa;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    padding: 20px 30px;
+}
+
+/* ================= JUDUL ================= */
+.judul {
+    margin-bottom: 20px;
+}
+
+.btn-back {
+    text-decoration: none;
+    color: #333;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+/* ================= LAYOUT ================= */
+.wrapper {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.box {
+    flex: 1;
+    min-width: 320px;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+/* ================= INPUT ================= */
+.input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+}
+
+textarea.input {
+    resize: vertical;
+}
+
+/* ================= BUTTON ================= */
+button {
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: #1976d2;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+}
+
+.btn-success {
+    background: #2e7d32;
+    color: white;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.btn-danger {
+    background: #d32f2f;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 6px;
+}
+
+.btn-danger-mini {
+    background: #d32f2f;
+    color: white;
+    border: none;
+    padding: 3px 7px;
+    border-radius: 5px;
+    font-size: 12px;
+    margin-left: 10px;
+}
+
+/* ================= INFO SISWA ================= */
+.info-siswa {
+    background: #f1f3f6;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 15px;
+}
+
+.info-siswa .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* ================= FORM TAMBAH SISWA ================= */
+.form-siswa {
+    background: #f9fafc;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+/* ================= ITEM LIST ================= */
+.item {
+    background: #f9fafc;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #eee;
+}
+
+/* ================= RINGKASAN ================= */
+.biaya-daftar {
+    color: #ff9800;
+    margin-top: 10px;
+}
+
+/* ================= RESPONSIVE ================= */
+@media(max-width: 768px){
+    .wrapper {
+        flex-direction: column;
+    }
+}

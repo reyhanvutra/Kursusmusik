@@ -6,26 +6,25 @@
     <h2>Dashboard Owner</h2>
 
     <!-- CARD -->
-    <div style="display:flex; gap:15px; margin:20px 0;">
+    <div style="display:flex; gap:15px; margin:20px 0; flex-wrap:wrap;">
 
-        <div class="card" style="flex:1; background:#2b2b2b; padding:20px;">
+        <div class="card" style="flex:1; background:#2b2b2b; padding:20px; color:#fff;">
             <h4>Pendapatan Bulan Ini</h4>
             <h2>Rp <?= number_format($pendapatan,0,',','.'); ?></h2>
-
             <a href="/owner/laporan" style="color:yellow;">Lihat Detail</a>
         </div>
 
-        <div class="card" style="flex:1; background:#444; padding:20px;">
+        <div class="card" style="flex:1; background:#444; padding:20px; color:#fff;">
             <h4>Total Transaksi</h4>
             <h2><?= $total_transaksi; ?></h2>
         </div>
 
-        <div class="card" style="flex:1; background:#2b2b2b; padding:20px;">
+        <div class="card" style="flex:1; background:#2b2b2b; padding:20px; color:#fff;">
             <h4>Siswa Aktif</h4>
             <h2><?= $siswa_aktif; ?></h2>
         </div>
 
-        <div class="card" style="flex:1; background:#444; padding:20px;">
+        <div class="card" style="flex:1; background:#444; padding:20px; color:#fff;">
             <h4>Kursus Aktif</h4>
             <h2><?= $kursus_aktif; ?></h2>
         </div>
@@ -33,9 +32,8 @@
     </div>
 
     <!-- GRAFIK -->
-    <div class="card" style="background:#2b2b2b; padding:20px;">
+    <div class="card" style="background:#2b2b2b; padding:20px; color:#fff; margin-top:20px;">
         <h4>Grafik Pendapatan</h4>
-
         <canvas id="chart"></canvas>
     </div>
 
@@ -60,8 +58,16 @@ new Chart(document.getElementById('chart'), {
         labels: bulan,
         datasets: [{
             label: 'Pendapatan',
-            data: total
+            data: total,
+            backgroundColor: '#f9c74f'
         }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
     }
 });
 </script>

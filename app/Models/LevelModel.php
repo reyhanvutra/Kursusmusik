@@ -15,6 +15,13 @@ class LevelModel extends Model
         'deskripsi',
         'urutan',
         'harga',
-        'pertemuan'
+        'pertemuan',
+        'instruktur',
+        'hari',
+        'jam_mulai',
+        'jam_selesai',
+        'slot',
+        'durasi',
+        'id_mentor'
     ];
 }

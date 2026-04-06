@@ -82,6 +82,7 @@
         <a href="/owner/laporan">Laporan</a>
         <a href="/owner/kursus">Daftar Kursus</a>
         <a href="/owner/log">Log Activity</a>
+        <a href="/owner/datasiswa">Data Siswa</a>
 
         <hr style="border-color:#333;">
 

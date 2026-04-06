@@ -68,6 +68,15 @@ $routes->group('admin', ['filter' => ['auth','role:admin']], function($routes){
         $routes->get('siswa/toggle/(:num)', 'Admin\Admin::toggle/$1');
         $routes->get('siswa/tambah', 'Admin\Admin::tambahsiswa');
         $routes->post('siswa/simpan', 'Admin\Admin::simpansiswa');
+
+    // mentor
+        $routes->get('mentor', 'Admin\Admin::indexmentor');
+            $routes->get('mentor/tambah', 'Admin\Admin::tambahmentor');
+            $routes->post('mentor/simpan', 'Admin\Admin::simpanmentor');    
+            $routes->get('mentor/edit/(:num)', 'Admin\Admin::editmentor/$1');
+            $routes->post('mentor/update/(:num)', 'Admin\Admin::updatementor/$1');
+                $routes->get('mentor/hapus/(:num)', 'Admin\Admin::hapusmentor/$1');
+
 });
 // KASIR
 $routes->group('kasir', ['filter' => ['auth', 'role:kasir']], function($routes){
@@ -102,5 +111,9 @@ $routes->group('owner', ['filter' => ['auth', 'role:owner']], function($routes){
         $routes->get('data-kursus/pdf', 'Owner\Owner::dataKursusPDF');
         $routes->get('log', 'Owner\Owner::log');
         $routes->get('log-activity', 'Owner\Owner::log');
+        $routes->get('datasiswa', 'Owner\Owner::dataSiswa');
+        $routes->get('datasiswa/pdf', 'Owner\Owner::dataSiswaPDF');
+            $routes->get('datasiswa/detail/(:num)', 'Owner\Owner::detailSiswa/$1');
+            
 
 });

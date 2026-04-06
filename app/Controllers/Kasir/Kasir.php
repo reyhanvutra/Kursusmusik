@@ -49,14 +49,19 @@ class Kasir extends BaseController
             'aktivitas' => $aktivitas
         ]);
     }
- // ================= DASHBOARD =================
+// ================= DASHBOARD =================
 public function dashboard()
 {
     $today = date('Y-m-d');
 
-    // ================= KURSUS AKTIF =================
-    $kursus_aktif = $this->kursusModel
+    // ================= LOAD MODEL =================
+    $levelModel = new \App\Models\LevelModel();
+
+    // ================= KELAS AKTIF (LEVEL YANG MASIH ADA SLOT) =================
+    $kursus_aktif = $levelModel
+        ->select('id_kursus')
         ->where('slot >', 0)
+        ->groupBy('id_kursus')
         ->countAllResults();
 
     // ================= PENDAPATAN HARI INI =================
@@ -70,18 +75,15 @@ public function dashboard()
         ->where('tanggal', $today)
         ->countAllResults();
 
-    // ================= AMBIL TRANSAKSI (LIMIT 5 TERBARU) =================
+    // ================= AMBIL TRANSAKSI TERBARU =================
     $transaksi = $this->transaksiModel
         ->select('transaksi.*, siswa.nama as nama_pembeli')
         ->join('siswa', 'siswa.id = transaksi.id_siswa', 'left')
         ->orderBy('transaksi.id', 'DESC')
-        ->limit(5) // 🔥 penting (preview saja)
+        ->limit(5)
         ->findAll();
 
-    // ================= LOAD MODEL =================
-    $levelModel = new \App\Models\LevelModel();
-
-    // ================= AMBIL ITEM =================
+    // ================= AMBIL DETAIL ITEM =================
     foreach ($transaksi as &$t) {
 
         $detail = $this->detailModel
@@ -292,6 +294,7 @@ public function detailSiswa($id)
 public function perpanjang($id_detail)
 {
     $detail = $this->detailModel
+        ->select('transaksi_detail.*, transaksi.id_siswa')
         ->join('transaksi', 'transaksi.id = transaksi_detail.id_transaksi')
         ->where('transaksi_detail.id', $id_detail)
         ->first();
@@ -308,29 +311,38 @@ public function perpanjang($id_detail)
     $kursusModel = new \App\Models\KursusModel();
     $siswaModel  = new \App\Models\SiswaModel();
 
-    $level  = $levelModel->find($detail['id_item']);
+    $level = $levelModel->find($detail['id_item']);
+
+    if(!$level){
+        return redirect()->back()->with('error','Level tidak ditemukan');
+    }
+
+    // 🔥 CEK SLOT (opsional tapi bagus)
+    if($level['slot'] <= 0){
+        return redirect()->back()->with('error','Slot penuh, tidak bisa perpanjang');
+    }
+
     $kursus = $kursusModel->find($level['id_kursus']);
     $siswa  = $siswaModel->find($detail['id_siswa']);
 
     $item = [
-        'nama'  => $kursus['nama_kursus'] . ' - ' . $level['nama_level'],
+        'nama'  => $kursus['nama_kursus'].' - '.$level['nama_level'],
         'harga' => $detail['harga'] / ($detail['bulan'] ?: 1),
     ];
 
     return view('kasir/transaksi_perpanjang', [
-        'siswa'          => $siswa,
-        'item'           => $item,
-        'id_detail'      => $id_detail,
-        'tanggal_mulai'  => $detail['tanggal_selesai']
+        'siswa' => $siswa,
+        'item' => $item,
+        'id_detail' => $id_detail,
+        'tanggal_mulai' => $detail['tanggal_selesai']
     ]);
 }
 public function simpanPerpanjang()
 {
     $id_detail = $this->request->getPost('id_detail');
-    $bulan     = $this->request->getPost('bulan');
-    $bayar     = $this->request->getPost('bayar');
+    $bulan     = (int)$this->request->getPost('bulan');
+    $bayar     = (int)$this->request->getPost('bayar');
 
-    // 🔥 WAJIB JOIN KE TRANSAKSI
     $detail = $this->detailModel
         ->select('transaksi_detail.*, transaksi.id_siswa')
         ->join('transaksi', 'transaksi.id = transaksi_detail.id_transaksi')
@@ -341,11 +353,20 @@ public function simpanPerpanjang()
         return redirect()->back()->with('error','Data tidak ditemukan');
     }
 
+    $levelModel = new \App\Models\LevelModel();
+    $level = $levelModel->find($detail['id_item']);
+
+    if(!$level){
+        return redirect()->back()->with('error','Level tidak ditemukan');
+    }
+
+    // 🔥 CEK SLOT
+    if($level['slot'] <= 0){
+        return redirect()->back()->with('error','Slot penuh');
+    }
+
     $today = date('Y-m-d');
 
-    // ===============================
-    // HITUNG TANGGAL PERPANJANGAN
-    // ===============================
     if($detail['tanggal_selesai'] >= $today){
         $mulai = $detail['tanggal_selesai'];
     } else {
@@ -354,35 +375,31 @@ public function simpanPerpanjang()
 
     $selesai = date('Y-m-d', strtotime("+$bulan month", strtotime($mulai)));
 
-    // ===============================
-    // 1. UPDATE DURASI (UTAMA)
-    // ===============================
+    // ================= UPDATE UTAMA =================
     $this->detailModel->update($id_detail, [
         'tanggal_selesai' => $selesai
     ]);
 
-    // ===============================
-    // 2. HITUNG TOTAL
-    // ===============================
+    // ================= HITUNG =================
     $harga_per_bulan = $detail['harga'] / ($detail['bulan'] ?: 1);
     $total = $harga_per_bulan * $bulan;
 
-    // ===============================
-    // 3. SIMPAN TRANSAKSI (RIWAYAT)
-    // ===============================
+    if($bayar < $total){
+        return redirect()->back()->with('error','Uang kurang');
+    }
+
+    // ================= TRANSAKSI =================
     $transaksiId = $this->transaksiModel->insert([
-        'id_siswa' => $detail['id_siswa'], // ✅ sekarang aman
+        'id_siswa' => $detail['id_siswa'],
         'tanggal' => date('Y-m-d'),
         'total_harga' => $total,
         'uang_bayar' => $bayar,
         'uang_kembali' => $bayar - $total,
         'biaya_pendaftaran' => 0,
-        'tipe_transaksi' => 'perpanjang' // 🔥 biar kebaca di detail
+        'tipe_transaksi' => 'perpanjang'
     ]);
 
-    // ===============================
-    // 4. SIMPAN DETAIL TRANSAKSI
-    // ===============================
+    // ================= DETAIL =================
     $this->detailModel->insert([
         'id_transaksi' => $transaksiId,
         'tipe' => 'kursus',
@@ -392,6 +409,11 @@ public function simpanPerpanjang()
         'tanggal_mulai' => $mulai,
         'tanggal_selesai' => $selesai
     ]);
+
+    // 🔥 KURANGI SLOT
+    $levelModel->set('slot','slot-1',false)
+        ->where('id', $detail['id_item'])
+        ->update();
 
     return redirect()->to('/kasir/detail/'.$transaksiId)
         ->with('success','Berhasil diperpanjang');
@@ -513,6 +535,7 @@ public function transaksi()
         'setting' => $this->settingModel->first()
     ]);
 }
+
 public function simpan()
 {
     $items = json_decode($this->request->getPost('items'), true);
@@ -527,19 +550,69 @@ public function simpan()
         return redirect()->back()->with('error','Pilih siswa dulu');
     }
 
-    // 🔥 AMBIL 1 SISWA (FIX ERROR)
     $siswa = $this->siswaModel->find($id_siswa);
 
     if(!$siswa){
         return redirect()->back()->with('error','Siswa tidak ditemukan');
     }
 
-    // 🔥 CEK APAKAH INI PERPANJANG
     $is_perpanjang = $this->request->getPost('is_perpanjang');
 
-    // ================= SETTING =================
     $setting = $this->settingModel->first();
     $biaya_setting = $setting['biaya_pendaftaran'] ?? 0;
+
+    $levelModel = new \App\Models\LevelModel();
+
+    // ================= VALIDASI SLOT & BENTROK =================
+    foreach($items as $i){
+
+        $level = $levelModel->find($i['id']);
+
+        if(!$level){
+            return redirect()->back()->with('error','Level tidak ditemukan');
+        }
+
+        // ================= SLOT DINAMIS =================
+        $aktif = $this->detailModel
+            ->where('id_item', $i['id'])
+            ->where('tanggal_selesai >=', date('Y-m-d'))
+            ->countAllResults();
+
+        $sisa = $level['slot'] - $aktif;
+
+        if($sisa <= 0){
+            return redirect()->back()->with('error','Slot penuh di '.$level['nama_level']);
+        }
+
+        // 🔥 ANTI RACE CONDITION (DOUBLE CHECK)
+        if($aktif >= $level['slot']){
+            return redirect()->back()->with('error','Slot sudah penuh (silakan ulangi)');
+        }
+
+        // ================= CEK BENTROK ANTAR ITEM =================
+        foreach($items as $j){
+
+            if($i['id'] == $j['id']) continue;
+
+            $level2 = $levelModel->find($j['id']);
+
+            $hari1 = explode(',', $level['hari']);
+            $hari2 = explode(',', $level2['hari']);
+
+            if(array_intersect($hari1, $hari2)){
+
+                $start1 = strtotime($level['jam_mulai']);
+                $end1   = strtotime($level['jam_selesai']);
+
+                $start2 = strtotime($level2['jam_mulai']);
+                $end2   = strtotime($level2['jam_selesai']);
+
+                if($start1 < $end2 && $end1 > $start2){
+                    return redirect()->back()->with('error','Jadwal bentrok antar level');
+                }
+            }
+        }
+    }
 
     // ================= HITUNG TOTAL =================
     $total = 0;
@@ -554,7 +627,7 @@ public function simpan()
     // ================= BIAYA PENDAFTARAN =================
     $biaya_pendaftaran = 0;
 
-    if(!$is_perpanjang && isset($siswa['sudah_daftar']) && $siswa['sudah_daftar'] == 0){
+    if(!$is_perpanjang && ($siswa['sudah_daftar'] ?? 0) == 0){
         $biaya_pendaftaran = $biaya_setting;
     }
 
@@ -582,13 +655,15 @@ public function simpan()
     }
 
     // ================= SIMPAN DETAIL =================
-    $levelModel = new \App\Models\LevelModel();
-
     foreach($items as $i){
 
         $level = $levelModel->find($i['id']);
+
         $bulan = (int)($i['bulan'] ?? 1);
         $harga = (int)$i['harga'];
+
+        $tanggal_mulai = $i['tanggal_mulai'] ?? date('Y-m-d');
+        $tanggal_selesai = date('Y-m-d', strtotime("+$bulan month", strtotime($tanggal_mulai)));
 
         $this->detailModel->insert([
             'id_transaksi' => $id,
@@ -596,21 +671,13 @@ public function simpan()
             'id_item' => $i['id'],
             'harga' => $harga * $bulan,
             'bulan' => $bulan,
-            'tanggal_mulai' => $i['tanggal_mulai'] ?? date('Y-m-d'),
-            'tanggal_selesai' => $i['tanggal_selesai'] ?? date('Y-m-d', strtotime('+1 month'))
+            'tanggal_mulai' => $tanggal_mulai,
+            'tanggal_selesai' => $tanggal_selesai
         ]);
-
-        // 🔥 KURANGI SLOT
-        if($level){
-            $this->kursusModel
-                ->set('slot','slot-1',false)
-                ->where('id', $level['id_kursus'])
-                ->update();
-        }
     }
 
     // ================= UPDATE SISWA =================
-    if(!$is_perpanjang && isset($siswa['sudah_daftar']) && $siswa['sudah_daftar'] == 0){
+    if(!$is_perpanjang && ($siswa['sudah_daftar'] ?? 0) == 0){
         $this->siswaModel->update($id_siswa, [
             'sudah_daftar' => 1
         ]);
@@ -683,28 +750,35 @@ public function detailKursus($id)
 {
     $levelModel = new \App\Models\LevelModel();
 
-    // ================= AMBIL KURSUS =================
     $kursus = $this->kursusModel->find($id);
 
-    // 🔥 VALIDASI
     if(!$kursus){
         throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
     }
 
-    // ================= AMBIL LEVEL =================
+    // 🔥 JOIN MENTOR
     $level = $levelModel
-        ->where('id_kursus', $id)
-        ->orderBy('harga', 'ASC') // 🔥 biar urut dari murah (biasanya beginner)
+        ->select('level.*, mentor.nama as nama_mentor')
+        ->join('mentor','mentor.id = level.id_mentor','left')
+        ->where('level.id_kursus', $id)
+        ->orderBy('level.urutan', 'ASC')
         ->findAll();
 
-    // ================= TAMBAHAN DATA LEVEL =================
     foreach($level as &$l){
 
-        // default kalau belum ada field
         $l['pertemuan'] = $l['pertemuan'] ?? 4;
-        $l['target'] = $l['target'] ?? 'Semua level';
 
-        // 🔥 label otomatis (optional biar keren)
+        // ================= SLOT DINAMIS =================
+        $aktif = $this->detailModel
+            ->join('transaksi', 'transaksi.id = transaksi_detail.id_transaksi')
+            ->where('transaksi_detail.id_item', $l['id'])
+            ->where('transaksi_detail.tanggal_selesai >=', date('Y-m-d'))
+            ->countAllResults();
+
+        $l['slot_terpakai'] = $aktif;
+        $l['slot_sisa'] = $l['slot'] - $aktif;
+
+        // ================= BADGE =================
         if(stripos($l['nama_level'], 'beginner') !== false){
             $l['badge'] = '🟢 Beginner';
         }elseif(stripos($l['nama_level'], 'intermediate') !== false){
@@ -715,9 +789,6 @@ public function detailKursus($id)
             $l['badge'] = '🎵 Level';
         }
     }
-
-    // 🔥 LOG (opsional tapi bagus)
-    $this->log('Melihat detail kursus: ' . $kursus['nama_kursus']);
 
     return view('kasir/detailkursus', [
         'k' => $kursus,

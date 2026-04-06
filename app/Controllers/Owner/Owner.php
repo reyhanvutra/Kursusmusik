@@ -6,63 +6,69 @@ use App\Controllers\BaseController;
 use App\Models\TransaksiModel;
 use App\Models\KursusModel;
 use App\Models\LogActivityModel;
+use App\Models\SiswaModel;
 use Dompdf\Dompdf;
 
 class Owner extends BaseController
 {
     protected $transaksiModel;
     protected $kursusModel;
+    protected $siswaModel;
 
     public function __construct()
     {
         $this->transaksiModel = new TransaksiModel();
         $this->kursusModel = new KursusModel();
+        $this->siswaModel = new SiswaModel();
     }
 
     // ================= DASHBOARD =================
-    public function dashboard()
-    {
-        $bulan = date('m');
-        $tahun = date('Y');
+public function dashboard()
+{
+    $bulan = date('m');
+    $tahun = date('Y');
 
-        // 💰 pendapatan bulan ini
-        $pendapatan = $this->transaksiModel
-            ->selectSum('total_harga')
-            ->where('MONTH(tanggal)', $bulan)
-            ->where('YEAR(tanggal)', $tahun)
-            ->first();
+    // 💰 Pendapatan bulan ini
+    $pendapatan = $this->transaksiModel
+        ->selectSum('total_harga')
+        ->where('MONTH(tanggal)', $bulan)
+        ->where('YEAR(tanggal)', $tahun)
+        ->first();
 
-        // 🧾 total transaksi bulan ini
-        $total_transaksi = $this->transaksiModel
-            ->where('MONTH(tanggal)', $bulan)
-            ->where('YEAR(tanggal)', $tahun)
-            ->countAllResults();
+    // 🧾 Total transaksi bulan ini
+    $total_transaksi = $this->transaksiModel
+        ->where('MONTH(tanggal)', $bulan)
+        ->where('YEAR(tanggal)', $tahun)
+        ->countAllResults();
 
-        // 🎵 kursus aktif
-        $kursus_aktif = $this->kursusModel
-            ->where('slot >', 0)
-            ->countAllResults();
+    // 🎵 Kursus aktif (kursus yang punya transaksi)
+    $kursus_aktif = $this->kursusModel
+        ->select('kursus.id') // ambil hanya kolom id untuk menghindari duplicate
+        ->join('level', 'level.id_kursus = kursus.id')
+        ->join('transaksi_detail', 'transaksi_detail.id_item = level.id', 'left')
+        ->groupBy('kursus.id')
+        ->countAllResults();
 
-        // 👨‍🎓 siswa aktif (FIX ❗)
-        $siswa_aktif = $this->transaksiModel
-            ->select('COUNT(DISTINCT id_siswa) as total')
-            ->first();
+    // 👨‍🎓 Siswa aktif (distinct siswa dari transaksi)
+    $siswa_aktif = $this->transaksiModel
+        ->select('COUNT(DISTINCT id_siswa) as total')
+        ->first();
 
-        // 📊 grafik per bulan
-        $grafik = $this->transaksiModel
-            ->select('MONTH(tanggal) as bulan, SUM(total_harga) as total')
-            ->groupBy('MONTH(tanggal)')
-            ->orderBy('bulan', 'ASC')
-            ->findAll();
+    // 📊 Grafik pendapatan per bulan
+    $grafik = $this->transaksiModel
+        ->select('MONTH(tanggal) as bulan, SUM(total_harga) as total')
+        ->groupBy('MONTH(tanggal)')
+        ->orderBy('bulan', 'ASC')
+        ->findAll();
 
-        return view('owner/dashboard', [
-            'pendapatan' => $pendapatan['total_harga'] ?? 0,
-            'total_transaksi' => $total_transaksi,
-            'kursus_aktif' => $kursus_aktif,
-            'siswa_aktif' => $siswa_aktif['total'] ?? 0,
-            'grafik' => $grafik
-        ]);
-    }
+    return view('owner/dashboard', [
+        'pendapatan' => $pendapatan['total_harga'] ?? 0,
+        'total_transaksi' => $total_transaksi,
+        'kursus_aktif' => $kursus_aktif,
+        'siswa_aktif' => $siswa_aktif['total'] ?? 0,
+        'grafik' => $grafik
+    ]);
+}
 
    public function laporan()
 {
@@ -261,5 +267,121 @@ class Owner extends BaseController
             'data' => $data,
             'pager' => $pager
         ]);
+    }
+   public function dataSiswa()
+    {
+        $nama   = $this->request->getGet('nama');
+        $status = $this->request->getGet('status'); // 0/1
+        $aktif  = $this->request->getGet('aktif');  // 1/0
+
+        $today = date('Y-m-d');
+
+        // Ambil data siswa + total transaksi
+        $builder = $this->siswaModel
+            ->select('siswa.*, COUNT(transaksi.id) as total_transaksi')
+            ->join('transaksi', 'transaksi.id_siswa = siswa.id', 'left')
+            ->groupBy('siswa.id')
+            ->orderBy('siswa.id', 'DESC');
+
+        // Filter nama
+        if ($nama) {
+            $builder->like('siswa.nama', $nama);
+        }
+
+        // Filter status
+        if ($status !== null && $status !== '') {
+            $builder->where('siswa.sudah_daftar', $status);
+        }
+
+        // Ambil semua dulu
+        $allData = $builder->findAll();
+
+        // Hitung aktif/nonaktif tiap siswa
+        $filtered = [];
+        foreach ($allData as $s) {
+            $aktifCount = $this->transaksiModel
+                ->join('transaksi_detail', 'transaksi_detail.id_transaksi = transaksi.id')
+                ->where('transaksi.id_siswa', $s['id'])
+                ->where('transaksi_detail.tanggal_selesai >=', $today)
+                ->countAllResults();
+
+            $s['aktif_count'] = $aktifCount;
+
+            // Filter aktif/nonaktif
+            if ($aktif !== null && $aktif !== '') {
+                if ($aktif == 1 && $aktifCount == 0) continue;
+                if ($aktif == 0 && $aktifCount > 0) continue;
+            }
+
+            $filtered[] = $s;
+        }
+
+        // Pagination manual
+        $page = $this->request->getGet('page') ?? 1;
+        $perPage = 10;
+        $offset = ($page - 1) * $perPage;
+        $pagedData = array_slice($filtered, $offset, $perPage);
+
+        // Gunakan pager CI4
+        $pager = \Config\Services::pager();
+        $pagerLinks = $pager->makeLinks($page, $perPage, count($filtered), 'default_full');
+
+        return view('owner/datasiswa', [
+            'siswa' => $pagedData,
+            'pager' => $pagerLinks,
+            'nama' => $nama,
+            'status' => $status,
+            'aktif' => $aktif
+        ]);
+    }
+
+    public function dataSiswaPDF()
+    {
+        $nama   = $this->request->getGet('nama');
+        $status = $this->request->getGet('status');
+        $aktif  = $this->request->getGet('aktif');
+
+        $today = date('Y-m-d');
+
+        // Query siswa + total transaksi
+        $builder = $this->siswaModel
+            ->select('siswa.*, COUNT(transaksi.id) as total_transaksi')
+            ->join('transaksi', 'transaksi.id_siswa = siswa.id', 'left')
+            ->groupBy('siswa.id')
+            ->orderBy('siswa.id', 'DESC');
+
+        if ($nama) $builder->like('siswa.nama', $nama);
+        if ($status !== null && $status !== '') $builder->where('siswa.sudah_daftar', $status);
+
+        $allData = $builder->findAll();
+
+        // Hitung aktif/nonaktif dan filter
+        $filtered = [];
+        foreach ($allData as $s) {
+            $aktifCount = $this->transaksiModel
+                ->join('transaksi_detail', 'transaksi_detail.id_transaksi = transaksi.id')
+                ->where('transaksi.id_siswa', $s['id'])
+                ->where('transaksi_detail.tanggal_selesai >=', $today)
+                ->countAllResults();
+
+            $s['aktif_count'] = $aktifCount;
+
+            // Filter aktif/nonaktif
+            if ($aktif !== null && $aktif !== '') {
+                if ($aktif == 1 && $aktifCount == 0) continue;
+                if ($aktif == 0 && $aktifCount > 0) continue;
+            }
+
+            $filtered[] = $s;
+        }
+
+        // Generate PDF
+        $html = view('owner/datasiswa_pdf', ['siswa' => $filtered]);
+
+        $dompdf = new \Dompdf\Dompdf();
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+        $dompdf->stream("data_siswa.pdf", ['Attachment' => true]);
     }
 }

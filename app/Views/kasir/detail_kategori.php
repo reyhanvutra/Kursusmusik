@@ -1,55 +1,61 @@
-x   <?= $this->extend('kasir/layout'); ?>
+<?= $this->extend('kasir/layout'); ?>
 <?= $this->section('content'); ?>
 
-<div class="container">
+<link rel="stylesheet" href="<?= base_url('assets/css/kasir/detail_kategori.css'); ?>">
 
-    <!-- BACK -->
-    <a href="/kasir/pilih"
-       style="display:inline-block;margin-bottom:15px;color:#333;text-decoration:none;">
-       ← Kembali ke Kategori
+<?php 
+$bg = $kategori['gambar'] 
+    ? base_url('uploads/kategori/'.$kategori['gambar']) 
+    : base_url('assets/no-image.jpg'); 
+?>
+
+<div class="detail-wrapper">
+
+    <a href="/kasir/pilih" class="btn-back">
+        <i class="fa-solid fa-arrow-left"></i> Kembali ke Kategori
     </a>
 
-    <!-- JUDUL -->
-    <h2><?= $kategori['nama_kategori']; ?></h2>
+    <div class="kategori-hero">
+        <img src="<?= $bg ?>" alt="<?= $kategori['nama_kategori']; ?>" class="hero-img">
+        <div class="overlay"></div>
 
-    <!-- DESKRIPSI -->
-    <div style="background:#f5f5f5;padding:15px;border-radius:10px;margin-bottom:20px;">
+        <div class="hero-content">
+            <h1><?= $kategori['nama_kategori']; ?></h1>
+        </div>
+    </div>
+
+    <?php if(!empty($kategori['deskripsi'])): ?>
+    <div class="kategori-deskripsi">
         <?= $kategori['deskripsi']; ?>
     </div>
+    <?php endif; ?>
 
-    <!-- LIST KURSUS -->
-    <h3>📚 Daftar Kursus</h3>
+    <div class="kursus-section">
+        <h2>Daftar Kursus Tersedia</h2>
 
-    <?php if(empty($kursus)): ?>
-        <p style="color:red;">Belum ada kursus di kategori ini</p>
-    <?php else: ?>
+        <?php if(empty($kursus)): ?>
+            <p class="empty">Saat ini belum ada paket kursus yang tersedia untuk kategori ini.</p>
+        <?php else: ?>
 
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px;">
+        <div class="kursus-grid">
+            <?php foreach($kursus as $k): ?>
+            <div class="kursus-card">
+                <div class="kursus-info">
+                    <h3><?= $k['nama_kursus']; ?></h3>
+                    <p>
+                        <?= (strlen($k['deskripsi']) > 110) ? substr($k['deskripsi'], 0, 110) . '...' : $k['deskripsi']; ?>
+                    </p>
+                </div>
 
-        <?php foreach($kursus as $k): ?>
-
-        <div style="background:white;padding:15px;border-radius:10px;
-                    box-shadow:0 2px 6px rgba(0,0,0,0.1);">
-
-            <h4><?= $k['nama_kursus']; ?></h4>
-
-            <p style="color:#666;font-size:14px;">
-                <?= $k['deskripsi']; ?>
-            </p>
-
-            <a href="/kasir/detail/kursus/<?= $k['id']; ?>"
-               style="display:inline-block;margin-top:10px;background:#4caf50;color:white;
-                      padding:8px 12px;border-radius:6px;text-decoration:none;">
-               🎯 Lihat Detail
-            </a>
-
+                <a href="/kasir/detail/kursus/<?= $k['id']; ?>" class="btn-kursus">
+                    Lihat Detail Paket <i class="fa-solid fa-chevron-right"></i>
+                </a>
+            </div>
+            <?php endforeach; ?>
         </div>
 
-        <?php endforeach; ?>
-
+        <?php endif; ?>
     </div>
-
-    <?php endif; ?>
 
 </div>
 
