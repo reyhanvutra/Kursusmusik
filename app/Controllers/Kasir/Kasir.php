@@ -178,26 +178,89 @@ public function riwayat()
         'pager' => $pager
     ]);
 }
-  public function siswa()
+public function siswa()
 {
     $today = date('Y-m-d');
 
-    $siswa = $this->siswaModel
+    // Ambil parameter filter
+    $nama   = $this->request->getGet('nama');
+    $kursus = $this->request->getGet('kursus');
+    $status = $this->request->getGet('status');
+
+    // =========================
+    // QUERY UTAMA
+    // =========================
+    $builder = $this->siswaModel
         ->select("
             siswa.*,
+
             COUNT(DISTINCT transaksi.id) as total_transaksi,
+
             COUNT(CASE 
                 WHEN transaksi_detail.tanggal_selesai >= '$today' 
                 THEN 1 
-            END) as kursus_aktif
+            END) as kursus_aktif,
+
+            GROUP_CONCAT(DISTINCT kursus.nama_kursus SEPARATOR ', ') as nama_kursus,
+            GROUP_CONCAT(DISTINCT level.nama_level SEPARATOR ', ') as nama_level
         ")
         ->join('transaksi', 'transaksi.id_siswa = siswa.id', 'left')
         ->join('transaksi_detail', 'transaksi_detail.id_transaksi = transaksi.id', 'left')
-        ->groupBy('siswa.id')
-        ->findAll();
 
+        // 🔥 FIX UTAMA (LEWAT LEVEL → KURSUS)
+        ->join('level', 'level.id = transaksi_detail.id_item AND transaksi_detail.tipe = "kursus"', 'left')
+        ->join('kursus', 'kursus.id = level.id_kursus', 'left');
+
+    // =========================
+    // FILTER NAMA
+    // =========================
+    if (!empty($nama)) {
+        $builder->like('siswa.nama', $nama);
+    }
+
+    // =========================
+    // FILTER KURSUS (FIX TOTAL 🔥)
+    // =========================
+    if (!empty($kursus)) {
+        $builder->where('level.id_kursus', $kursus);
+    }
+
+    // =========================
+    // GROUPING
+    // =========================
+    $builder->groupBy('siswa.id');
+
+    // =========================
+    // FILTER STATUS
+    // =========================
+    if ($status == 'aktif') {
+        $builder->having('kursus_aktif >', 0);
+    } elseif ($status == 'nonaktif') {
+        $builder->having('kursus_aktif =', 0);
+    }
+
+    // =========================
+    // EKSEKUSI
+    // =========================
+    $siswa = $builder->get()->getResultArray();
+
+    // =========================
+    // LIST KURSUS (UNTUK DROPDOWN)
+    // =========================
+    $db = \Config\Database::connect();
+    $listKursus = $db->table('kursus')->get()->getResultArray();
+
+    // =========================
+    // RETURN VIEW
+    // =========================
     return view('kasir/siswa', [
-        'siswa' => $siswa
+        'siswa'      => $siswa,
+        'listKursus' => $listKursus,
+        'filter'     => [
+            'nama'   => $nama,
+            'kursus' => $kursus,
+            'status' => $status,
+        ]
     ]);
 }
 public function detailSiswa($id)

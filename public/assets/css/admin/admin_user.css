@@ -136,3 +136,170 @@
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
 }
+/* --- GRID SYSTEM --- */
+.level-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 25px;
+    margin-top: 20px;
+}
+
+/* --- LEVEL CARD --- */
+.level-card {
+    background: #1a1a1a;
+    border-radius: 25px;
+    padding: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    transition: 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.level-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(153, 0, 0, 0.3);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+}
+
+.level-card-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.order-badge {
+    background: #990000;
+    color: white;
+    font-size: 12px;
+    font-weight: 900;
+    padding: 5px 10px;
+    border-radius: 8px;
+}
+
+.level-name {
+    color: white;
+    font-size: 18px;
+    margin: 0;
+}
+
+.level-price {
+    margin-bottom: 20px;
+}
+
+.level-price small {
+    color: #555;
+    text-transform: uppercase;
+    font-size: 10px;
+    letter-spacing: 1px;
+}
+
+.level-price p {
+    color: #00ff64;
+    font-size: 22px;
+    font-weight: 800;
+    margin: 0;
+}
+
+/* --- INFO GRID INSIDE CARD --- */
+.level-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #888;
+    font-size: 13px;
+}
+
+.info-item i {
+    color: #444;
+    width: 15px;
+}
+
+/* --- SLOT PROGRESS --- */
+.slot-section {
+    background: rgba(0,0,0,0.2);
+    padding: 15px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+}
+
+.slot-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #666;
+}
+
+.progress-bar {
+    height: 6px;
+    background: #252525;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(to right, #990000, #ff3232);
+    border-radius: 10px;
+}
+
+/* --- ACTIONS --- */
+.level-card-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.btn-action-card {
+    padding: 10px;
+    text-align: center;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 700;
+    transition: 0.3s;
+}
+
+.btn-action-card.edit { background: #252525; color: #ccc; }
+.btn-action-card.delete { background: rgba(255, 50, 50, 0.05); color: #ff3232; }
+
+.btn-action-card.edit:hover { background: white; color: black; }
+.btn-action-card.delete:hover { background: #ff3232; color: white; }
+
+.text-success { color: #00ff64; }
+.text-danger { color: #ff3232; }
+
+.empty-state-card {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 100px;
+    color: #333;
+}
+.empty-state-card i { font-size: 50px; margin-bottom: 20px; display: block; }
+/* --- TOMBOL KEMBALI (TEXT ONLY WITH HOVER) --- */
+.btn-back-link {
+    color: #666;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+}
+
+.btn-back-link:hover {
+    color: #fff;
+    transform: translateX(-5px); /* Efek geser sedikit ke kiri */
+}
+

@@ -26,15 +26,6 @@
                 <input type="email" name="email" class="form-control" value="<?= $user['email']; ?>" required>
             </div>
 
-            <div class="form-group">
-                <label>Role:</label>
-                <select name="role" class="form-control">
-                    <option value="admin" <?= $user['role']=='admin'?'selected':''; ?>>Admin</option>
-                    <option value="kasir" <?= $user['role']=='kasir'?'selected':''; ?>>Kasir</option>
-                    <option value="owner" <?= $user['role']=='owner'?'selected':''; ?>>Owner</option>
-                </select>
-            </div>
-
             <button type="submit" class="btn-save">Update Data</button>
         </form>
     </div>

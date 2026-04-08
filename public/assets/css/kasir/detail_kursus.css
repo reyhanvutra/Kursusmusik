@@ -2,9 +2,8 @@
 .detail-kursus-wrapper {
     width: 100%;
     min-height: 100vh;
-    height: auto;
-    padding: 40px 20px 100px 20px;
-    background: #0f0f0f; /* Hitam pekat */
+    padding: 60px 40px 120px 40px;
+    background: radial-gradient(circle at top left, #1a1a1a, #0f0f0f);
     color: #fff;
     box-sizing: border-box;
 }
@@ -13,31 +12,35 @@
 .btn-back {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    color: #888;
+    gap: 10px;
+    color: #666;
     text-decoration: none;
-    font-size: 12px;
-    font-weight: 700;
+    font-size: 11px;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 1.2px;
-    margin-bottom: 30px;
-    transition: 0.3s;
+    letter-spacing: 2px;
+    margin-bottom: 40px;
+    transition: all 0.4s ease;
 }
 
-.btn-back:hover { color: #fff; transform: translateX(-5px); }
+.btn-back:hover { 
+    color: #fff; 
+    transform: translateX(-8px); 
+}
 
 /* --- HEADER SECTION --- */
 .header-kursus {
-    margin-bottom: 40px;
-    max-width: 900px;
+    margin-bottom: 60px;
+    max-width: 850px;
 }
 
 .judul-kursus {
-    font-size: clamp(32px, 5vw, 48px);
+    font-size: clamp(38px, 6vw, 56px);
     font-weight: 900;
-    letter-spacing: -1.5px;
-    margin-bottom: 15px;
-    background: linear-gradient(to right, #fff, #888);
+    letter-spacing: -2px;
+    margin-bottom: 20px;
+    line-height: 1;
+    background: linear-gradient(135deg, #ffffff 0%, #666666 100%);
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -45,112 +48,125 @@
 
 .deskripsi-kursus {
     font-size: 16px;
-    color: #999;
+    color: #888;
     line-height: 1.8;
-    background: rgba(255,255,255,0.03);
-    padding: 25px;
-    border-radius: 20px;
-    border: 1px solid rgba(255,255,255,0.05);
+    padding-left: 20px;
+    border-left: 2px solid #990000;
 }
 
 /* --- GRID LEVEL --- */
 .judul-level {
-    font-size: 20px;
+    font-size: 14px;
     font-weight: 800;
-    margin: 50px 0 25px 0;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: #990000;
+    margin: 60px 0 30px 0;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 20px;
 }
 
 .judul-level::after {
     content: "";
     height: 1px;
     flex: 1;
-    background: rgba(255,255,255,0.1);
+    background: linear-gradient(to right, rgba(153, 0, 0, 0.5), transparent);
 }
 
 .grid-level {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 30px;
 }
 
-/* --- CARD LEVEL (PREMIUM DESIGN) --- */
+/* --- CARD LEVEL (REFINED PRESETS) --- */
 .card-level {
-    background: #1a1a1a;
-    border: 1px solid rgba(255,255,255,0.05);
-    border-radius: 25px;
-    padding: 35px;
-    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 30px;
+    padding: 40px;
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
     display: flex;
     flex-direction: column;
     position: relative;
-    overflow: hidden;
+}
+
+.card-level::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(circle at top right, rgba(153, 0, 0, 0.1), transparent);
+    pointer-events: none;
 }
 
 .card-level:hover {
-    transform: translateY(-12px);
-    border-color: #990000;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+    transform: translateY(-15px);
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(153, 0, 0, 0.4);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.5);
 }
 
 .card-level h3 {
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 800;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    margin-bottom: 15px;
+    color: #fff;
 }
 
 .level-desc {
     font-size: 14px;
-    color: #777;
-    margin-bottom: 25px;
-    min-height: 40px;
+    color: #666;
+    margin-bottom: 30px;
+    line-height: 1.6;
 }
 
 /* --- INFO LIST --- */
 .info-list {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    margin-bottom: 30px;
+    gap: 18px;
+    margin-bottom: 40px;
 }
 
 .info-item {
     display: flex;
-    align-items: center;
-    gap: 12px;
+    align-items: flex-start;
+    gap: 15px;
     font-size: 13px;
-    color: #bbb;
+    color: #aaa;
 }
 
 .info-item i {
     color: #990000;
-    width: 20px;
-    text-align: center;
+    font-size: 16px;
+    margin-top: 2px;
+}
+
+.info-item b {
+    color: #fff;
+    margin-right: 4px;
 }
 
 /* --- HARGA & BUTTON --- */
 .price-tag {
     margin-top: auto;
-    padding-top: 25px;
-    border-top: 1px solid rgba(255,255,255,0.05);
 }
 
 .price-value {
-    font-size: 24px;
+    font-size: 32px;
     font-weight: 900;
     color: #fff;
-    margin-bottom: 20px;
+    letter-spacing: -1px;
+    margin-bottom: 25px;
 }
 
 .price-value span {
-    font-size: 12px;
-    color: #555;
-    font-weight: 400;
+    font-size: 14px;
+    color: #444;
+    font-weight: 500;
+    letter-spacing: 0;
 }
 
 .btn-pilih {
@@ -158,39 +174,38 @@
     background: #990000;
     color: #fff;
     border: none;
-    padding: 16px;
-    border-radius: 15px;
+    padding: 20px;
+    border-radius: 20px;
     font-weight: 800;
-    font-size: 14px;
+    font-size: 13px;
     text-transform: uppercase;
+    letter-spacing: 2px;
     cursor: pointer;
-    transition: 0.3s;
-    box-shadow: 0 10px 20px rgba(153, 0, 0, 0.2);
+    transition: all 0.3s ease;
 }
 
 .btn-pilih:hover:not(:disabled) {
-    background: #cc0000;
-    transform: scale(1.02);
+    background: #ff0000;
+    box-shadow: 0 15px 30px rgba(255, 0, 0, 0.2);
 }
 
 .btn-pilih:disabled {
     background: #222;
     color: #444;
     cursor: not-allowed;
-    box-shadow: none;
 }
 
 /* --- STATUS SLOT --- */
 .slot-badge {
     position: absolute;
-    top: 20px;
-    right: 25px;
-    font-size: 11px;
-    font-weight: 800;
-    padding: 5px 12px;
-    border-radius: 20px;
-    text-transform: uppercase;
+    top: 30px;
+    right: 30px;
+    font-size: 10px;
+    font-weight: 900;
+    padding: 6px 15px;
+    border-radius: 30px;
+    letter-spacing: 1px;
 }
 
-.slot-available { background: rgba(0, 255, 100, 0.1); color: #00ff64; }
-.slot-full { background: rgba(255, 0, 0, 0.1); color: #ff0000; }
+.slot-available { background: rgba(0, 255, 100, 0.05); color: #00ff64; border: 1px solid rgba(0, 255, 100, 0.1); }
+.slot-full { background: rgba(255, 0, 0, 0.05); color: #ff3333; border: 1px solid rgba(255, 0, 0, 0.1); }

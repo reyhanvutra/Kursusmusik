@@ -1,7 +1,7 @@
 <?= $this->extend('kasir/layout'); ?>
 <?= $this->section('content'); ?>
 
-<link rel="stylesheet" href="<?= base_url('assets/css/kasir/dashboard_kasir.css'); ?>">
+<link rel="stylesheet" href="<?= base_url('assets/css/kasir/riwayat_transaksi.css'); ?>">
 
 <div class="form-page-wrapper">
 
@@ -11,7 +11,7 @@
     </div>
 
     <div style="margin-bottom:15px;">
-        <a href="/kasir/dashboard" class="btn-nav secondary">← Kembali ke Dashboard</a>
+        <a href="/kasir/dashboard" class="btn-nav secondary">Kembali ke Dashboard</a>
     </div>
 
     <div class="table-container">

@@ -145,7 +145,7 @@ public function dashboard()
         $this->userModel->update($id, [
             'nama' => $this->request->getPost('nama'),
             'email' => $this->request->getPost('email'),
-            'role' => $this->request->getPost('role'),
+            // 'role' => $this->request->getPost('role'),
         ]);
          $this->log('Mengedit user: '.$this->request->getPost('nama'));
         return redirect()->to('/admin/user')
@@ -194,21 +194,11 @@ public function dashboard()
         return redirect()->back()->with('error','Kategori wajib dipilih');
     }
 
-    // ================= UPLOAD GAMBAR =================
-    $file = $this->request->getFile('gambar');
-    $namaGambar = null;
-
-    if($file && $file->isValid()){
-        $namaGambar = $file->getRandomName();
-        $file->move('uploads/', $namaGambar);
-    }
-
     // ================= SIMPAN =================
     $this->kursusModel->save([
         'id_kategori' => $this->request->getPost('id_kategori'),
         'nama_kursus' => $this->request->getPost('nama_kursus'),
-        'deskripsi' => $this->request->getPost('deskripsi'),
-        'gambar' => $namaGambar
+        'deskripsi' => $this->request->getPost('deskripsi')
     ]);
 
     $this->log('Menambah kursus: ' . $this->request->getPost('nama_kursus'));
@@ -230,25 +220,11 @@ public function dashboard()
 {
     $kursus = $this->kursusModel->find($id);
 
-    // ================= UPLOAD GAMBAR =================
-    $file = $this->request->getFile('gambar');
-    $namaGambar = $kursus['gambar'];
-
-    if($file && $file->isValid()){
-        $namaGambar = $file->getRandomName();
-        $file->move('uploads/', $namaGambar);
-
-        if($kursus['gambar']){
-            @unlink('uploads/'.$kursus['gambar']);
-        }
-    }
-
     // ================= UPDATE =================
     $this->kursusModel->update($id, [
         'id_kategori' => $this->request->getPost('id_kategori'),
         'nama_kursus' => $this->request->getPost('nama_kursus'),
-        'deskripsi' => $this->request->getPost('deskripsi'),
-        'gambar' => $namaGambar
+        'deskripsi' => $this->request->getPost('deskripsi')
     ]);
 
     $this->log('Mengedit kursus: ' . $this->request->getPost('nama_kursus'));
@@ -806,45 +782,79 @@ public function hapus($id)
         ->with('success','Level berhasil dihapus');
 }
 
-// ================= LIST SISWA =================
 public function indexsiswa()
 {
-    $keyword = $this->request->getGet('search');
-
-    // 🔍 SEARCH
-    if ($keyword) {
-        $siswa = $this->siswaModel
-            ->like('nama', $keyword)
-            ->orLike('no_hp', $keyword)
-            ->findAll();
-    } else {
-        $siswa = $this->siswaModel->findAll();
-    }
-
     $today = date('Y-m-d');
 
-    foreach ($siswa as &$s) {
+    // 🔍 ambil filter
+    $search = $this->request->getGet('search');
+    $kursus = $this->request->getGet('kursus');
+    $status = $this->request->getGet('status');
 
-        // 🔥 cek apakah masih punya kursus aktif
-        $aktifTransaksi = $this->detailModel
-            ->join('transaksi', 'transaksi.id = transaksi_detail.id_transaksi')
-            ->where('transaksi.id_siswa', $s['id'])
-            ->where('transaksi_detail.tanggal_selesai >=', $today)
-            ->countAllResults();
+    $builder = $this->siswaModel
+        ->select("
+            siswa.*,
 
-        // 🔥 LOGIKA STATUS FINAL
-        if ($s['sudah_daftar'] == 0) {
-            $s['status'] = 'belum';
-        } else {
-            $s['status'] = $aktifTransaksi > 0 ? 'aktif' : 'nonaktif';
-        }
+            COUNT(DISTINCT transaksi.id) as total_transaksi,
+
+            COUNT(CASE 
+                WHEN transaksi_detail.tanggal_selesai >= '$today' 
+                THEN 1 
+            END) as kursus_aktif,
+
+            GROUP_CONCAT(DISTINCT k.nama_kursus SEPARATOR ', ') as nama_kursus
+        ")
+        ->join('transaksi', 'transaksi.id_siswa = siswa.id', 'left')
+        ->join('transaksi_detail', 'transaksi_detail.id_transaksi = transaksi.id', 'left')
+
+        // 🔥 ambil level dulu
+        ->join('level l', 'l.id = transaksi_detail.id_item', 'left')
+
+        // 🔥 baru ambil kursus dari level
+        ->join('kursus k', 'k.id = l.id_kursus', 'left');
+
+    // ================= SEARCH =================
+    if (!empty($search)) {
+        $builder->groupStart()
+            ->like('siswa.nama', $search)
+            ->orLike('siswa.no_hp', $search)
+        ->groupEnd();
     }
 
-    $this->log('Masuk halaman siswa');
+    // ================= FILTER KURSUS =================
+    if (!empty($kursus)) {
+        $builder->where('k.id', $kursus);
+    }
 
+    // ================= GROUP =================
+    $builder->groupBy('siswa.id');
+
+    // ================= FILTER STATUS =================
+    if ($status == 'aktif') {
+        $builder->having('kursus_aktif >', 0);
+    } elseif ($status == 'nonaktif') {
+        $builder->having('kursus_aktif =', 0);
+    }
+
+    $siswa = $builder->get()->getResultArray();
+
+    // ================= AMBIL LIST KURSUS =================
+    $listKursus = $this->kursusModel->findAll();
+
+    // ================= FORMAT STATUS =================
+    foreach ($siswa as &$s) {
+        $s['status'] = $s['kursus_aktif'] > 0 ? 'aktif' : 'nonaktif';
+    }
+
+        $this->log('Masuk halaman siswa dengan filter - Search: ' . ($search ?? '-') . ', Kursus: ' . ($kursus ?? '-') . ', Status: ' . ($status ?? '-'));
     return view('admin/siswa/index', [
         'siswa' => $siswa,
-        'search' => $keyword
+        'search' => $search,
+        'listKursus' => $listKursus,
+        'filter' => [
+            'kursus' => $kursus,
+            'status' => $status
+        ]
     ]);
 }
 

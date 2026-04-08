@@ -1,115 +1,101 @@
 <?= $this->extend('kasir/layout'); ?>
 <?= $this->section('content'); ?>
 
-<div class="container">
+<link rel="stylesheet" href="<?= base_url('assets/css/kasir/transaksi_detail.css'); ?>">
 
-<h2 style="margin-bottom:15px;">📄 Detail Transaksi</h2>
-
-<div style="background:#2b2b2b; padding:25px; border-radius:12px; color:white;">
-
-<?php $tanggal = date('d F Y', strtotime($t['tanggal'])); ?>
-
-<!-- HEADER -->
-<div style="margin-bottom:15px;">
-    <div><b>No:</b> TRX-<?= str_pad($t['id'],5,'0',STR_PAD_LEFT); ?></div>
-    <div><b>Nama:</b> <?= $t['nama_pembeli']; ?></div>
-    <div><b>No HP:</b> <?= $t['no_hp']; ?></div>
-    <div><b>Tanggal:</b> <?= $tanggal; ?></div>
-</div>
-
-<hr>
-
-<h3>🧾 Item Dibeli</h3>
-
-<?php foreach($detail as $d): ?>
-
-<div style="background:#3a3a3a; padding:15px; border-radius:10px; margin-bottom:12px;">
-
-    <div style="font-weight:bold; font-size:16px;">
-        <?= $d['nama']; ?>
-    </div>
-
-    <div style="color:cyan; font-size:13px;">
-        <?= $d['tipe_label']; ?>
-    </div>
-
-    <hr style="border-color:#555;">
-
-   <?php if($d['tipe'] == 'kursus'): ?>
-
-    <div>
-        💰 Rp <?= number_format($d['harga_per_bulan'],0,',','.'); ?> 
-        x <?= $d['bulan']; ?> bulan
-    </div>
-
-    <div style="font-size:13px; color:#ccc;">
-        📅 <?= $d['tanggal_mulai_f']; ?> → <?= $d['tanggal_selesai_f']; ?>
-    </div>
-
-    <!-- 🔥 KHUSUS PERPANJANG -->
-    <?php if(!empty($d['is_perpanjang'])): ?>
-        <div style="
-            margin-top:10px;
-            padding:12px;
-            background:#2a2a2a;
-            border-left:5px solid orange;
-            border-radius:8px;
-        ">
-            <div style="color:orange; font-weight:bold;">
-                🔄 Transaksi Perpanjang
+<div class="detail-container">
+    <div class="invoice-box">
+        
+        <div class="invoice-id">TRX-<?= str_pad($t['id'], 5, '0', STR_PAD_LEFT); ?></div>
+        
+        <div class="invoice-header">
+            <div class="customer-info">
+                <h2><?= $t['nama_pembeli']; ?></h2>
+                <p><i class="fa-solid fa-phone"></i> <?= $t['no_hp']; ?></p>
+                <p><i class="fa-solid fa-calendar"></i> <?= date('d F Y', strtotime($t['tanggal'])); ?></p>
             </div>
-
-            <div style="font-size:13px; margin-top:5px; color:#ccc;">
-                ➕ Tambah <?= $d['bulan']; ?> bulan<br>
-                📅 Dari: <?= $d['tanggal_mulai_f']; ?><br>
-                📅 Sampai: <?= $d['tanggal_selesai_f']; ?>
+            <div style="text-align: right;">
+                <span class="item-label" style="background:rgba(0,255,128,0.1); color:var(--success); font-size:12px; padding:8px 15px;">
+                    Lunas
+                </span>
             </div>
         </div>
-    <?php endif; ?>
 
-<?php else: ?>
+        <div class="section-title">
+            <i class="fa-solid fa-receipt"></i> Detail Item
+        </div>
 
-        <div>📦 Paket Full</div>
+        <?php foreach($detail as $d): ?>
+        <div class="item-card">
+            <div class="item-header">
+                <div class="item-name"><?= $d['nama']; ?></div>
+                <div class="item-label"><?= $d['tipe_label']; ?></div>
+            </div>
 
-    <?php endif; ?>
+            <div class="item-details">
+                <?php if($d['tipe'] == 'kursus'): ?>
+                    <div style="margin-bottom:5px;">
+                        💰 Rp <?= number_format($d['harga_per_bulan'],0,',','.'); ?> x <?= $d['bulan']; ?> Bulan
+                    </div>
+                    <div style="font-size:12px; opacity:0.7;">
+                        <i class="fa-solid fa-clock"></i> Periode: <?= $d['tanggal_mulai_f']; ?> — <?= $d['tanggal_selesai_f']; ?>
+                    </div>
 
-    <div style="margin-top:8px; font-weight:bold; color:lime;">
-        Total: Rp <?= number_format($d['harga'],0,',','.'); ?>
-    </div>
+                    <?php if(!empty($d['is_perpanjang'])): ?>
+                        <div class="perpanjang-notice">
+                            <strong>🔄 Perpanjangan Aktif</strong><br>
+                            Menambahkan masa aktif kursus selama <?= $d['bulan']; ?> bulan ke depan.
+                        </div>
+                    <?php endif; ?>
+                <?php else: ?>
+                    <div><i class="fa-solid fa-box-open"></i> Paket Produk Full</div>
+                <?php endif; ?>
+            </div>
 
-</div>
+            <div style="text-align: right; margin-top: 10px; font-weight: 800; color: var(--success);">
+                Rp <?= number_format($d['harga'],0,',','.'); ?>
+            </div>
+        </div>
+        <?php endforeach; ?>
 
-<?php endforeach; ?>
+        <div class="summary-area">
+            <?php if($t['biaya_pendaftaran'] > 0): ?>
+            <div class="summary-line">
+                <span>Biaya Pendaftaran</span>
+                <span>Rp <?= number_format($t['biaya_pendaftaran'],0,',','.'); ?></span>
+            </div>
+            <?php endif; ?>
 
-<hr>
+            <div class="summary-line total">
+                <span>Total Tagihan</span>
+                <span style="color: var(--success);">Rp <?= number_format($t['total_harga'],0,',','.'); ?></span>
+            </div>
 
-<?php if($t['biaya_pendaftaran'] > 0): ?>
-<p>Biaya Pendaftaran: <b>Rp <?= number_format($t['biaya_pendaftaran'],0,',','.'); ?></b></p>
-<?php endif; ?>
-
-<h3>Total: Rp <?= number_format($t['total_harga'],0,',','.'); ?></h3>
-
-<p>Bayar: Rp <?= number_format($t['uang_bayar'],0,',','.'); ?></p>
-<p>Kembali: Rp <?= number_format($t['uang_kembali'],0,',','.'); ?></p>
-
-<br>
-
-<a href="/kasir/cetak/<?= $t['id']; ?>" target="_blank"
-style="background:green;padding:10px 18px;border-radius:8px;color:white;text-decoration:none;">
-🖨️ Cetak Struk
-</a>
-
-<?php 
+            <div class="payment-status">
+                <div>
+                    <span style="display:block; font-size:10px; color:var(--text-dim); text-transform:uppercase;">Dibayar</span>
+                    <strong>Rp <?= number_format($t['uang_bayar'],0,',','.'); ?></strong>
+                </div>
+                <div>
+                    <span style="display:block; font-size:10px; color:var(--text-dim); text-transform:uppercase;">Kembali</span>
+                    <strong>Rp <?= number_format($t['uang_kembali'],0,',','.'); ?></strong>
+                </div>
+            </div>
+        </div>
+        <?php 
 $back = $_SERVER['HTTP_REFERER'] ?? '/kasir/dashboard';
 ?>
 
-<a href="<?= $back; ?>"
-style="background:#555;padding:10px 18px;border-radius:8px;color:white;text-decoration:none;">
-⬅️ Kembali
-</a>
+        <div class="action-area">
+            <a href="/kasir/cetak/<?= $t['id']; ?>" target="_blank" class="btn-print">
+                <i class="fa-solid fa-print"></i> Cetak Struk
+            </a>
+            <a href="<?= $back; ?>" class="btn-back-detail">
+                Kembali 
+            </a>
+        </div>
 
-</div>
-
+    </div>
 </div>
 
 <?= $this->endSection(); ?>

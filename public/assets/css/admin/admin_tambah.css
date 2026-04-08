@@ -97,13 +97,60 @@
     box-shadow: 0 5px 15px rgba(153, 0, 0, 0.4);
 }
 
-.btn-back {
+/* .btn-back {
     color: #888;
     text-decoration: none;
     font-size: 14px;
     transition: 0.2s;
+} */
+
+/* .btn-back:hover {
+    color: #ffffff;
+} */
+/* Box untuk gambar yang sudah ada */
+.current-img-box {
+    width: 100%;
+    height: 150px;
+    background: #111;
+    border-radius: 15px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.current-img-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.6; /* Dibuat agak redup agar fokus ke yang baru */
+}
+
+.no-image-placeholder {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+}
+
+/* Penyesuaian Preview Box agar tingginya sama */
+.preview-box {
+    height: 150px;
+}
+/* --- TOMBOL KEMBALI (TEXT ONLY WITH HOVER) --- */
+.btn-back {
+    color: #666;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
 }
 
 .btn-back:hover {
-    color: #ffffff;
+    color: #fff;
+    transform: translateX(-5px); /* Efek geser sedikit ke kiri */
 }

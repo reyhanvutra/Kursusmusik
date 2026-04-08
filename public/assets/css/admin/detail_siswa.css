@@ -1,170 +1,171 @@
-/* Pastikan body dan html mengizinkan scroll */
-html, body {
-    overflow-y: auto !important;
-    height: auto !important;
+/* --- LAYOUT FIX --- */
+.content-wrapper {
+    padding: 30px;
+    background: #0f0f0f;
+    min-height: 100vh;
 }
 
-/* Jika kamu menggunakan wrapper utama untuk konten admin, 
-   pastikan dia bisa scroll jika isinya melebihi tinggi layar */
-.content-wrapper, .main-content {
-    overflow-y: auto;
-    max-height: 100vh;
-    padding-bottom: 50px; /* Jarak aman di bawah agar tidak terpotong */
+/* --- HEADER AREA --- */
+.detail-header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
 }
 
-/* Custom Scrollbar agar tetap estetik (Dark Mode) */
-::-webkit-scrollbar {
-    width: 8px;
+.title-group h2 {
+    color: #fff;
+    font-size: 28px;
+    font-weight: 800;
+    margin: 0;
 }
 
-::-webkit-scrollbar-track {
-    background: #121212;
+.title-group p {
+    color: #555;
+    margin: 5px 0 0 0;
+    font-size: 14px;
 }
 
-::-webkit-scrollbar-thumb {
-    background: #333;
-    border-radius: 10px;
+.btn-back-custom {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #ccc;
+    padding: 10px 20px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-    background: #444;
+.btn-back-custom:hover {
+    background: #990000;
+    color: #fff;
+    border-color: #990000;
 }
-/* --- PROFILE CARD SECTION --- */
-.profile-card {
+
+/* --- PROFILE CARD --- */
+.main-profile-card {
     background: #1a1a1a;
     border-radius: 25px;
-    padding: 30px;
+    padding: 35px;
     border: 1px solid rgba(255, 255, 255, 0.05);
-    display: flex;
-    align-items: center;
-    gap: 25px;
-    margin-bottom: 30px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 40px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
 }
 
-.profile-avatar {
-    background: #222;
-    width: 70px;
-    height: 70px;
-    border-radius: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
-    color: #555;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+.accent-line {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 6px;
+    background: linear-gradient(to bottom, #990000, #4a0000);
 }
 
-.profile-info h3 {
+.profile-top-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.profile-top-row h1 {
+    margin: 0;
     color: #fff;
-    margin: 0 0 5px 0;
-    font-size: 22px;
-    font-weight: 800;
+    font-size: 32px;
+    font-weight: 900;
+    letter-spacing: -1px;
 }
 
-.profile-meta {
+.profile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+}
+
+.info-item {
     display: flex;
-    gap: 15px;
-    color: #777;
-    font-size: 13px;
+    flex-direction: column;
+    gap: 8px;
 }
 
-.profile-meta span {
+.info-label {
+    color: #444;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.info-value {
+    color: #ccc;
+    font-size: 16px;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 10px;
 }
 
-/* --- TRANSACTION TIMELINE --- */
-.transaction-item {
+/* --- TRANSACTION SECTION --- */
+.section-divider {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.section-divider h3 {
+    color: #fff;
+    margin: 0;
+    font-size: 20px;
+}
+
+.transaction-card {
     background: #1a1a1a;
     border-radius: 20px;
-    margin-bottom: 20px;
-    border-left: 5px solid #008f39; /* Aksen hijau untuk transaksi */
+    margin-bottom: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
     overflow: hidden;
-    transition: 0.3s;
 }
 
-.transaction-item:hover {
-    transform: translateX(5px);
-}
-
-.transaction-header {
+.trx-card-header {
     background: rgba(255, 255, 255, 0.02);
-    padding: 15px 25px;
+    padding: 20px 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.trx-id {
-    font-family: 'Courier New', Courier, monospace;
-    color: #fff;
-    font-weight: bold;
-}
-
-.trx-date {
-    color: #666;
-    font-size: 12px;
-}
-
-.trx-amount {
-    color: #00ff00;
-    font-weight: 800;
-    font-size: 16px;
-}
-
-/* --- DETAIL TABLE INSIDE CARD --- */
-.detail-table {
+.trx-detail-table {
     width: 100%;
     border-collapse: collapse;
 }
 
-.detail-table th {
-    text-align: left;
-    font-size: 10px;
-    text-transform: uppercase;
-    color: #444;
-    padding: 15px 25px 5px 25px;
-    letter-spacing: 1px;
-}
-
-.detail-table td {
-    padding: 10px 25px 15px 25px;
-    color: #ccc;
-    font-size: 14px;
-    vertical-align: top;
-}
-
-.course-name {
-    color: #fff;
-    font-weight: 700;
-    display: block;
-}
-
-.course-sub {
-    font-size: 11px;
+.trx-detail-table th {
+    padding: 15px 30px;
     color: #555;
+    font-size: 11px;
+    text-transform: uppercase;
+    text-align: left;
 }
 
-.status-dot {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    margin-right: 5px;
+.trx-detail-table td {
+    padding: 20px 30px;
+    border-top: 1px solid rgba(255,255,255,0.02);
 }
 
-.status-active { background: #00ff00; color: #00ff00; font-weight: bold; font-size: 12px; }
-.status-expired { background: #ff4d4d; color: #ff4d4d; font-weight: bold; font-size: 12px; }
-
-/* Empty State */
-.empty-history {
-    text-align: center;
-    padding: 50px;
-    background: #1a1a1a;
-    border-radius: 20px;
-    color: #444;
-    border: 2px dashed rgba(255, 255, 255, 0.05);
+/* --- BADGES --- */
+.badge-custom {
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
 }
+
+.badge-active { background: rgba(0, 255, 100, 0.1); color: #00ff64; border: 1px solid rgba(0, 255, 100, 0.2); }
+.badge-expired { background: rgba(255, 255, 255, 0.05); color: #555; border: 1px solid rgba(255, 255, 255, 0.05); }

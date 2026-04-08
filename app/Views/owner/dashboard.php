@@ -1,75 +1,55 @@
 <?= $this->extend('owner/layout'); ?>
 <?= $this->section('content'); ?>
 
-<div class="container">
+<link rel="stylesheet" href="<?= base_url('assets/css/owner/dashboard.css'); ?>">
 
-    <h2>Dashboard Owner</h2>
+<div class="welcome-section">
+    <h2>Ringkasan Performa</h2>
+    <p>Pantau pertumbuhan bisnis kursus musik Anda secara real-time.</p>
+</div>
 
-    <!-- CARD -->
-    <div style="display:flex; gap:15px; margin:20px 0; flex-wrap:wrap;">
-
-        <div class="card" style="flex:1; background:#2b2b2b; padding:20px; color:#fff;">
-            <h4>Pendapatan Bulan Ini</h4>
-            <h2>Rp <?= number_format($pendapatan,0,',','.'); ?></h2>
-            <a href="/owner/laporan" style="color:yellow;">Lihat Detail</a>
-        </div>
-
-        <div class="card" style="flex:1; background:#444; padding:20px; color:#fff;">
-            <h4>Total Transaksi</h4>
-            <h2><?= $total_transaksi; ?></h2>
-        </div>
-
-        <div class="card" style="flex:1; background:#2b2b2b; padding:20px; color:#fff;">
-            <h4>Siswa Aktif</h4>
-            <h2><?= $siswa_aktif; ?></h2>
-        </div>
-
-        <div class="card" style="flex:1; background:#444; padding:20px; color:#fff;">
-            <h4>Kursus Aktif</h4>
-            <h2><?= $kursus_aktif; ?></h2>
-        </div>
-
+<div class="stats-grid">
+    
+    <div class="stat-card featured">
+        <h4>Pendapatan Bulan Ini</h4>
+        <h2>Rp <?= number_format($pendapatan, 0, ',', '.'); ?></h2>
+        <a href="/owner/laporan" class="card-action-pill">
+            Detail Laporan <i class="fa-solid fa-arrow-right" style="margin-left: 5px;"></i>
+        </a>
     </div>
 
-    <!-- GRAFIK -->
-    <div class="card" style="background:#2b2b2b; padding:20px; color:#fff; margin-top:20px;">
-        <h4>Grafik Pendapatan</h4>
-        <canvas id="chart"></canvas>
+    <div class="stat-card">
+        <h4>Total Transaksi</h4>
+        <h2><?= $total_transaksi; ?></h2>
+        <div class="card-action-pill" style="pointer-events: none; opacity: 0.6;">
+            Invoices Processed
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <h4>Siswa Aktif</h4>
+        <h2 style="color: #00d4ff;"><?= $siswa_aktif; ?></h2>
+        <a href="/owner/datasiswa" class="card-action-pill">
+            Lihat Data Siswa
+        </a>
+    </div>
+
+    <div class="stat-card">
+        <h4>Kursus Aktif</h4>
+        <h2><?= $kursus_aktif; ?></h2>
+        <a href="/owner/kursus" class="card-action-pill">
+            Kelola Kursus
+        </a>
     </div>
 
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script>
-let dataGrafik = <?= json_encode($grafik); ?>;
-
-let bulan = [];
-let total = [];
-
-dataGrafik.forEach(d => {
-    bulan.push("Bulan " + d.bulan);
-    total.push(d.total);
-});
-
-new Chart(document.getElementById('chart'), {
-    type: 'bar',
-    data: {
-        labels: bulan,
-        datasets: [{
-            label: 'Pendapatan',
-            data: total,
-            backgroundColor: '#f9c74f'
-        }]
-    },
-    options: {
-        scales: {
-            y: {
-                beginAtZero: true
-            }
-        }
-    }
-});
-</script>
+<div class="info-notice">
+    <i class="fa-solid fa-circle-info"></i>
+    <div class="text-content">
+        <b>Sinkronisasi Data Otomatis</b>
+        <span>Laporan keuangan diperbarui setiap kali kasir menyelesaikan pembayaran baru.</span>
+    </div>
+</div>
 
 <?= $this->endSection(); ?>

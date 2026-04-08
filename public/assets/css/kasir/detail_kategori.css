@@ -1,19 +1,19 @@
-/* ================= WRAPPER ================= */
+/* --- DETAIL WRAPPER --- */
 .detail-wrapper {
-    padding: 25px 40px;
+    padding: 0 40px 40px 40px;
     max-width: 1400px;
     margin: 0 auto;
 }
 
-/* ================= BACK BUTTON ================= */
+/* --- BACK BUTTON (MATCH ADMIN STYLE) --- */
 .btn-back {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 25px;
+    gap: 12px;
+    margin-bottom: 30px;
     color: #666;
     text-decoration: none;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 1.5px;
@@ -22,149 +22,147 @@
 
 .btn-back:hover {
     color: #fff;
-    transform: translateX(-5px);
 }
 
-/* ================= HERO (PAS & TIDAK TERPOTONG) ================= */
+/* --- HERO SECTION (GAMBAR UTUH / TIDAK TERPOTONG) --- */
 .kategori-hero {
     width: 100%;
-    /* Menggunakan aspect ratio agar tinggi mengikuti lebar gambar secara alami */
-    aspect-ratio: 21 / 7; 
-    max-height: 400px;
     background: #000;
-    border-radius: 20px;
+    border-radius: 40px; /* Tetap konsisten dengan dashboard */
     overflow: hidden;
     position: relative;
-    border: 1px solid rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.05);
+    /* Hapus aspect-ratio dan max-height agar mengikuti tinggi gambar asli */
+    line-height: 0; /* Menghilangkan gap kecil di bawah gambar */
 }
 
 .hero-img {
     width: 100%;
-    height: 100%;
-    /* Ini kunci agar gambar pas: cover akan memenuhi ruang, 
-       sedangkan position top memastikan wajah tidak terpotong */
-    object-fit: cover;
-    object-position: center top; 
+    height: auto; /* Biarkan tinggi mengikuti proporsi asli gambar */
+    display: block;
+    object-fit: initial; /* Kembalikan ke default agar tidak ada cropping */
 }
 
-/* OVERLAY - Gradasi Halus dari Kiri */
+/* Overlay: Kita buat lebih gelap di bawah agar teks 'kursus dewasa' tetap kontras */
 .kategori-hero .overlay {
     position: absolute;
     inset: 0;
     background: linear-gradient(
-        to right, 
+        to top, 
         rgba(0,0,0,0.8) 0%, 
-        rgba(0,0,0,0.3) 50%,
+        rgba(0,0,0,0.2) 40%,
         transparent 100%
     );
     z-index: 1;
 }
 
-/* CONTENT HERO */
 .hero-content {
     position: absolute;
-    bottom: 10%;
+    bottom: 40px;
     left: 40px;
     z-index: 2;
 }
 
 .hero-content h1 {
     color: white;
-    font-size: clamp(24px, 5vw, 42px); /* Font responsif */
+    font-size: clamp(32px, 5vw, 56px);
     font-weight: 900;
-    text-transform: lowercase; /* Estetik modern */
     margin: 0;
-    letter-spacing: -1px;
+    letter-spacing: -2px;
+    text-shadow: 0 4px 15px rgba(0,0,0,0.5); /* Tambah shadow agar makin tajam */
 }
 
-/* ================= DESKRIPSI (TYPOGRAPHY TERBARU) ================= */
+/* --- DESKRIPSI (CLEAN TYPOGRAPHY) --- */
 .kategori-deskripsi {
-    margin-top: 30px;
-    max-width: 850px;
+    margin-top: 40px;
+    max-width: 900px;
     color: #888;
     line-height: 1.8;
-    font-size: 15px;
-    padding: 0 5px;
+    font-size: 16px;
+    font-weight: 500;
 }
 
-/* ================= SECTION ================= */
+/* --- KURSUS SECTION --- */
 .kursus-section {
-    margin-top: 60px;
-    border-top: 1px solid rgba(255,255,255,0.05);
+    margin-top: 80px;
     padding-top: 40px;
 }
 
 .kursus-section h2 {
-    font-size: 22px;
-    font-weight: 700;
+    font-size: 28px;
+    font-weight: 800;
     color: white;
     margin-bottom: 30px;
-    letter-spacing: -0.5px;
+    letter-spacing: -1px;
 }
 
-/* ================= GRID & CARD ================= */
+/* --- GRID & CARD (PREMIUM OBSIDIAN) --- */
 .kursus-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 24px;
 }
 
 .kursus-card {
-    background: #141414;
-    border-radius: 16px;
-    padding: 30px;
-    border: 1px solid rgba(255,255,255,0.03);
+    background: #1a1a1a; /* Samakan dengan warna kartu kategori */
+    border-radius: 30px;
+    padding: 35px;
+    border: 1px solid rgba(255,255,255,0.05);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    transition: all 0.4s ease;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    min-height: 220px;
 }
 
 .kursus-card:hover {
-    background: #1a1a1a;
-    border-color: var(--accent-red);
-    transform: translateY(-8px);
+    border-color: rgba(153, 0, 0, 0.4);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
 }
 
 .kursus-info h3 {
-    font-size: 20px;
-    margin-bottom: 12px;
+    font-size: 24px;
+    margin-bottom: 15px;
     color: white;
-    font-weight: 700;
+    font-weight: 800;
+    letter-spacing: -0.5px;
 }
 
 .kursus-info p {
     font-size: 14px;
     color: #666;
     line-height: 1.6;
-    margin-bottom: 25px;
+    font-weight: 500;
+    /* Limit deskripsi 3 baris */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
-/* ================= BUTTON (CLEAN STYLE) ================= */
+/* --- BUTTON DETAIL (PREMIUM PILL) --- */
 .btn-kursus {
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    color: #fff;
+    margin-top: 30px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #eee;
+    padding: 12px 24px;
+    border-radius: 15px;
     text-decoration: none;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 1px;
-    padding-top: 15px;
-    border-top: 1px solid rgba(255,255,255,0.05);
-    transition: 0.3s;
-}
-
-.btn-kursus i {
-    font-size: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
     transition: 0.3s;
 }
 
 .btn-kursus:hover {
-    color: var(--accent-red);
-}
-
-.btn-kursus:hover i {
-    transform: translateX(5px);
+    background: #990000;
+    color: #fff;
+    border-color: #990000;
 }

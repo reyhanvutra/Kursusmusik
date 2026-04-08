@@ -1,55 +1,66 @@
 <?= $this->extend('admin/layout'); ?>
 <?= $this->section('content'); ?>
+<link rel="stylesheet" href="<?= base_url('assets/css/admin/admin_user.css'); ?>">
 
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-    <h2>Data Mentor</h2>
-    <a href="/admin/mentor/tambah" style="background:#28a745;color:white;padding:8px 12px;border-radius:6px;">
-        + Tambah Mentor
-    </a>
-</div>
-
-<?php if(session()->getFlashdata('success')): ?>
-    <div style="color:lightgreen;margin-bottom:10px;">
-        <?= session()->getFlashdata('success'); ?>
+<div class="table-container">
+    <div class="user-header-flex">
+        <h2 style="color: white; margin: 0;">Data Mentor</h2>
+        <a href="/admin/mentor/tambah" class="btn-tambah">
+            <span>+</span> Tambah Mentor
+        </a>
     </div>
-<?php endif; ?>
 
-<?php if(session()->getFlashdata('error')): ?>
-    <div style="color:red;margin-bottom:10px;">
-        <?= session()->getFlashdata('error'); ?>
-    </div>
-<?php endif; ?>
-
-<table border="1" cellpadding="10" width="100%" style="border-collapse:collapse;">
-    <tr style="background:#222;color:white;">
-        <th>Nama</th>
-        <th>Keahlian</th>
-        <th>Status</th>
-        <th>Aksi</th>
-    </tr>
-
-    <?php if(empty($mentor)): ?>
-        <tr>
-            <td colspan="4" style="text-align:center;">Belum ada data mentor</td>
-        </tr>
+    <?php if(session()->getFlashdata('success')): ?>
+        <div class="alert success">
+            <?= session()->getFlashdata('success'); ?>
+        </div>
     <?php endif; ?>
 
-    <?php foreach($mentor as $m): ?>
-    <tr>
-        <td><?= $m['nama']; ?></td>
-        <td><?= $m['keahlian']; ?></td>
-        <td>
-            <?= $m['aktif'] ? '<span style="color:lightgreen">Aktif</span>' : '<span style="color:red">Nonaktif</span>'; ?>
-        </td>
-        <td>
-            <a href="/admin/mentor/edit/<?= $m['id']; ?>">Edit</a> |
-            <a href="/admin/mentor/hapus/<?= $m['id']; ?>"
-               onclick="return confirm('Yakin hapus mentor ini?')">
-               Hapus
-            </a>
-        </td>
-    </tr>
-    <?php endforeach; ?>
-</table>
+    <?php if(session()->getFlashdata('error')): ?>
+        <div class="alert error">
+            <?= session()->getFlashdata('error'); ?>
+        </div>
+    <?php endif; ?>
+
+    <table class="custom-table">
+        <thead>
+            <tr>
+                <th>Nama</th>
+                <th>Keahlian</th>
+                <th>Status</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if(empty($mentor)): ?>
+                <tr>
+                    <td colspan="4" style="text-align:center;">Belum ada data mentor</td>
+                </tr>
+            <?php else: ?>
+                <?php foreach($mentor as $m): ?>
+                <tr>
+                    <td><?= $m['nama']; ?></td>
+                    <td><?= $m['keahlian']; ?></td>
+                    <td>
+                        <span class="badge-role" style="<?= $m['aktif'] ? '' : 'background:rgba(255,0,0,0.15); color:#ff4d4d;' ?>">
+                            <?= $m['aktif'] ? 'Aktif' : 'Nonaktif'; ?>
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-group">
+                            <a href="/admin/mentor/edit/<?= $m['id']; ?>" class="action-link edit" title="Edit">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                 </a>
+                            <a href="/admin/mentor/hapus/<?= $m['id']; ?>">
+                                 <i class="fa-solid fa-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </tbody>
+    </table>
+</div>
 
 <?= $this->endSection(); ?>

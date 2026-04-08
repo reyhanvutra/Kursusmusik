@@ -2,111 +2,212 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Owner Panel</title>
-
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        body{
-            margin:0;
-            font-family: Arial, sans-serif;
-            background:#1e1e1e;
-            color:white;
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
-        /* SIDEBAR */
-        .sidebar{
-            width:220px;
-            height:100vh;
-            position:fixed;
-            background:#111;
-            padding-top:20px;
+        :root {
+            --bg-base:        #121212; 
+            --bg-surface:     #121212; 
+            --bg-sidebar:     #121212;
+            --accent:         #990000; 
+            --accent-glow:    rgba(153, 0, 0, 0.5);
+            --text-primary:   #ffffff;
+            --text-secondary: #9e9e9e;
+            --sidebar-w:      80px; 
+            --transition:     0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .sidebar h3{
-            text-align:center;
-            margin-bottom:30px;
+        body {
+            display: flex;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg-base);
+            color: var(--text-primary);
+            min-height: 100vh;
         }
 
-        .sidebar a{
-            display:block;
-            padding:12px 20px;
-            color:#ccc;
-            text-decoration:none;
+      /* --- SIDEBAR FIX --- */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: var(--bg-sidebar);
+            height: 100vh;
+            position: fixed;
+            left: 0; top: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 0; /* Memberi ruang napas atas & bawah */
+            z-index: 100;
+            border-right: 1px solid rgba(255,255,255,0.03);
         }
 
-        .sidebar a:hover{
-            background:#333;
-            color:white;
+        /* Container menu dipaksa ke tengah */
+        .nav-group {
+            flex: 1; /* Mengambil semua sisa ruang */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* Memaksa isi grup ke tengah vertikal */
+            gap: 25px;
         }
 
-        /* CONTENT */
-        .content{
-            margin-left:220px;
-            padding:20px;
+        /* Menghilangkan margin auto pada logout agar tidak merusak centering */
+        .btn-logout-sidebar {
+            margin-top: 0; 
+            color: #444;
+            transition: 0.3s;
         }
 
-        /* CARD */
-        .card{
-            border-radius:10px;
-            box-shadow:0 0 10px rgba(0,0,0,0.3);
+        .nav-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 20px;
+            transition: var(--transition);
+            position: relative;
         }
 
-        /* TOPBAR */
-        .topbar{
-            background:#111;
-            padding:10px 20px;
-            margin-bottom:20px;
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
+        .nav-icon.active {
+            color: #fff;
+            background: var(--accent);
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            box-shadow: 0 4px 15px var(--accent-glow);
+            animation: morph 3s ease-in-out infinite both alternate;
         }
 
-        .btn-logout{
-            background:red;
-            padding:6px 12px;
-            border:none;
-            color:white;
-            border-radius:5px;
-            text-decoration:none;
+        @keyframes morph {
+            0% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
+            100% { border-radius: 50% 50% 20% 80% / 25% 80% 20% 75%; }
         }
 
+        /* --- MAIN CONTENT & TOPBAR --- */
+        .main {
+            margin-left: var(--sidebar-w);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 30px 40px;
+            background: var(--bg-surface);
+        }
+
+        .topbar-title h1 {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            border-radius: 10px;
+            display: grid;
+            place-items: center;
+            color: #fff;
+        }
+
+        .content {
+            flex: 1;
+            padding: 0 40px 40px 40px;
+        }
+
+        .btn-logout-sidebar {
+            margin-top: auto;
+            margin-bottom: 30px;
+            color: #555;
+            transition: 0.3s;
+        }
+        
+        .btn-logout-sidebar:hover { color: #ff3333; }
     </style>
-
 </head>
 <body>
 
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-        <h3>OWNER</h3>
+<?php $currentUri = uri_string(); ?>
 
-        <a href="/owner/dashboard">Dashboard</a>
-        <a href="/owner/laporan">Laporan</a>
-        <a href="/owner/kursus">Daftar Kursus</a>
-        <a href="/owner/log">Log Activity</a>
-        <a href="/owner/datasiswa">Data Siswa</a>
+<aside class="sidebar">
 
-        <hr style="border-color:#333;">
+    <nav class="nav-group">
+        <a href="/owner/dashboard" 
+           class="nav-icon <?= (str_contains($currentUri, 'dashboard')) ? 'active' : '' ?>">
+            <i class="fa-solid fa-house"></i>
+        </a>
 
-        <a href="/logout" style="color:red;">Logout</a>
-    </div>
+        <a href="/owner/laporan" 
+           class="nav-icon <?= (str_contains($currentUri, 'laporan')) ? 'active' : '' ?>">
+            <i class="fa-solid fa-file-invoice-dollar"></i>
+        </a>
 
-    <!-- CONTENT -->
-    <div class="content">
+        <a href="/owner/kursus" 
+           class="nav-icon <?= (str_contains($currentUri, 'kursus')) ? 'active' : '' ?>">
+            <i class="fa-solid fa-music"></i>
+        </a>
 
-        <!-- TOPBAR -->
-        <div class="topbar">
-            <div>
-                <b>Owner Panel</b>
+        <a href="/owner/datasiswa" 
+           class="nav-icon <?= (str_contains($currentUri, 'datasiswa')) ? 'active' : '' ?>">
+            <i class="fa-solid fa-user-graduate"></i>
+        </a>
+
+        <a href="/owner/log" 
+           class="nav-icon <?= (str_contains($currentUri, 'log')) ? 'active' : '' ?>">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+        </a>
+    </nav>
+
+    <a href="/logout" class="nav-icon btn-logout-sidebar">
+        <i class="fa-solid fa-right-from-bracket"></i>
+    </a>
+</aside>
+
+<div class="main">
+    <header class="topbar">
+        <div class="topbar-title">
+            <h1>OWNER OVERVIEW</h1>
+            <p style="font-size: 13px; color: var(--text-secondary);">
+                Halo, <?= session()->get('nama') ?? 'Owner'; ?>! Selamat bekerja kembali.
+            </p>
+        </div>
+        
+        <div class="user-profile">
+            <div style="text-align: right;">
+                <div style="font-weight: 800; font-size: 14px;"><?= session()->get('nama'); ?></div>
+                <small style="color: var(--text-secondary); font-size: 11px;">Owner Access</small>
             </div>
-
-            <div>
-                <span><?= session()->get('nama') ?? 'Owner'; ?></span>
+            <div class="user-avatar">
+                <i class="fa-solid fa-user-tie"></i>
             </div>
         </div>
+    </header>
 
-        <!-- ISI -->
+    <main class="content">
         <?= $this->renderSection('content'); ?>
-
-    </div>
+    </main>
+</div>
 
 </body>
 </html>

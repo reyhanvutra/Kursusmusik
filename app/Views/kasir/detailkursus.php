@@ -16,18 +16,14 @@
         </div>
     </header>
 
-    <h3 class="judul-level">🎯 Paket Level Tersedia</h3>
-
-    <?php if(empty($level)): ?>
-        <p style="color: #444; font-style: italic;">Belum ada level kursus yang dibuka.</p>
-    <?php endif; ?>
+    <h3 class="judul-level"><span>Paket Level Tersedia</span></h3>
 
     <div class="grid-level">
         <?php foreach($level as $l): ?>
         <div class="card-level">
             
             <span class="slot-badge <?= $l['slot_sisa'] > 0 ? 'slot-available' : 'slot-full'; ?>">
-                <?= $l['slot_sisa'] > 0 ? 'Slot Tersedia: '.$l['slot_sisa'] : 'Penuh'; ?>
+                <?= $l['slot_sisa'] > 0 ? $l['slot_sisa'].' Slot Tersisa' : 'Kelas Penuh'; ?>
             </span>
 
             <h3><?= $l['badge']; ?> <?= $l['nama_level']; ?></h3>
@@ -35,26 +31,26 @@
 
             <div class="info-list">
                 <div class="info-item">
-                    <i class="fa-solid fa-calendar-check"></i>
-                    <span><b><?= $l['pertemuan']; ?>x</b> Pertemuan / bulan</span>
+                    <i class="fa-solid fa-calendar-day"></i>
+                    <span><b><?= $l['pertemuan']; ?>x</b> Pertemuan tiap bulan</span>
                 </div>
                 <div class="info-item">
-                    <i class="fa-solid fa-clock"></i>
-                    <span>Durasi: <?= $l['durasi'] ?? '-' ?></span>
+                    <i class="fa-solid fa-hourglass-half"></i>
+                    <span>Durasi Sesi: <b><?= $l['durasi'] ?? '-' ?></b></span>
                 </div>
                 <div class="info-item">
-                    <i class="fa-solid fa-user-tie"></i>
-                    <span>Mentor: <?= $l['nama_mentor'] ?? 'TBA' ?></span>
+                    <i class="fa-solid fa-user-astronaut"></i>
+                    <span>Mentor: <b><?= $l['nama_mentor'] ?? 'TBA' ?></b></span>
                 </div>
                 <div class="info-item">
-                    <i class="fa-solid fa-business-time"></i>
-                    <span>Jadwal: <?= $l['hari']; ?> (<?= $l['jam_mulai']; ?> - <?= $l['jam_selesai']; ?>)</span>
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span>Jadwal: <b><?= $l['hari']; ?></b> (<?= $l['jam_mulai']; ?> - <?= $l['jam_selesai']; ?>)</span>
                 </div>
             </div>
 
             <div class="price-tag">
                 <div class="price-value">
-                    Rp <?= number_format($l['harga'],0,',','.'); ?> <span>/ bulan</span>
+                    Rp <?= number_format($l['harga'],0,',','.'); ?> <span>/ bln</span>
                 </div>
                 
                 <button 
@@ -66,7 +62,7 @@
                     )"
                     <?= $l['slot_sisa'] <= 0 ? 'disabled' : '' ?>
                 >
-                    <?= $l['slot_sisa'] <= 0 ? 'Mohon Maaf, Penuh' : 'Ambil Paket Ini' ?>
+                    <?= $l['slot_sisa'] <= 0 ? 'Quota Terlampaui' : 'Pilih Level' ?>
                 </button>
             </div>
         </div>

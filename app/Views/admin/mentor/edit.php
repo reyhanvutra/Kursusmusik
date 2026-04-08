@@ -1,37 +1,61 @@
 <?= $this->extend('admin/layout'); ?>
+
 <?= $this->section('content'); ?>
+<link rel="stylesheet" href="<?= base_url('assets/css/admin/admin_tambah.css'); ?>">
 
-<h2>Edit Mentor</h2>
-
-<a href="/admin/mentor">← Kembali</a>
-
-<?php if(session()->getFlashdata('error')): ?>
-    <div style="color:red;margin-top:10px;">
-        <?= session()->getFlashdata('error'); ?>
+<div class="form-page-wrapper">
+    
+    <div class="form-header-area">
+        <a href="/admin/mentor" class="btn-back">
+             <i class="fa-solid fa-arrow-left"></i>Kembali</a>
+        <h2 class="page-header">Edit Mentor</h2>
     </div>
-<?php endif; ?>
 
-<form method="post" action="/admin/mentor/update/<?= $mentor['id']; ?>" style="margin-top:15px;">
-<?= csrf_field(); ?>
+    <div class="form-container">
+        
+        <?php if(session()->getFlashdata('error')): ?>
+            <div class="alert error">
+                <?= session()->getFlashdata('error'); ?>
+            </div>
+        <?php endif; ?>
 
-<label>Nama Mentor</label><br>
-<input type="text" name="nama" value="<?= old('nama',$mentor['nama']); ?>" required
-       style="width:300px;padding:6px;"><br><br>
+        <form method="post" action="/admin/mentor/update/<?= $mentor['id']; ?>">
+            <?= csrf_field(); ?>
 
-<label>Keahlian</label><br>
-<input type="text" name="keahlian" value="<?= old('keahlian',$mentor['keahlian']); ?>" required
-       style="width:300px;padding:6px;"><br><br>
+            <div class="form-group">
+                <label for="nama">Nama Mentor</label>
+                <input type="text" 
+                       id="nama" 
+                       name="nama" 
+                       class="form-control" 
+                       value="<?= old('nama', $mentor['nama']); ?>" 
+                       required>
+            </div>
 
-<label>Status</label><br>
-<select name="aktif" style="width:200px;padding:6px;">
-    <option value="1" <?= $mentor['aktif'] ? 'selected' : '' ?>>Aktif</option>
-    <option value="0" <?= !$mentor['aktif'] ? 'selected' : '' ?>>Nonaktif</option>
-</select><br><br>
+            <div class="form-group">
+                <label for="keahlian">Keahlian</label>
+                <input type="text" 
+                       id="keahlian" 
+                       name="keahlian" 
+                       class="form-control" 
+                       value="<?= old('keahlian', $mentor['keahlian']); ?>" 
+                       required>
+            </div>
 
-<button type="submit" style="background:#28a745;color:white;padding:8px 15px;border:none;border-radius:5px;">
-    Update
-</button>
+            <div class="form-group">
+                <label for="aktif">Status</label>
+                <select name="aktif" id="aktif" class="form-control">
+                    <option value="1" <?= old('aktif', $mentor['aktif']) == '1' ? 'selected' : ''; ?>>Aktif</option>
+                    <option value="0" <?= old('aktif', $mentor['aktif']) == '0' ? 'selected' : ''; ?>>Nonaktif</option>
+                </select>
+            </div>
 
-</form>
+            <button type="submit" class="btn-save">
+                Update
+            </button>
+
+        </form>
+    </div>
+</div>
 
 <?= $this->endSection(); ?>

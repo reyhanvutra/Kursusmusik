@@ -1,0 +1,177 @@
+/* --- ROOT VARIABLES --- */
+:root {
+    --accent: #990000;
+    --dark-bg: #0f0f0f;
+    --card-bg: #1a1a1a;
+    --row-bg: #1e1e1e;
+    --text-dim: #888;
+    --text-main: #eee;
+}
+
+/* --- PAGE WRAPPER --- */
+.form-page-wrapper {
+    padding: 30px 40px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* --- HEADER AREA --- */
+.form-header-area {
+    margin-bottom: 30px;
+}
+
+.page-header {
+    font-weight: 800;
+    font-size: 32px;
+    letter-spacing: -1.5px;
+    color: #ffffff;
+    margin: 0 0 5px 0;
+}
+
+/* --- NAVIGATION BUTTON --- */
+.btn-nav.secondary {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--text-dim);
+    padding: 12px 24px;
+    border-radius: 15px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 700;
+    display: inline-block;
+    transition: 0.3s;
+}
+
+.btn-nav.secondary:hover {
+    background: #222;
+    color: #fff;
+    border-color: #444;
+}
+
+/* --- TABLE CONTAINER (PREMIUM BOX) --- */
+.table-container {
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 40px; /* Konsisten dengan dashboard */
+    padding: 35px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+}
+
+.table-header {
+    margin-bottom: 25px;
+    padding-left: 10px;
+}
+
+/* --- CUSTOM TABLE STYLES --- */
+.custom-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 12px; /* Jarak antar baris */
+}
+
+.custom-table th {
+    text-align: left;
+    padding: 10px 20px;
+    color: #444;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.custom-table tbody tr {
+    background: var(--row-bg);
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.custom-table tbody tr:hover {
+    background: #252525;
+    transform: scale(1.005);
+}
+
+.custom-table td {
+    padding: 20px;
+    font-size: 14px;
+    color: #ccc;
+    border-top: 1px solid rgba(255,255,255,0.02);
+    border-bottom: 1px solid rgba(255,255,255,0.02);
+}
+
+/* Rounding corners for each row */
+.custom-table td:first-child { 
+    border-radius: 20px 0 0 20px; 
+    border-left: 1px solid rgba(255,255,255,0.02); 
+}
+.custom-table td:last-child { 
+    border-radius: 0 20px 20px 0; 
+    border-right: 1px solid rgba(255,255,255,0.02); 
+}
+
+/* --- BADGE & BUTTONS --- */
+.badge-item {
+    background: rgba(255, 255, 255, 0.05);
+    color: #bbb;
+    padding: 6px 14px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.btn-detail {
+    background: var(--accent);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 14px;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 800;
+    transition: 0.3s;
+    display: inline-block;
+}
+
+.btn-detail:hover {
+    filter: brightness(1.2);
+    box-shadow: 0 5px 15px rgba(153, 0, 0, 0.3);
+}
+
+/* --- PAGINATION STYLES (CodeIgniter 4 Default Override) --- */
+.pagination {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+}
+
+.pagination li a, .pagination li span {
+    color: #888;
+    padding: 10px 18px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 13px;
+    transition: 0.3s;
+}
+
+.pagination li.active span {
+    background: var(--accent);
+    color: white;
+}
+
+.pagination li a:hover {
+    background: #222;
+    color: #fff;
+}
+
+/* Responsivitas */
+@media (max-width: 768px) {
+    .wrapper {
+        grid-template-columns: 1fr;
+    }
+    .custom-table {
+        display: block;
+        overflow-x: auto;
+    }
+}

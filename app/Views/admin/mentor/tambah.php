@@ -1,37 +1,63 @@
 <?= $this->extend('admin/layout'); ?>
+
 <?= $this->section('content'); ?>
+<link rel="stylesheet" href="<?= base_url('assets/css/admin/admin_tambah.css'); ?>">
 
-<h2>Tambah Mentor</h2>
-
-<a href="/admin/mentor">← Kembali</a>
-
-<?php if(session()->getFlashdata('error')): ?>
-    <div style="color:red;margin-top:10px;">
-        <?= session()->getFlashdata('error'); ?>
+<div class="form-page-wrapper">
+    
+    <div class="form-header-area">
+        <a href="/admin/mentor" class="btn-back">
+             <i class="fa-solid fa-arrow-left"></i>Kembali</a>
+        <h2 class="page-header">Tambah Mentor</h2>
     </div>
-<?php endif; ?>
 
-<form method="post" action="/admin/mentor/simpan" style="margin-top:15px;">
-<?= csrf_field(); ?>
+    <div class="form-container">
+        
+        <?php if(session()->getFlashdata('error')): ?>
+            <div class="alert error">
+                <?= session()->getFlashdata('error'); ?>
+            </div>
+        <?php endif; ?>
 
-<label>Nama Mentor</label><br>
-<input type="text" name="nama" value="<?= old('nama'); ?>" required
-       style="width:300px;padding:6px;"><br><br>
+        <form method="post" action="/admin/mentor/simpan">
+            <?= csrf_field(); ?>
 
-<label>Keahlian</label><br>
-<input type="text" name="keahlian" value="<?= old('keahlian'); ?>" required
-       style="width:300px;padding:6px;"><br><br>
+            <div class="form-group">
+                <label for="nama">Nama Mentor</label>
+                <input type="text" 
+                       id="nama" 
+                       name="nama" 
+                       class="form-control" 
+                       placeholder="Masukkan nama lengkap..."
+                       value="<?= old('nama'); ?>" 
+                       required>
+            </div>
 
-<label>Status</label><br>
-<select name="aktif" style="width:200px;padding:6px;">
-    <option value="1">Aktif</option>
-    <option value="0">Nonaktif</option>
-</select><br><br>
+            <div class="form-group">
+                <label for="keahlian">Keahlian</label>
+                <input type="text" 
+                       id="keahlian" 
+                       name="keahlian" 
+                       class="form-control" 
+                       placeholder="Contoh: Gitar, Piano, Vokal..."
+                       value="<?= old('keahlian'); ?>" 
+                       required>
+            </div>
 
-<button type="submit" style="background:#007bff;color:white;padding:8px 15px;border:none;border-radius:5px;">
-    Simpan
-</button>
+            <div class="form-group">
+                <label for="aktif">Status</label>
+                <select name="aktif" id="aktif" class="form-control">
+                    <option value="1" <?= old('aktif') == '1' ? 'selected' : ''; ?>>Aktif</option>
+                    <option value="0" <?= old('aktif') == '0' ? 'selected' : ''; ?>>Nonaktif</option>
+                </select>
+            </div>
 
-</form>
+            <button type="submit" class="btn-save">
+                Simpan
+            </button>
+
+        </form>
+    </div>
+</div>
 
 <?= $this->endSection(); ?>

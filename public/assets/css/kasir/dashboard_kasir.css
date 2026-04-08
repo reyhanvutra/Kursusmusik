@@ -1,148 +1,199 @@
-/* --- DASHBOARD KASIR STYLE --- */
+/* --- ROOT VARIABLES --- */
 :root {
-    --bg-dark: #121212;
+    --accent: #990000;
+    --dark-bg: #0f0f0f;
     --card-bg: #1a1a1a;
-    --accent-red: #990000;
-    --border-rgba: rgba(255, 255, 255, 0.05);
-    --radius-lg: 20px;
-    --radius-md: 12px;
 }
 
-/* Container utama agar tidak terlalu lebar ke samping */
-.form-page-wrapper {
-    padding: 30px;
-    max-width: 1200px;
+.dashboard-wrapper {
+    padding: 30px 40px;
+    max-width: 1400px;
     margin: 0 auto;
 }
 
-/* Navigasi Tombol */
-.nav-buttons {
+/* --- HEADER SECTION --- */
+.welcome-header {
     display: flex;
-    gap: 15px;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 35px;
 }
 
-.btn-nav {
+.page-header {
+    font-weight: 800;
+    font-size: 28px;
+    letter-spacing: -1px;
+    color: #ffffff;
+    margin: 0;
+}
+
+/* Tombol Transaksi (Gaya Putih Premium) */
+.btn-main-action {
+    background: #ffffff;
+    color: #000000;
+    padding: 14px 28px;
+    border-radius: 20px; /* Lebih membulat */
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 13px;
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 12px 24px;
-    border-radius: var(--radius-md);
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 14px;
-    transition: all 0.3s ease;
+    gap: 12px;
+    transition: background 0.3s ease;
 }
 
-.btn-nav.primary {
-    background: var(--accent-red);
-    color: white;
+.btn-main-action:hover {
+    background: #e0e0e0;
 }
 
-.btn-nav.secondary {
-    background: #252525;
-    color: #bbb;
-    border: 1px solid var(--border-rgba);
-}
-
-.btn-nav:hover {
-    transform: translateY(-2px);
-    filter: brightness(1.2);
-}
-
-/* Kartu Statistik */
-.stats-grid {
+/* --- STATS GRID (Sama dengan Card-Premium Admin) --- */
+.stats-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 25px;
-    margin-bottom: 40px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-bottom: 30px;
 }
 
-.stat-card {
+.card-premium {
     background: var(--card-bg);
-    padding: 30px;
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border-rgba);
-    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-}
-
-.stat-card h4 {
-    color: #666;
-    font-size: 12px;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-    letter-spacing: 1px;
-}
-
-.stat-card h2 {
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 40px; /* Konsisten dengan Admin */
+    padding: 35px;
     color: #ffffff;
-    font-size: 32px;
-    margin: 0;
-    font-weight: 700;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 220px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.stat-card span {
+.card-premium:hover {
+    border-color: rgba(153, 0, 0, 0.4);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+    /* Animasi transform: translateY dihapus sesuai request */
+}
+
+.card-label {
     font-size: 16px;
-    color: #444;
-    margin-left: 8px;
+    font-weight: 600;
+    color: #888;
+    letter-spacing: 1px;
+    text-transform: uppercase;
 }
 
-/* Tabel Riwayat */
-.table-container {
+.card-value {
+    font-size: 52px;
+    font-weight: 800;
+    margin-top: 10px;
+}
+
+.card-info-pill {
+    background: rgba(255, 255, 255, 0.05);
+    color: #eee;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    width: fit-content;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.text-success { color: #00ff80 !important; }
+
+/* --- NAVIGATION PILLS --- */
+.sub-nav {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 30px;
+}
+
+.btn-sub-nav {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #888;
+    padding: 12px 24px;
+    border-radius: 15px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 700;
+    transition: 0.3s;
+}
+
+.btn-sub-nav:hover {
+    background: #222;
+    color: #fff;
+    border-color: #444;
+}
+
+/* --- TABLE SECTION (Sama dengan Desain Admin) --- */
+.glass-table-container {
     background: var(--card-bg);
-    border-radius: var(--radius-lg);
-    padding: 30px;
-    border: 1px solid var(--border-rgba);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 40px;
+    padding: 30px 35px;
 }
 
-.table-header {
+.table-header-flex {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 25px;
 }
 
-.custom-table {
+.modern-table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0 10px;
 }
 
-.custom-table th {
+.modern-table th {
     text-align: left;
-    padding: 15px;
-    border-bottom: 2px solid #222;
-    color: #555;
+    padding: 10px 20px;
+    color: #444;
     font-size: 12px;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
 }
 
-.custom-table td {
-    padding: 20px 15px;
-    border-bottom: 1px solid #222;
+.modern-table tbody tr {
+    background: #1e1e1e; /* Gaya user-item di Admin */
+    transition: all 0.3s ease;
+}
+
+.modern-table td {
+    padding: 20px;
     font-size: 14px;
     color: #ccc;
+    border-top: 1px solid rgba(255,255,255,0.02);
+    border-bottom: 1px solid rgba(255,255,255,0.02);
 }
 
-.badge-item {
+/* Rounding the rows */
+.modern-table td:first-child { border-radius: 15px 0 0 15px; border-left: 1px solid rgba(255,255,255,0.02); }
+.modern-table td:last-child { border-radius: 0 15px 15px 0; border-right: 1px solid rgba(255,255,255,0.02); }
+
+.item-pill {
     background: #252525;
-    color: #999;
-    padding: 6px 12px;
-    border-radius: 8px;
+    color: #eee;
+    padding: 6px 14px;
+    border-radius: 10px;
     font-size: 11px;
-    border: 1px solid var(--border-rgba);
+    font-weight: 700;
+    border: 1px solid rgba(255,255,255,0.05);
 }
 
-.btn-detail {
-    background: #252525;
+.btn-action-view {
+    background: var(--accent);
     color: white;
-    padding: 8px 16px;
-    border-radius: 8px;
+    padding: 8px 18px;
+    border-radius: 12px;
     text-decoration: none;
-    font-size: 12px;
+    font-size: 11px;
+    font-weight: 800;
     transition: 0.3s;
 }
 
-.btn-detail:hover {
-    background: #333;
+.btn-action-view:hover {
+    filter: brightness(1.2);
 }
