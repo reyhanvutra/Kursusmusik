@@ -268,120 +268,121 @@ public function dashboard()
             'pager' => $pager
         ]);
     }
-   public function dataSiswa()
-    {
-        $nama   = $this->request->getGet('nama');
-        $status = $this->request->getGet('status'); // 0/1
-        $aktif  = $this->request->getGet('aktif');  // 1/0
+  public function dataSiswa()
+{
+    $today = date('Y-m-d');
 
-        $today = date('Y-m-d');
+    $nama   = $this->request->getGet('nama');
+    $aktif  = $this->request->getGet('aktif');
+    $kursus = $this->request->getGet('kursus');
 
-        // Ambil data siswa + total transaksi
-        $builder = $this->siswaModel
-            ->select('siswa.*, COUNT(transaksi.id) as total_transaksi')
-            ->join('transaksi', 'transaksi.id_siswa = siswa.id', 'left')
-            ->groupBy('siswa.id')
-            ->orderBy('siswa.id', 'DESC');
+    $builder = $this->siswaModel
+        ->select("
+            siswa.*,
 
-        // Filter nama
-        if ($nama) {
-            $builder->like('siswa.nama', $nama);
-        }
+            COUNT(DISTINCT transaksi.id) as total_transaksi,
 
-        // Filter status
-        if ($status !== null && $status !== '') {
-            $builder->where('siswa.sudah_daftar', $status);
-        }
+            COUNT(CASE 
+                WHEN transaksi_detail.tanggal_selesai >= '$today' 
+                THEN 1 
+            END) as aktif_count,
 
-        // Ambil semua dulu
-        $allData = $builder->findAll();
+            GROUP_CONCAT(DISTINCT k.nama_kursus SEPARATOR ', ') as nama_kursus
+        ")
+        ->join('transaksi', 'transaksi.id_siswa = siswa.id', 'left')
+        ->join('transaksi_detail', 'transaksi_detail.id_transaksi = transaksi.id', 'left')
+        ->join('level l', 'l.id = transaksi_detail.id_item', 'left')
+        ->join('kursus k', 'k.id = l.id_kursus', 'left')
+        ->groupBy('siswa.id')
+        ->orderBy('siswa.id', 'DESC');
 
-        // Hitung aktif/nonaktif tiap siswa
-        $filtered = [];
-        foreach ($allData as $s) {
-            $aktifCount = $this->transaksiModel
-                ->join('transaksi_detail', 'transaksi_detail.id_transaksi = transaksi.id')
-                ->where('transaksi.id_siswa', $s['id'])
-                ->where('transaksi_detail.tanggal_selesai >=', $today)
-                ->countAllResults();
-
-            $s['aktif_count'] = $aktifCount;
-
-            // Filter aktif/nonaktif
-            if ($aktif !== null && $aktif !== '') {
-                if ($aktif == 1 && $aktifCount == 0) continue;
-                if ($aktif == 0 && $aktifCount > 0) continue;
-            }
-
-            $filtered[] = $s;
-        }
-
-        // Pagination manual
-        $page = $this->request->getGet('page') ?? 1;
-        $perPage = 10;
-        $offset = ($page - 1) * $perPage;
-        $pagedData = array_slice($filtered, $offset, $perPage);
-
-        // Gunakan pager CI4
-        $pager = \Config\Services::pager();
-        $pagerLinks = $pager->makeLinks($page, $perPage, count($filtered), 'default_full');
-
-        return view('owner/datasiswa', [
-            'siswa' => $pagedData,
-            'pager' => $pagerLinks,
-            'nama' => $nama,
-            'status' => $status,
-            'aktif' => $aktif
-        ]);
+    // 🔍 FILTER NAMA
+    if ($nama) {
+        $builder->like('siswa.nama', $nama);
     }
 
-    public function dataSiswaPDF()
-    {
-        $nama   = $this->request->getGet('nama');
-        $status = $this->request->getGet('status');
-        $aktif  = $this->request->getGet('aktif');
-
-        $today = date('Y-m-d');
-
-        // Query siswa + total transaksi
-        $builder = $this->siswaModel
-            ->select('siswa.*, COUNT(transaksi.id) as total_transaksi')
-            ->join('transaksi', 'transaksi.id_siswa = siswa.id', 'left')
-            ->groupBy('siswa.id')
-            ->orderBy('siswa.id', 'DESC');
-
-        if ($nama) $builder->like('siswa.nama', $nama);
-        if ($status !== null && $status !== '') $builder->where('siswa.sudah_daftar', $status);
-
-        $allData = $builder->findAll();
-
-        // Hitung aktif/nonaktif dan filter
-        $filtered = [];
-        foreach ($allData as $s) {
-            $aktifCount = $this->transaksiModel
-                ->join('transaksi_detail', 'transaksi_detail.id_transaksi = transaksi.id')
-                ->where('transaksi.id_siswa', $s['id'])
-                ->where('transaksi_detail.tanggal_selesai >=', $today)
-                ->countAllResults();
-
-            $s['aktif_count'] = $aktifCount;
-
-            // Filter aktif/nonaktif
-            if ($aktif !== null && $aktif !== '') {
-                if ($aktif == 1 && $aktifCount == 0) continue;
-                if ($aktif == 0 && $aktifCount > 0) continue;
-            }
-
-            $filtered[] = $s;
-        }
-
-        // Generate PDF
-        $html = view('owner/datasiswa_pdf', ['siswa' => $filtered]);
-
-        $dompdf = new \Dompdf\Dompdf();
-        $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'portrait');
-        $dompdf->render();
-        $dompdf->stream("data_siswa.pdf", ['Attachment' => true]);
+    // 🔥 FILTER KURSUS
+    if ($kursus) {
+        $builder->where('k.id', $kursus);
     }
+
+    // 🔥 FILTER STATUS AKTIF
+    if ($aktif !== null && $aktif !== '') {
+        if ($aktif == 1) {
+            $builder->having('aktif_count >', 0);
+        } else {
+            $builder->having('aktif_count =', 0);
+        }
+    }
+
+    $allData = $builder->get()->getResultArray();
+
+    // ================= PAGINATION MANUAL =================
+    $page = $this->request->getGet('page') ?? 1;
+    $perPage = 10;
+    $offset = ($page - 1) * $perPage;
+
+    $pagedData = array_slice($allData, $offset, $perPage);
+
+    $pager = \Config\Services::pager();
+    $pagerLinks = $pager->makeLinks($page, $perPage, count($allData), 'default_full');
+
+    // 🔥 LIST KURSUS UNTUK FILTER
+    $listKursus = $this->kursusModel->findAll();
+
+    return view('owner/datasiswa', [
+        'siswa' => $pagedData,
+        'pager' => $pagerLinks,
+        'nama' => $nama,
+        'aktif' => $aktif,
+        'kursus' => $kursus,
+        'listKursus' => $listKursus
+    ]);
+}
+
+   public function dataSiswaPDF()
+{
+    $today = date('Y-m-d');
+
+    $nama   = $this->request->getGet('nama');
+    $aktif  = $this->request->getGet('aktif');
+    $kursus = $this->request->getGet('kursus');
+
+    $builder = $this->siswaModel
+        ->select("
+            siswa.*,
+            COUNT(DISTINCT transaksi.id) as total_transaksi,
+            COUNT(CASE 
+                WHEN transaksi_detail.tanggal_selesai >= '$today' 
+                THEN 1 
+            END) as aktif_count,
+            GROUP_CONCAT(DISTINCT k.nama_kursus SEPARATOR ', ') as nama_kursus
+        ")
+        ->join('transaksi', 'transaksi.id_siswa = siswa.id', 'left')
+        ->join('transaksi_detail', 'transaksi_detail.id_transaksi = transaksi.id', 'left')
+        ->join('level l', 'l.id = transaksi_detail.id_item', 'left')
+        ->join('kursus k', 'k.id = l.id_kursus', 'left')
+        ->groupBy('siswa.id');
+
+    if ($nama) $builder->like('siswa.nama', $nama);
+    if ($kursus) $builder->where('k.id', $kursus);
+
+    if ($aktif !== null && $aktif !== '') {
+        if ($aktif == 1) {
+            $builder->having('aktif_count >', 0);
+        } else {
+            $builder->having('aktif_count =', 0);
+        }
+    }
+
+    $siswa = $builder->get()->getResultArray();
+
+    $html = view('owner/datasiswa_pdf', ['siswa' => $siswa]);
+
+    $dompdf = new \Dompdf\Dompdf();
+    $dompdf->loadHtml($html);
+    $dompdf->setPaper('A4', 'portrait');
+    $dompdf->render();
+    $dompdf->stream("data_siswa.pdf", ['Attachment' => true]);
+}
 }

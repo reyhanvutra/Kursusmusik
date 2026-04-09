@@ -8,7 +8,7 @@
             <h2 class="page-title">Data Siswa</h2>
             <p class="page-subtitle">Daftar seluruh siswa yang terdaftar dalam sistem kursus musik.</p>
         </div>
-        <a href="/owner/datasiswa/pdf?nama=<?= $nama ?>&status=<?= $status ?>&aktif=<?= $aktif ?>" 
+        <a href="/owner/datasiswa/pdf?nama=<?= $nama ?>&aktif=<?= $aktif ?>&kursus=<?= $kursus ?>" 
            class="btn btn-pdf">
             <i class="fa-solid fa-file-pdf"></i> Export PDF
         </a>
@@ -23,6 +23,16 @@
                     <input type="text" name="nama" placeholder="Cari nama siswa..." value="<?= $nama ?? ''; ?>">
                 </div>
             </div>
+            <div class="input-group">
+                <label>Kursus</label>
+                <select name="kursus">
+                    <option value="">Semua Kursus</option>
+                    <?php foreach($listKursus as $k): ?>
+                        <option value="<?= $k['id']; ?>"
+    <?= ($kursus == $k['id']) ? 'selected' : '' ?>><?= $k['nama_kursus']; ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
 
             <div class="input-group">
                 <label>Status Aktivitas</label>
@@ -35,7 +45,9 @@
 
             <div class="button-group">
                 <button type="submit" class="btn btn-filter">Filter</button>
-                <a href="/owner/datasiswa" class="btn btn-clear">Reset</a>
+                <a href="/owner/datasiswa" class="btn btn-clear">
+                    <i class="fa-solid fa-rotate-left"></i> Clear
+                </a>
             </div>
         </form>
     </div>
@@ -48,6 +60,7 @@
                     <th>Informasi Siswa</th>
                     <th>Kontak</th>
                     <th>Alamat</th>
+                    <th>Kursus</th>
                     <th class="text-center">Status</th>
                     <th class="text-right">Total Transaksi</th>
                 </tr>
@@ -71,6 +84,11 @@
                             </div>
                         </td>
                         <td><span class="address-text"><?= $s['alamat']; ?></span></td>
+                        <td>
+    <span style="color:#fff;font-weight:500;">
+        <?= !empty($s['nama_kursus']) ? $s['nama_kursus'] : 'Kursus sudah tidak tersedia'; ?>
+    </span>
+</td>
                         <td class="text-center">
                             <?php if($s['aktif_count'] > 0): ?>
                                 <span class="badge-status aktif">Aktif</span>

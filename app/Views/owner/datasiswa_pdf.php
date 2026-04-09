@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Data Siswa</title>
+    <title>Data Siswa </title>
     <style>
         body { font-family: Arial, sans-serif; font-size: 12px; }
         h2 { text-align: center; margin-bottom: 10px; }
@@ -26,6 +26,7 @@
             <th>Nama</th>
             <th>No HP</th>
             <th>Alamat</th>
+            <th>Kursus</th>
             <th>Status</th>
             <th>Total Transaksi</th>
         </tr>
@@ -37,6 +38,7 @@
             <td><?= $s['nama']; ?></td>
             <td><?= $s['no_hp']; ?></td>
             <td><?= $s['alamat']; ?></td>
+            <td><?= $s['nama_kursus'] ?? 'Kursus sudah tidak tersedia'; ?></td>
             <td>
                 <?php if($s['aktif_count']>0): ?>
                     <span class="badge aktif">Aktif</span>
