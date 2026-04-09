@@ -1,0 +1,216 @@
+/* --- CONTAINER --- */
+.report-container {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.header-action {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.page-title {
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+/* --- TOTAL BADGE --- */
+.total-badge {
+    background: rgba(153, 0, 0, 0.1);
+    border: 1px solid rgba(153, 0, 0, 0.2);
+    padding: 10px 20px;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.total-badge .label {
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #9e9e9e;
+    letter-spacing: 1px;
+}
+
+.total-badge .value {
+    font-size: 20px;
+    font-weight: 800;
+    color: #fff;
+}
+
+/* --- CARDS --- */
+.card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 25px;
+    backdrop-filter: blur(10px);
+}
+
+/* --- FILTER GRID --- */
+/* Mengatur grid agar lebih rapi dan seimbang */
+.filter-grid {
+    display: flex;
+    flex-wrap: wrap; /* Agar responsif jika layar kecil */
+    align-items: flex-end; /* Memastikan semua input dan tombol sejajar di bawah */
+    gap: 15px; /* Jarak antar elemen filter */
+}
+
+/* Mengatur lebar tiap input group agar tidak terlalu lebar/sempit */
+.input-group {
+    flex: 1; 
+    min-width: 150px; /* Lebar minimal tiap input */
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Khusus untuk Nama Siswa bisa dibuat lebih lebar sedikit */
+.input-group:nth-child(4) {
+    flex: 1.5;
+}
+
+.input-group label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #666;
+    text-transform: uppercase;
+    padding-left: 5px;
+}
+
+.input-group input, 
+.input-group select {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 12px 15px;
+    color: #fff;
+    font-family: inherit;
+    transition: 0.3s;
+}
+/* Memastikan teks opsi di dalam dropdown terlihat */
+.input-group select option {
+    background-color: #1e1e1e; /* Warna gelap agar kontras dengan teks putih */
+    color: #ffffff;
+    padding: 10px;
+}
+
+
+.input-group input:focus, 
+.input-group select:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* --- BUTTONS --- */
+.button-group {
+    display: flex;
+    gap: 10px;
+}
+
+.btn {
+    padding: 12px 20px;
+    border-radius: 12px;
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.btn-filter { background: var(--accent); color: #fff; }
+.btn-filter:hover { box-shadow: 0 5px 15px var(--accent-glow); transform: translateY(-2px); }
+
+.btn-clear { background: rgba(255, 255, 255, 0.05); color: #ccc; }
+.btn-clear:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+
+.btn-pdf { background: #fff; color: #000; }
+.btn-pdf:hover { background: #e0e0e0; transform: translateY(-2px); }
+
+/* --- MODERN TABLE --- */
+.card-table-wrapper {
+    padding: 10px;
+    overflow-x: auto;
+}
+
+.modern-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.modern-table th {
+    text-align: left;
+    padding: 20px;
+    font-size: 12px;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.modern-table td {
+    padding: 18px 20px;
+    font-size: 14px;
+    color: #9e9e9e;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+.modern-table tr:hover td {
+    background: rgba(255, 255, 255, 0.01);
+    color: #fff;
+}
+
+.student-name {
+    font-weight: 700;
+    color: #fff;
+}
+
+.text-accent { color: var(--accent); }
+.text-white { color: #fff; font-weight: 700; }
+.text-muted { font-size: 12px; opacity: 0.6; }
+
+.badge-date {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+}
+
+/* --- PAGINATION --- */
+.pagination-wrapper {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+/* Custom styling for CI4 Default Pager jika diperlukan */
+.pagination-wrapper ul {
+    display: flex;
+    list-style: none;
+    gap: 5px;
+}
+
+.pagination-wrapper li a {
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    color: #fff;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.pagination-wrapper li.active a {
+    background: var(--accent);
+}

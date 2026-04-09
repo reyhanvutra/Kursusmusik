@@ -1,0 +1,188 @@
+/* --- LAYOUT & CARDS --- */
+.report-container {
+    animation: slideUp 0.4s ease-out;
+}
+.header-action {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.page-title { font-weight: 800; letter-spacing: -1px; }
+.page-subtitle { color: #666; font-size: 13px; }
+
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 25px;
+    backdrop-filter: blur(12px);
+}
+
+/* --- FILTER DESIGN --- */
+.filter-grid {
+    display: flex;
+    align-items: flex-end;
+    gap: 15px;
+}
+
+.input-group {
+    flex: 1;
+}
+
+.input-group label {
+    font-size: 11px;
+    font-weight: 800;
+    color: #444;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.input-with-icon { position: relative; }
+.input-with-icon i {
+    position: absolute; left: 15px; top: 50%;
+    transform: translateY(-50%); color: var(--accent);
+}
+
+.input-group input, .input-group select {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 10px 15px;
+    color: #fff;
+    width: 100%;
+}
+
+.input-with-icon input { padding-left: 42px; }
+
+/* --- ROLE BADGES --- */
+.role-badge {
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.role-badge.admin {
+    background: rgba(153, 0, 0, 0.15);
+    color: #ff3e3e;
+    border: 1px solid rgba(153, 0, 0, 0.3);
+}
+
+.role-badge.kasir {
+    background: rgba(0, 150, 255, 0.1);
+    color: #3eaeff;
+    border: 1px solid rgba(0, 150, 255, 0.2);
+}
+
+/* --- ACTIVITY TEXT --- */
+.activity-desc {
+    color: #ccc;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.activity-dot {
+    font-size: 8px;
+    color: var(--accent);
+    opacity: 0.6;
+}
+
+/* --- TIMESTAMP DESIGN --- */
+.timestamp {
+    display: flex;
+    flex-direction: column;
+}
+
+.timestamp .date {
+    color: #fff;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.timestamp .time {
+    color: #555;
+    font-size: 11px;
+}
+
+/* --- TABLE UTILS --- */
+.modern-table { width: 100%; border-collapse: collapse; }
+.modern-table th {
+    text-align: left; padding: 15px 20px;
+    font-size: 11px; color: #444; text-transform: uppercase;
+}
+.modern-table td {
+    padding: 18px 20px; border-bottom: 1px solid rgba(255,255,255,0.02);
+}
+
+.user-info-name { color: #fff; font-weight: 700; }
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+/* --- PAGINATION --- */
+.pagination-wrapper {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+/* Custom styling for CI4 Default Pager jika diperlukan */
+.pagination-wrapper ul {
+    display: flex;
+    list-style: none;
+    gap: 5px;
+}
+
+.pagination-wrapper li a {
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    color: #fff;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.pagination-wrapper li.active a {
+    background: var(--accent);
+}
+    /* Memastikan teks opsi di dalam dropdown terlihat */
+.input-group select option {
+    background-color: #1e1e1e; /* Warna gelap agar kontras dengan teks putih */
+    color: #ffffff;
+    padding: 10px;
+}
+/* --- BUTTONS --- */
+.button-group {
+    display: flex;
+    gap: 10px;
+}
+
+.btn {
+    padding: 12px 20px;
+    border-radius: 12px;
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}.btn-filter { background: var(--accent); color: #fff; }
+.btn-filter:hover { box-shadow: 0 5px 15px var(--accent-glow); transform: translateY(-2px); }
+
+.btn-clear { background: rgba(255, 255, 255, 0.05); color: #ccc; }
+.btn-clear:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }

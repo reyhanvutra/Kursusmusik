@@ -1,102 +1,179 @@
-.container {
-    padding: 20px;
+/* --- LAYOUT --- */
+.report-container {
+    animation: fadeIn 0.4s ease-out;
 }
 
-.judul {
-    margin-bottom: 20px;
-}
-
-/* FILTER */
-.filter-box {
+.header-action {
     display: flex;
-    gap: 10px;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.page-title { font-weight: 800; letter-spacing: -1px; }
+.page-subtitle { color: #666; font-size: 13px; }
+
+/* --- CARDS & FILTER --- */
+.card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 18px;
+    padding: 22px;
     margin-bottom: 20px;
 }
 
-.filter-box input,
-.filter-box select {
-    padding: 8px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
+.filter-grid {
+    display: flex;
+    align-items: flex-end;
+    gap: 15px;
 }
 
-.filter-box button {
-    background: #3498db;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 6px;
-    cursor: pointer;
+.input-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
-.btn-reset {
-    background: #aaa;
-    color: white;
-    padding: 8px 15px;
-    border-radius: 6px;
-    text-decoration: none;
+.input-group label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #555;
+    text-transform: uppercase;
+    padding-left: 5px;
 }
 
-/* TABLE */
-.table-box {
-    overflow-x: auto;
-    background: white;
+.input-with-icon { position: relative; }
+.input-with-icon i {
+    position: absolute; left: 15px; top: 50%;
+    transform: translateY(-50%); color: var(--accent);
+}
+
+.input-group input, .input-group select {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 10px;
+    padding: 10px 15px;
+    color: #fff;
+    width: 100%;
+}
+/* Memastikan teks opsi di dalam dropdown terlihat */
+.input-group select option {
+    background-color: #1e1e1e; /* Warna gelap agar kontras dengan teks putih */
+    color: #ffffff;
     padding: 10px;
 }
 
-table {
+.input-with-icon input { padding-left: 40px; }
+
+/* --- BUTTONS --- */
+.btn {
+    height: 42px;
+    padding: 0 20px;
+    border-radius: 10px;
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-filter { background: var(--accent); color: #fff; }
+.btn-clear { background: rgba(255,255,255,0.05); color: #ccc; text-decoration: none; }
+.btn-pdf { background: #fff; color: #000; text-decoration: none; }
+
+.btn:hover { transform: translateY(-2px); opacity: 0.9; }
+
+/* --- TABLE --- */
+.modern-table {
     width: 100%;
     border-collapse: collapse;
 }
 
-thead {
-    background: #2c3e50;
-    color: white;
-}
-
-th, td {
-    padding: 10px;
+.modern-table th {
     text-align: left;
+    padding: 15px 20px;
+    font-size: 11px;
+    color: #444;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 
-tbody tr:nth-child(even) {
-    background: #f2f2f2;
+.modern-table td {
+    padding: 15px 20px;
+    color: #999;
+    border-bottom: 1px solid rgba(255,255,255,0.02);
 }
 
-/* BADGE */
-.badge {
-    padding: 5px 10px;
-    border-radius: 8px;
-    font-size: 12px;
-}
+.student-info { display: flex; flex-direction: column; }
+.student-name { color: #fff; font-weight: 700; font-size: 14px; }
+.student-id { color: #555; font-size: 11px; }
 
-.badge.baru {
-    background: orange;
-    color: white;
-}
+.contact-box { font-size: 13px; color: #ccc; }
+.address-text { font-size: 12px; opacity: 0.7; }
 
-.badge.lama {
-    background: green;
-    color: white;
-}
-
-/* BUTTON */
-.btn-detail {
-    background: #27ae60;
-    color: white;
-    padding: 5px 10px;
+/* --- BADGE STATUS --- */
+.badge-status {
+    padding: 4px 12px;
     border-radius: 6px;
-    text-decoration: none;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
 }
 
-/* EMPTY */
-.kosong {
-    text-align: center;
-    color: #888;
+.badge-status.aktif {
+    background: rgba(0, 255, 100, 0.1);
+    color: #00ff64;
+    border: 1px solid rgba(0, 255, 100, 0.2);
 }
 
-/* PAGINATION */
-.pagination {
+.badge-status.nonaktif {
+    background: rgba(255, 50, 50, 0.1);
+    color: #ff3232;
+    border: 1px solid rgba(255, 50, 50, 0.2);
+}
+
+.transaction-count {
+    color: #fff;
+    font-weight: 800;
+    font-size: 16px;
+    margin-right: 4px;
+}
+
+/* --- UTILS --- */
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+.text-success { color: #27ae60; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+/* --- PAGINATION --- */
+.pagination-wrapper {
     margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+/* Custom styling for CI4 Default Pager jika diperlukan */
+.pagination-wrapper ul {
+    display: flex;
+    list-style: none;
+    gap: 5px;
+}
+
+.pagination-wrapper li a {
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    color: #fff;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.pagination-wrapper li.active a {
+    background: var(--accent);
 }

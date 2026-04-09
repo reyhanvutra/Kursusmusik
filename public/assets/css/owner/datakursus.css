@@ -1,0 +1,199 @@
+/* --- LAYOUT & HEADER --- */
+.report-container {
+    animation: fadeIn 0.4s ease-out;
+}
+
+.header-action {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 30px;
+}
+
+.page-title {
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 5px;
+}
+
+.page-subtitle {
+    color: #666;
+    font-size: 14px;
+}
+
+/* --- BADGE & STATS --- */
+.total-badge.highlight {
+    background: linear-gradient(135deg, rgba(153, 0, 0, 0.2) 0%, rgba(153, 0, 0, 0.05) 100%);
+    border: 1px solid rgba(153, 0, 0, 0.3);
+    padding: 15px 25px;
+    border-radius: 18px;
+    text-align: right;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.total-badge .label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #9e9e9e;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.total-badge .value {
+    font-size: 24px;
+    font-weight: 900;
+    color: #fff;
+}
+
+/* --- FILTER SECTION --- */
+.card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 25px;
+    backdrop-filter: blur(10px);
+}
+
+.filter-flex {
+    display: flex;
+    align-items: flex-end;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.input-group {
+    flex: 1;
+    min-width: 300px;
+}
+
+.input-group label {
+    display: block;
+    font-size: 11px;
+    font-weight: 800;
+    color: #555;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+.input-with-icon {
+    position: relative;
+}
+
+.input-with-icon i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--accent);
+    font-size: 14px;
+}
+
+.input-with-icon input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 12px 15px 12px 45px;
+    color: #fff;
+    transition: 0.3s;
+}
+
+.input-with-icon input:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* --- BUTTONS --- */
+.button-group {
+    display: flex;
+    gap: 10px;
+}
+
+.btn {
+    height: 45px;
+    padding: 0 20px;
+    border-radius: 12px;
+    border: none;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.3s;
+    text-decoration: none;
+}
+
+.btn-filter { background: var(--accent); color: #fff; }
+.btn-filter:hover { box-shadow: 0 8px 20px var(--accent-glow); transform: translateY(-2px); }
+
+.btn-clear { background: rgba(255, 255, 255, 0.05); color: #ccc; }
+.btn-clear:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+
+.btn-pdf { background: #fff; color: #000; }
+.btn-pdf:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255,255,255,0.1); }
+
+/* --- TABLE STYLE --- */
+.modern-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.modern-table th {
+    text-align: left;
+    padding: 20px;
+    color: #444;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.modern-table td {
+    padding: 18px 20px;
+    color: #9e9e9e;
+    border-bottom: 1px solid rgba(255,255,255,0.02);
+}
+
+.course-name { color: #fff; font-weight: 700; font-size: 15px; }
+.badge-category { background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 6px; font-size: 12px; }
+.sold-count { color: var(--accent); font-weight: 800; }
+
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+.font-bold { font-weight: 800; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+/* --- PAGINATION --- */
+.pagination-wrapper {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+/* Custom styling for CI4 Default Pager jika diperlukan */
+.pagination-wrapper ul {
+    display: flex;
+    list-style: none;
+    gap: 5px;
+}
+
+.pagination-wrapper li a {
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    color: #fff;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.pagination-wrapper li.active a {
+    background: var(--accent);
+}

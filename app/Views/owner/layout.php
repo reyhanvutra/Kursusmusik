@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Owner Panel</title>
+    <title>Owner Panel | Music Course</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
@@ -31,9 +31,10 @@
             background: var(--bg-base);
             color: var(--text-primary);
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
-      /* --- SIDEBAR FIX --- */
+        /* --- SIDEBAR --- */
         .sidebar {
             width: var(--sidebar-w);
             background: var(--bg-sidebar);
@@ -43,26 +44,17 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 40px 0; /* Memberi ruang napas atas & bawah */
             z-index: 100;
-            border-right: 1px solid rgba(255,255,255,0.03);
+            border-right: 1px solid rgba(255,255,255,0.05);
         }
 
-        /* Container menu dipaksa ke tengah */
         .nav-group {
-            flex: 1; /* Mengambil semua sisa ruang */
+            flex: 1; /* Mengambil ruang agar menu bisa di tengah vertikal */
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center; /* Memaksa isi grup ke tengah vertikal */
+            justify-content: center;
             gap: 25px;
-        }
-
-        /* Menghilangkan margin auto pada logout agar tidak merusak centering */
-        .btn-logout-sidebar {
-            margin-top: 0; 
-            color: #444;
-            transition: 0.3s;
         }
 
         .nav-icon {
@@ -76,6 +68,10 @@
             font-size: 20px;
             transition: var(--transition);
             position: relative;
+        }
+
+        .nav-icon:hover {
+            color: var(--accent);
         }
 
         .nav-icon.active {
@@ -118,32 +114,47 @@
         .user-profile {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 15px;
         }
 
         .user-avatar {
-            width: 40px;
-            height: 40px;
+            width: 42px;
+            height: 42px;
             background: var(--accent);
-            border-radius: 10px;
+            border-radius: 12px;
             display: grid;
             place-items: center;
             color: #fff;
+            font-size: 18px;
+        }
+
+        /* Tombol Logout di Kanan Atas */
+        .btn-logout-top {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: var(--transition);
+            margin-left: 5px;
+        }
+
+        .btn-logout-top:hover {
+            background: var(--accent);
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 8px 20px var(--accent-glow);
+            transform: translateY(-2px);
         }
 
         .content {
             flex: 1;
             padding: 0 40px 40px 40px;
         }
-
-        .btn-logout-sidebar {
-            margin-top: auto;
-            margin-bottom: 30px;
-            color: #555;
-            transition: 0.3s;
-        }
-        
-        .btn-logout-sidebar:hover { color: #ff3333; }
     </style>
 </head>
 <body>
@@ -154,40 +165,36 @@
 
     <nav class="nav-group">
         <a href="/owner/dashboard" 
-           class="nav-icon <?= (str_contains($currentUri, 'dashboard')) ? 'active' : '' ?>">
+           class="nav-icon <?= (str_contains($currentUri, 'dashboard')) ? 'active' : '' ?>" title="Dashboard">
             <i class="fa-solid fa-house"></i>
         </a>
 
         <a href="/owner/laporan" 
-           class="nav-icon <?= (str_contains($currentUri, 'laporan')) ? 'active' : '' ?>">
+           class="nav-icon <?= (str_contains($currentUri, 'laporan')) ? 'active' : '' ?>" title="Laporan">
             <i class="fa-solid fa-file-invoice-dollar"></i>
         </a>
 
         <a href="/owner/kursus" 
-           class="nav-icon <?= (str_contains($currentUri, 'kursus')) ? 'active' : '' ?>">
+           class="nav-icon <?= (str_contains($currentUri, 'kursus')) ? 'active' : '' ?>" title="Data Kursus">
             <i class="fa-solid fa-music"></i>
         </a>
 
         <a href="/owner/datasiswa" 
-           class="nav-icon <?= (str_contains($currentUri, 'datasiswa')) ? 'active' : '' ?>">
+           class="nav-icon <?= (str_contains($currentUri, 'datasiswa')) ? 'active' : '' ?>" title="Data Siswa">
             <i class="fa-solid fa-user-graduate"></i>
         </a>
 
         <a href="/owner/log" 
-           class="nav-icon <?= (str_contains($currentUri, 'log')) ? 'active' : '' ?>">
+           class="nav-icon <?= (str_contains($currentUri, 'log')) ? 'active' : '' ?>" title="Log Aktivitas">
             <i class="fa-solid fa-clock-rotate-left"></i>
         </a>
     </nav>
-
-    <a href="/logout" class="nav-icon btn-logout-sidebar">
-        <i class="fa-solid fa-right-from-bracket"></i>
-    </a>
 </aside>
 
 <div class="main">
     <header class="topbar">
         <div class="topbar-title">
-            <h1>OWNER OVERVIEW</h1>
+            <h1>Welcome <?= session()->get('nama') ?? 'Owner'; ?></h1>
             <p style="font-size: 13px; color: var(--text-secondary);">
                 Halo, <?= session()->get('nama') ?? 'Owner'; ?>! Selamat bekerja kembali.
             </p>
@@ -196,11 +203,16 @@
         <div class="user-profile">
             <div style="text-align: right;">
                 <div style="font-weight: 800; font-size: 14px;"><?= session()->get('nama'); ?></div>
-                <small style="color: var(--text-secondary); font-size: 11px;">Owner Access</small>
+                <small style="color: var(--text-secondary); font-size: 11px;">Owner</small>
             </div>
+            
             <div class="user-avatar">
                 <i class="fa-solid fa-user-tie"></i>
             </div>
+
+            <a href="/logout" class="btn-logout-top" title="Keluar">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </a>
         </div>
     </header>
 

@@ -183,6 +183,51 @@
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 42px;
+            height: 42px;
+            background: var(--accent);
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            color: #fff;
+            font-size: 18px;
+        }
+
+        /* Tombol Logout di Kanan Atas */
+        .btn-logout-top {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: var(--transition);
+            margin-left: 5px;
+        }
+
+        .btn-logout-top:hover {
+            background: var(--accent);
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 8px 20px var(--accent-glow);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            flex: 1;
+            padding: 0 40px 40px 40px;
+        }
     </style>
 </head>
 <body>
@@ -255,7 +300,21 @@ $currentUri = uri_string();
             <h1><?= $page_title ?? 'Welcome Admin Dashboard' ?></h1>
             <p><?= $page_subtitle ?? 'Selamat Datang ' . (session()->get('nama') ?? 'Nama Anda') ?></p>
         </div>
-        <a href="/logout" class="btn-logout">Logout</a>
+
+           <div class="user-profile">
+            <div style="text-align: right;">
+                <div style="font-weight: 800; font-size: 14px;"><?= session()->get('nama'); ?></div>
+                <small style="color: var(--text-secondary); font-size: 11px;">Admin</small>
+            </div>
+            
+            <div class="user-avatar">
+                <i class="fa-solid fa-user-tie"></i>
+            </div>
+
+            <a href="/logout" class="btn-logout-top" title="Keluar">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </a>
+        </div>
     </header>
 
     <main class="content">
