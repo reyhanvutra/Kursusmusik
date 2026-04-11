@@ -11,6 +11,7 @@
     <h2 class="judul">Transaksi</h2>
 
     <form action="/kasir/simpan" method="post" onsubmit="return kirimData()">
+         <input type="hidden" name="id_siswa" id="id_siswa">
         <div class="wrapper">
            <div class="box kiri">
     <div class="section-title">
@@ -141,335 +142,308 @@
 
 <script>
 
-
-
-// ================= INIT =================
-
-if(!localStorage.getItem('from_detail')){
-
+// ================= AUTO RESET =================
+if (localStorage.getItem('from_detail') !== '1') {
     localStorage.removeItem('cart');
-
 }
-
 localStorage.removeItem('from_detail');
 
-
-
 let BIAYA_DAFTAR = <?= $setting['biaya_pendaftaran'] ?? 0 ?>;
-
 let biayaDaftarAktif = 0;
-
 let items = JSON.parse(localStorage.getItem('cart') || '[]');
 
 
+// ================= LOAD SISWA =================
+let savedSiswa = JSON.parse(localStorage.getItem('siswa') || 'null');
 
-// ================= SEARCH =================
-
-document.getElementById('searchSiswa').addEventListener('input', function(){
-
-    let keyword = this.value.toLowerCase();
-
-    document.querySelectorAll('#listSiswa option').forEach(opt=>{
-
-        opt.style.display = opt.text.toLowerCase().includes(keyword) ? '' : 'none';
-
-    });
-
-});
-
-
-
-// ================= PILIH SISWA =================
-
-document.getElementById('listSiswa').addEventListener('change', function(){
-
-
-
-    let s = this.options[this.selectedIndex];
-
-
-
-    document.getElementById('id_siswa').value = s.value;
-
-    document.getElementById('nama').value = s.dataset.nama;
-
-    document.getElementById('nohp').value = s.dataset.nohp;
-
-    document.getElementById('alamat').value = s.dataset.alamat;
-
-
+if(savedSiswa){
+    document.getElementById('id_siswa').value = savedSiswa.id;
+    document.getElementById('nama').value = savedSiswa.nama;
+    document.getElementById('nohp').value = savedSiswa.nohp;
+    document.getElementById('alamat').value = savedSiswa.alamat;
 
     document.getElementById('infoSiswa').style.display = 'block';
 
-
-
-    let status = parseInt(s.dataset.daftar || 0);
-
-
-
-    if(status === 0){
-
+    if(parseInt(savedSiswa.daftar) === 0){
         biayaDaftarAktif = BIAYA_DAFTAR;
-
         document.getElementById('statusSiswa').innerHTML = "🟠 Siswa Baru";
-
         document.getElementById('biayaDaftarBox').style.display = 'block';
-
         document.getElementById('biayaDaftar').innerText = formatRupiah(biayaDaftarAktif);
-
-    }else{
-
+    } else {
         biayaDaftarAktif = 0;
-
         document.getElementById('statusSiswa').innerHTML = "🟢 Siswa Lama";
-
         document.getElementById('biayaDaftarBox').style.display = 'none';
-
     }
+}
 
 
-
-    render();
-
+// ================= SEARCH =================
+document.getElementById('searchSiswa').addEventListener('input', function(){
+    let keyword = this.value.toLowerCase();
+    document.querySelectorAll('#listSiswa option').forEach(opt=>{
+        opt.style.display = opt.text.toLowerCase().includes(keyword) ? '' : 'none';
+    });
 });
 
 
+// ================= PILIH SISWA =================
+document.getElementById('listSiswa').addEventListener('change', function(){
 
-// ================= RESET =================
+    let s = this.options[this.selectedIndex];
 
-function resetSiswa(){
+    document.getElementById('id_siswa').value = s.value;
+    document.getElementById('nama').value = s.dataset.nama;
+    document.getElementById('nohp').value = s.dataset.nohp;
+    document.getElementById('alamat').value = s.dataset.alamat;
 
-    document.getElementById('id_siswa').value = '';
+    document.getElementById('infoSiswa').style.display = 'block';
 
-    document.getElementById('infoSiswa').style.display = 'none';
+    let status = parseInt(s.dataset.daftar || 0);
 
-    biayaDaftarAktif = 0;
+    if(status === 0){
+        biayaDaftarAktif = BIAYA_DAFTAR;
+        document.getElementById('statusSiswa').innerHTML = "🟠 Siswa Baru";
+        document.getElementById('biayaDaftarBox').style.display = 'block';
+        document.getElementById('biayaDaftar').innerText = formatRupiah(biayaDaftarAktif);
+    }else{
+        biayaDaftarAktif = 0;
+        document.getElementById('statusSiswa').innerHTML = "🟢 Siswa Lama";
+        document.getElementById('biayaDaftarBox').style.display = 'none';
+    }
+
+    // 🔥 SIMPAN SISWA
+    localStorage.setItem('siswa', JSON.stringify({
+        id: s.value,
+        nama: s.dataset.nama,
+        nohp: s.dataset.nohp,
+        alamat: s.dataset.alamat,
+        daftar: s.dataset.daftar
+    }));
 
     render();
+});
 
+
+// ================= RESET SISWA =================
+function resetSiswa(){
+    document.getElementById('id_siswa').value = '';
+    document.getElementById('infoSiswa').style.display = 'none';
+    biayaDaftarAktif = 0;
+    localStorage.removeItem('siswa');
+    render();
 }
-
 
 
 // ================= TOGGLE FORM =================
-
 function toggleForm(){
-
     let f = document.getElementById('formSiswa');
-
     f.style.display = f.style.display === 'none' ? 'block' : 'none';
-
 }
 
+
+// ================= SIMPAN SISWA AJAX =================
+function simpanSiswa(){
+
+    let nama   = document.getElementById('nama_siswa').value.trim();
+    let nohp   = document.getElementById('nohp_siswa').value.trim();
+    let alamat = document.getElementById('alamat_siswa').value.trim();
+
+    if(!nama || !nohp){
+        alert('Nama & No HP wajib diisi!');
+        return;
+    }
+
+    fetch('/kasir/simpanSiswaAjax', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            nama: nama,
+            no_hp: nohp,
+            alamat: alamat
+        })
+    })
+    .then(res => res.json())
+    .then(res => {
+
+        // DUPLIKAT
+        if(res.status === 'duplicate'){
+
+            let s = res.data;
+
+            document.getElementById('id_siswa').value = s.id;
+            document.getElementById('nama').value = s.nama;
+            document.getElementById('nohp').value = s.no_hp;
+            document.getElementById('alamat').value = s.alamat;
+
+            document.getElementById('infoSiswa').style.display = 'block';
+
+            localStorage.setItem('siswa', JSON.stringify({
+                id: s.id,
+                nama: s.nama,
+                nohp: s.no_hp,
+                alamat: s.alamat,
+                daftar: s.sudah_daftar
+            }));
+
+            render();
+            return;
+        }
+
+        // SUCCESS
+        if(res.status === 'success'){
+
+            let select = document.getElementById('listSiswa');
+
+            let opt = document.createElement('option');
+            opt.value = res.id;
+            opt.text = res.nama + ' (' + res.no_hp + ')';
+            opt.dataset.nama = res.nama;
+            opt.dataset.nohp = res.no_hp;
+            opt.dataset.alamat = res.alamat;
+            opt.dataset.daftar = 0;
+
+            select.appendChild(opt);
+
+            select.value = res.id;
+            select.dispatchEvent(new Event('change'));
+
+            // 🔥 SIMPAN
+            localStorage.setItem('siswa', JSON.stringify({
+                id: res.id,
+                nama: res.nama,
+                nohp: res.no_hp,
+                alamat: res.alamat,
+                daftar: 0
+            }));
+
+            document.getElementById('nama_siswa').value = '';
+            document.getElementById('nohp_siswa').value = '';
+            document.getElementById('alamat_siswa').value = '';
+        }
+
+    });
+}
 
 
 // ================= TANGGAL =================
-
 document.getElementById('tanggal_mulai').addEventListener('change', hitungTanggal);
-
 document.getElementById('bulan').addEventListener('input', hitungTanggal);
-
 document.getElementById('bayar').addEventListener('input', render);
 
-
-
 function hitungTanggal(){
-
     let mulai = document.getElementById('tanggal_mulai').value;
-
     let bulan = parseInt(document.getElementById('bulan').value) || 1;
-
-
 
     if(!mulai) return;
 
-
-
     let t = new Date(mulai);
-
     t.setMonth(t.getMonth() + bulan);
 
-
-
     document.getElementById('tanggal_selesai').value = t.toISOString().split('T')[0];
-
 }
 
 
-
+// ================= RENDER =================
 function render(){
 
-    let subtotal = 0;
+    let bulan = parseInt(document.getElementById('bulan').value) || 1;
 
+    let subtotal = 0;
     let html = '';
 
-
-
     items.forEach((i,index)=>{
-
-        let bulan = parseInt(document.getElementById('bulan').value) || i.bulan || 1;
-
-        let hargaTotalItem = i.harga * bulan;
-
-        subtotal += hargaTotalItem;
-
-
+        let harga = i.harga * bulan;
+        subtotal += harga;
 
         html += `
-
         <div class="item">
-
             <b>${i.nama}</b>
-
-            <button type="button" onclick="hapus(${index})" class="btn-danger-mini">X</button>
-
-            <div>Rp ${formatRupiah(i.harga)} x ${bulan} bulan</div>
-
-            <div><b>Rp ${formatRupiah(hargaTotalItem)}</b></div>
-
+            <button type="button" onclick="hapus(${index})">X</button>
+            <div>Rp ${formatRupiah(i.harga)} x ${bulan}</div>
+            <div><b>Rp ${formatRupiah(harga)}</b></div>
         </div>`;
-
     });
-
-
 
     let total = subtotal + biayaDaftarAktif;
 
-
-
     document.getElementById('list').innerHTML = html || '<i>Belum ada item</i>';
-
     document.getElementById('subtotal').innerText = formatRupiah(subtotal);
-
     document.getElementById('total').innerText = formatRupiah(total);
-
-
 
     let bayar = parseInt(document.getElementById('bayar').value) || 0;
 
-
-
     document.getElementById('bayarText').innerText = formatRupiah(bayar);
-
     document.getElementById('kembali').innerText = formatRupiah(bayar - total);
 
-
-
-    // Update items di localStorage
-
-    items = items.map(i => ({...i, bulan: parseInt(document.getElementById('bulan').value) || i.bulan}));
-
     localStorage.setItem('cart', JSON.stringify(items));
-
 }
-
 
 
 // ================= HAPUS =================
-
 function hapus(i){
-
     items.splice(i,1);
-
     localStorage.setItem('cart', JSON.stringify(items));
-
     render();
-
 }
-
 
 
 // ================= SUBMIT =================
-
 function kirimData(){
 
-
-
     if(!document.getElementById('id_siswa').value){
-
         alert('Pilih siswa dulu!');
-
         return false;
-
     }
 
-
-
     let bulan = document.getElementById('bulan').value;
-
     let mulai = document.getElementById('tanggal_mulai').value;
-
-
+    let selesai = document.getElementById('tanggal_selesai').value;
 
     items = items.map(i => ({
-
         ...i,
-
         bulan: bulan,
-
-        tanggal_mulai: mulai
-
+        tanggal_mulai: mulai,
+        tanggal_selesai: selesai
     }));
-
-
 
     document.getElementById('items').value = JSON.stringify(items);
 
-
-
+    // 🔥 CLEAR SEMUA
     localStorage.removeItem('cart');
-
     localStorage.removeItem('last_kursus');
-
-
+    localStorage.removeItem('siswa');
 
     return true;
-
 }
-
 
 
 // ================= NAVIGASI =================
-
 function tambahItem(){
-
-    window.location = '/kasir/pilih';
-
+    localStorage.setItem('from_detail', '1');
+    window.location.href = '/kasir/pilih';
 }
-
-
 
 function kembaliKeKursus(){
-
     localStorage.removeItem('cart');
+    localStorage.removeItem('siswa');
 
     let id = localStorage.getItem('last_kursus');
-
     if(id){
-
         window.location.href = "/kasir/detail/kursus/" + id;
-
     }else{
-
         window.location.href = "/kasir/pilih";
-
     }
-
 }
 
 
-
+// ================= FORMAT =================
 function formatRupiah(angka){
-
     return new Intl.NumberFormat('id-ID').format(angka);
-
 }
 
 
-
+// INIT
 render();
-
-
 
 </script>
 

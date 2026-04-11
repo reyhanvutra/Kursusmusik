@@ -10,11 +10,6 @@
         </a>
     </div>
 
-    <?php if(session()->getFlashdata('success')): ?>
-        <div class="alert success">
-            <?= session()->getFlashdata('success'); ?>
-        </div>
-    <?php endif; ?>
 
     <?php if(session()->getFlashdata('error')): ?>
         <div class="alert error">

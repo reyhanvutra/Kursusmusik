@@ -21,9 +21,9 @@
             </div>
 
             <div class="input-group">
-                <label>Filter Peran</label>
+                <label>Filter Role</label>
                 <select name="role">
-                    <option value="">-- Semua Peran --</option>
+                    <option value="">-- Semua Role --</option>
                     <option value="admin" <?= (($_GET['role'] ?? '')=='admin')?'selected':'' ?>>Admin</option>
                     <option value="kasir" <?= (($_GET['role'] ?? '')=='kasir')?'selected':'' ?>>Kasir</option>
                 </select>

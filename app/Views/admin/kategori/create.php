@@ -47,14 +47,12 @@
     const imgPreview = document.getElementById('imgPreview');
     const previewBox = document.getElementById('previewBox');
 
-    imgInput.onchange = evt => {
-        const [file] = imgInput.files;
-        if (file) {
-            imgPreview.src = URL.createObjectURL(file);
-            imgPreview.style.display = 'block';
-            previewBox.querySelector('i').style.display = 'none';
-            previewBox.querySelector('p').style.display = 'none';
-        }
+   imgInput.onchange = evt => {
+    const [file] = imgInput.files;
+    if (file) {
+        imgPreview.src = URL.createObjectURL(file);
+        imgPreview.style.display = 'block';
     }
+}
 </script>
 <?= $this->endSection(); ?>

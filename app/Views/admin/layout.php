@@ -320,7 +320,9 @@ $currentUri = uri_string();
     <main class="content">
         <?= $this->renderSection('content'); ?>
     </main>
+    
 </div>
+
 <script>
 setTimeout(() => {
     const alerts = document.querySelectorAll('.alert');
@@ -337,6 +339,8 @@ setTimeout(() => {
 
 }, 3000);
 </script>
+
 </body>
+
 
 </html>

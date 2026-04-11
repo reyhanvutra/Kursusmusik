@@ -8,12 +8,6 @@
         <p style="color: #888; font-size: 13px; margin: 5px 0 0 0;">Kelola biaya pendaftaran kursus secara global.</p>
     </div>
 
-    <?php if(session()->getFlashdata('success')): ?>
-        <div class="alert success" style="width: 100%; max-width: 800px;">
-            <i class="fa-solid fa-circle-check"></i> <?= session()->getFlashdata('success') ?>
-        </div>
-    <?php endif; ?>
-
     <div class="form-container">
         <form action="/admin/setting/update" method="post">
             <?= csrf_field(); ?>

@@ -18,12 +18,6 @@
     </a>
 </div>
 
-    <?php if(session()->getFlashdata('success')): ?>
-        <div class="alert success">
-            <i class="fa-solid fa-circle-check"></i> <?= session()->getFlashdata('success'); ?>
-        </div>
-    <?php endif; ?>
-
     <div class="level-grid">
         <?php if(empty($level)): ?>
             <div class="empty-state-card">

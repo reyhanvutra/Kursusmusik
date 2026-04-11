@@ -121,7 +121,7 @@ Rp <?= number_format($t['uang_kembali'],0,',','.'); ?>
 <hr>
 
 <div class="center">
-    Terima Kasih 🙏
+    Terima Kasih 
 </div>
 
 </div>

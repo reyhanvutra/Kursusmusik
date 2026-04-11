@@ -170,13 +170,24 @@
             flex: 1;
             padding: 0 40px 40px 40px;
         }
+        .brand-link {
+    text-decoration: none;
+    color: inherit;
+    transition: 0.3s;
+}
+
+.brand-link:hover {
+    color: #ff0000; /* biar ada efek hover */
+}
     </style>
 </head>
 <body>
 
 <nav class="navbar">
     <div class="brand-section">
-        <h2>Welcome Kasir Dashboard <?= session()->get('nama'); ?></h2>
+        <h2>  <a href="/kasir/dashboard" class="brand-link">
+            Welcome Kasir Dashboard <?= session()->get('nama'); ?>
+        </a></h2>
     </div>
 
      <div class="user-profile">
