@@ -62,10 +62,12 @@
                         <small>Mulai Kursus</small>
                         <b><?= date('d M Y', strtotime($d['mulai_awal'])); ?></b>
                     </div>
-                    <div class="detail-node">
-                        <small>Terakhir Perpanjang</small>
-                        <b><?= $d['jumlah_perpanjang']; ?>x Transaksi</b>
-                    </div>
+                   <div class="detail-node">
+    <small>Status Perpanjangan</small>
+    <b style="color:#00d4ff;">
+        <?= $d['label_perpanjang']; ?>
+    </b>
+</div>
                     <div class="detail-node">
                         <small>Berakhir Pada</small>
                         <b><?= date('d M Y', strtotime($d['selesai'])); ?></b>

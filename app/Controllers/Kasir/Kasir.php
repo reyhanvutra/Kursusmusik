@@ -322,7 +322,18 @@ public function detailSiswa($id)
         $selesai    = $terakhir['tanggal_selesai'];
 
         // jumlah perpanjang
-        $jumlah_perpanjang = count($list) - 1;
+      $jumlah_perpanjang = count($list) - 1;
+
+// ================= LABEL PERPANJANG =================
+if($jumlah_perpanjang <= 0){
+    $label = 'Baru';
+} elseif($jumlah_perpanjang == 1){
+    $label = 'Sudah perpanjang 1x';
+} elseif($jumlah_perpanjang == 2){
+    $label = 'Sudah perpanjang 2x';
+} else {
+   $label = 'Sudah perpanjang ' . $jumlah_perpanjang . 'x';
+}
 
         // hitung sisa hari
         $sisa = (strtotime($selesai) - strtotime($today)) / 86400;
@@ -342,6 +353,7 @@ public function detailSiswa($id)
             'selesai' => $selesai,
             'durasi_hari' => max(0, floor($durasi)),
             'jumlah_perpanjang' => $jumlah_perpanjang,
+              'label_perpanjang' => $label, 
             'sisa_hari' => max(0, floor($sisa)),
             'status' => $status
         ]];
@@ -406,6 +418,11 @@ public function simpanPerpanjang()
     $bulan     = (int)$this->request->getPost('bulan');
     $bayar     = (int)$this->request->getPost('bayar');
 
+    // ================= VALIDASI AWAL =================
+    if(!$id_detail || $bulan <= 0){
+        return redirect()->back()->with('error','Data tidak valid');
+    }
+
     $detail = $this->detailModel
         ->select('transaksi_detail.*, transaksi.id_siswa')
         ->join('transaksi', 'transaksi.id = transaksi_detail.id_transaksi')
@@ -423,11 +440,12 @@ public function simpanPerpanjang()
         return redirect()->back()->with('error','Level tidak ditemukan');
     }
 
-    // 🔥 CEK SLOT
+    // ================= CEK SLOT =================
     if($level['slot'] <= 0){
         return redirect()->back()->with('error','Slot penuh');
     }
 
+    // ================= HITUNG TANGGAL =================
     $today = date('Y-m-d');
 
     if($detail['tanggal_selesai'] >= $today){
@@ -438,12 +456,7 @@ public function simpanPerpanjang()
 
     $selesai = date('Y-m-d', strtotime("+$bulan month", strtotime($mulai)));
 
-    // ================= UPDATE UTAMA =================
-    $this->detailModel->update($id_detail, [
-        'tanggal_selesai' => $selesai
-    ]);
-
-    // ================= HITUNG =================
+    // ================= HITUNG TOTAL =================
     $harga_per_bulan = $detail['harga'] / ($detail['bulan'] ?: 1);
     $total = $harga_per_bulan * $bulan;
 
@@ -462,7 +475,7 @@ public function simpanPerpanjang()
         'tipe_transaksi' => 'perpanjang'
     ]);
 
-    // ================= DETAIL =================
+    // ================= DETAIL BARU (INI KUNCI 🔥) =================
     $this->detailModel->insert([
         'id_transaksi' => $transaksiId,
         'tipe' => 'kursus',

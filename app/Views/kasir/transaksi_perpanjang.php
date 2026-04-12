@@ -66,7 +66,7 @@
                     <label>Nominal Bayar</label>
                     <div class="currency-input">
                         <span>Rp</span>
-                        <input type="number" id="bayar" placeholder="0" required>
+                        <input type="number" id="bayar" name="bayar" placeholder="0" required>
                     </div>
                 </div>
             </div>

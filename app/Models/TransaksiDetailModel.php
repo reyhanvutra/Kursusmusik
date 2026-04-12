@@ -15,6 +15,7 @@ class TransaksiDetailModel extends Model
         'harga',
         'bulan',
         'tanggal_mulai',
-        'tanggal_selesai'
+        'tanggal_selesai',
+        'tipe_detail'
     ];
 }
