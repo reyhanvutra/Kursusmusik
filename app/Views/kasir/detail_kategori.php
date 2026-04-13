@@ -15,14 +15,7 @@ $bg = $kategori['gambar']
         <i class="fa-solid fa-arrow-left"></i> Kembali ke Kategori
     </a>
 
-    <div class="kategori-hero">
-        <img src="<?= $bg ?>" alt="<?= $kategori['nama_kategori']; ?>" class="hero-img">
-        <div class="overlay"></div>
-
-        <div class="hero-content">
-            <h1><?= $kategori['nama_kategori']; ?></h1>
-        </div>
-    </div>
+    <h1 class="judul-kategori"><?= $kategori['nama_kategori']; ?></h1>
 
     <?php if(!empty($kategori['deskripsi'])): ?>
     <div class="kategori-deskripsi">
